@@ -13,9 +13,9 @@ public class MenuManager : MonoBehaviour
     public TextMeshProUGUI titleText;
 
     [Header("Level Button UI Elements")]
-    public Button[] levelButtons = new Button[4];
-    public TextMeshProUGUI[] levelNameTexts = new TextMeshProUGUI[4];
-    public TextMeshProUGUI[] levelDescTexts = new TextMeshProUGUI[4];
+    public Button[] levelButtons = new Button[5];
+    public TextMeshProUGUI[] levelNameTexts = new TextMeshProUGUI[5];
+    public TextMeshProUGUI[] levelDescTexts = new TextMeshProUGUI[5];
 
     void Start()
     {
@@ -36,6 +36,8 @@ public class MenuManager : MonoBehaviour
             {
                 int levelIndex = i;
                 var levelData = LevelManager.Instance.GetLevelData(i);
+
+                if (levelData == null) continue;
 
                 // Set button text
                 if (levelNameTexts[i] != null)
