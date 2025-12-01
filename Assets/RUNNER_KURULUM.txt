@@ -1,0 +1,257 @@
+═══════════════════════════════════════════════════════════
+🎮 PENGUIN RUNNER - UNITY KURULUM KILAVUZU
+═══════════════════════════════════════════════════════════
+
+✅ HAZIR OLAN ŞEYLER:
+
+1. ✅ TÜM SCRIPT'LER HAZIR (Assets/Scripts/):
+   - RunnerPlayerController.cs
+   - RunnerGameManager.cs
+   - RunnerObstacleSpawner.cs
+   - RunnerObstacle.cs
+   - RunnerGroundScroller.cs
+
+2. ✅ LEVELMANAGER GÜNCELLENDİ:
+   - 5 level tanımlı
+   - Level 5: "Penguin Runner" ekli
+
+3. ✅ MENUMANAGER GÜNCELLENDİ:
+   - 5 buton array'i hazır
+
+4. ✅ SCENE OLUŞTURULMUŞ:
+   - RunnerLevel.unity VAR!
+
+═══════════════════════════════════════════════════════════
+🚀 ŞİMDİ NE YAPILACAK?
+═══════════════════════════════════════════════════════════
+
+RunnerLevel.unity scene'i ZATENoluşturulmuş!
+Sadece içini doldurmak gerekiyor:
+
+ADIM 1: RunnerLevel Scene'ini Aç
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Assets/Scenes/RunnerLevel.unity dosyasına çift tıkla
+
+
+ADIM 2: GameManager Ekle (30 saniye)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Hierarchy'de sağ tık > Create Empty
+2. İsim: "GameManager"
+3. Add Component > "RunnerGameManager"
+4. Add Component > "Audio Source"
+
+
+ADIM 3: Player Oluştur (1 dakika)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Hierarchy > sağ tık > 2D Object > Sprites > Square
+2. İsim: "Player"
+3. Inspector'da:
+   Transform > Position: X=-6, Y=-2, Z=0
+   Transform > Scale: X=0.5, Y=0.5, Z=1
+
+4. Add Component > "Rigidbody2D"
+   - Body Type: Kinematic
+   - Gravity Scale: 0
+
+5. Add Component > "Box Collider 2D" (1. collider - standing)
+   - İsim değiştir: "StandingCollider"
+
+6. Add Component > "Box Collider 2D" (2. collider - ducking)
+   - İsim değiştir: "DuckingCollider"
+   - Offset Y: -0.2
+   - Size Y: 0.6
+
+7. Add Component > "RunnerPlayerController"
+   - Ground Y: -2
+   - Jump Velocity: 12
+   - Gravity: 0.6
+   - Standing Collider: İlk BoxCollider2D'yi sürükle
+   - Ducking Collider: İkinci BoxCollider2D'yi sürükle
+
+8. Tag'i "Player" yap (Inspector üst kısım)
+
+
+ADIM 4: Ground (Zemin) Oluştur (1 dakika)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Hierarchy > sağ tık > 3D Object > Quad
+2. İsim: "Ground"
+3. Inspector'da:
+   Transform > Position: X=0, Y=-3, Z=0
+   Transform > Rotation: X=90, Y=0, Z=0
+   Transform > Scale: X=20, Y=1, Z=1
+
+4. Add Component > "Box Collider 2D"
+   - Is Trigger: KAPALI! (false)
+
+5. Add Component > "RunnerGroundScroller"
+   - Ground Renderer: Quad'ın MeshRenderer'ını sürükle
+   - Scroll Speed Multiplier: 0.5
+
+
+ADIM 5: ObstacleSpawner (30 saniye)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Hierarchy > sağ tık > Create Empty
+2. İsim: "ObstacleSpawner"
+3. Add Component > "RunnerObstacleSpawner"
+   - Spawn X: 12
+   - Gap Coefficient: 0.6
+   - Clear Time: 3
+
+
+ADIM 6: Obstacle Prefab Oluştur (1 dakika)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Hierarchy > sağ tık > 2D Object > Sprites > Square
+2. İsim: "Obstacle"
+3. Inspector'da:
+   Transform > Position: X=10, Y=-2, Z=0
+   Transform > Scale: X=0.5, Y=1, Z=1
+   Sprite Renderer > Color: KIRMIZI
+
+4. Add Component > "Box Collider 2D"
+   - Is Trigger: AÇIK! (true)
+
+5. Add Component > "RunnerObstacle"
+
+6. Tag'i "Obstacle" yap
+   (Eğer "Obstacle" tag'i yoksa:
+    Inspector > Tag > Add Tag > "Obstacle" oluştur)
+
+7. PREFAB YAP:
+   - Project'te Assets/Prefabs klasörü oluştur (yoksa)
+   - Obstacle'ı Project'e sürükle
+   - Hierarchy'den Obstacle'ı SİL
+
+8. ObstacleSpawner'a Prefab'ı Ekle:
+   - Hierarchy'de ObstacleSpawner'ı seç
+   - Inspector > RunnerObstacleSpawner
+   - Obstacle Types > Size: 1
+   - Element 0:
+     * Name: "Basic"
+     * Prefab: Obstacle prefab'ını sürükle
+     * Width: 1
+     * Min Gap: 3
+     * Min Speed: 0
+
+
+ADIM 7: UI Oluştur (2 dakika)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Hierarchy > sağ tık > UI > Canvas
+
+2. Canvas altında Score Text:
+   - sağ tık > UI > Text - TextMeshPro
+   - İsim: "ScoreText"
+   - Rect Transform > Anchor Preset: TOP RIGHT
+   - Pos X: -100, Pos Y: -50
+   - Text: "00000"
+   - Font Size: 48
+   - Alignment: Right
+
+3. Canvas altında High Score Text:
+   - Öncekini kopyala (Ctrl+D)
+   - İsim: "HighScoreText"
+   - Pos Y: -100
+   - Text: "HI 00000"
+
+4. Canvas altında Game Over Panel:
+   - sağ tık > UI > Panel
+   - İsim: "GameOverPanel"
+
+   Panel içinde:
+   a) Text: "GAME OVER"
+      - Center, büyük font
+
+   b) Button: "RestartButton"
+      - Text: "RESTART"
+
+   c) Button: "MenuButton"
+      - Text: "MAIN MENU"
+
+5. GameManager'a UI'ı Bağla:
+   - Hierarchy > GameManager seç
+   - Inspector > RunnerGameManager:
+     * Score Text: ScoreText'i sürükle
+     * High Score Text: HighScoreText'i sürükle
+     * Game Over Panel: GameOverPanel'i sürükle
+     * Restart Button: RestartButton'u sürükle
+     * Menu Button: MenuButton'u sürükle
+
+
+ADIM 8: MenuScene'de 5. Butonu Ekle
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. MenuScene'i aç (Assets/Scenes/MenuScene.unity)
+
+2. Menu GameObject > MenuManager:
+   - Level Buttons, Level Name Texts, Level Desc Texts
+     array'leri ZATEN 5 olarak ayarlı ✅
+
+3. UI'da 5. Level Button oluştur:
+   - Varolan butonlardan birini kopyala
+   - İsim: "Level5Button"
+
+4. MenuManager array'lerine ekle:
+   - 5. elementi bu yeni butona bağla
+
+
+ADIM 9: Build Settings
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+File > Build Settings > Add Open Scenes
+
+
+ADIM 10: TEST ET! 🎮
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. MenuScene'i aç
+2. Play'e bas
+3. "Penguin Runner" butonuna tıkla
+4. Space ile zıpla
+5. S ile eğil
+6. Engellere çarpma!
+
+═══════════════════════════════════════════════════════════
+🐛 SORUN GİDERME
+═══════════════════════════════════════════════════════════
+
+PROBLEM: Player düşüyor
+ÇÖZÜM: Rigidbody2D > Gravity Scale: 0 olmalı
+
+PROBLEM: Engeller spawn olmuyor
+ÇÖZÜM: ObstacleSpawner > Spawn X: 12 olmalı
+
+PROBLEM: Collision çalışmıyor
+ÇÖZÜM: Tag'leri kontrol et!
+  - Player tag: "Player"
+  - Obstacle tag: "Obstacle"
+
+PROBLEM: Ground collider çalışmıyor
+ÇÖZÜM: BoxCollider2D > Is Trigger: KAPALI olmalı
+
+PROBLEM: Obstacle collider çalışmıyor
+ÇÖZÜM: BoxCollider2D > Is Trigger: AÇIK olmalı
+
+═══════════════════════════════════════════════════════════
+📋 KONTROL LİSTESİ
+═══════════════════════════════════════════════════════════
+
+RunnerLevel Scene'de:
+[ ] GameManager var
+[ ] Player var (2 collider + script + tag)
+[ ] Ground var (collider + scroller)
+[ ] ObstacleSpawner var (prefab bağlı)
+[ ] UI var (Score + GameOver + buttons)
+[ ] GameManager'a UI bağlı
+
+MenuScene'de:
+[ ] 5. buton var
+[ ] MenuManager'a bağlı
+
+Test:
+[ ] Play > Menu > "Penguin Runner" görünüyor
+[ ] Level 5'e tıklayınca RunnerLevel açılıyor
+[ ] Space ile zıplıyor
+[ ] S ile eğiliyor
+[ ] Engele çarpınca Game Over
+
+═══════════════════════════════════════════════════════════
+
+Hazır! Toplam süre: ~10 dakika
+
+İyi oyunlar! 🎮🐧🍺

@@ -37,6 +37,8 @@ public class MenuManager : MonoBehaviour
                 int levelIndex = i;
                 var levelData = LevelManager.Instance.GetLevelData(i);
 
+                if (levelData == null) continue;
+
                 // Set button text
                 if (levelNameTexts[i] != null)
                 {
