@@ -66,7 +66,7 @@ public class PenguinController : MonoBehaviour
         if (!isAlive) return;
 
         // Apply custom gravity
-        rb.velocity += Vector2.up * gravity * Time.fixedDeltaTime;
+        rb.linearVelocity += Vector2.up * gravity * Time.fixedDeltaTime;
     }
 
     void HandleInput()
@@ -96,7 +96,7 @@ public class PenguinController : MonoBehaviour
 
     void Jump()
     {
-        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         isGrounded = false;
 
         if (animator != null)
@@ -166,7 +166,7 @@ public class PenguinController : MonoBehaviour
         if (!isAlive) return;
 
         isAlive = false;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
 
         if (animator != null)
         {
