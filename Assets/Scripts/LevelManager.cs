@@ -22,11 +22,11 @@ public class LevelManager : MonoBehaviour
         public bool hasFire;
         public bool hasPoison;
         public bool hasMines;
-        public bool cobraInstantKill;  // True if cobra touch = instant death
+        public bool cobraInstantKill;
     }
 
     [Header("Level Definitions")]
-    public LevelData[] levels = new LevelData[5];
+    public LevelData[] levels = new LevelData[4];
 
     void Awake()
     {
@@ -44,7 +44,6 @@ public class LevelManager : MonoBehaviour
 
     void InitializeLevels()
     {
-        // Level 1 - Core Level
         levels[0] = new LevelData
         {
             levelName = "Core Level",
@@ -58,10 +57,9 @@ public class LevelManager : MonoBehaviour
             hasFire = false,
             hasPoison = false,
             hasMines = false,
-            cobraInstantKill = true  // Level 1: Cobra touch = instant death
+            cobraInstantKill = true
         };
 
-        // Level 2 - Contact Zone
         levels[1] = new LevelData
         {
             levelName = "Contact Zone",
@@ -75,10 +73,9 @@ public class LevelManager : MonoBehaviour
             hasFire = true,
             hasPoison = false,
             hasMines = false,
-            cobraInstantKill = true  // Level 2: Cobra touch = instant death
+            cobraInstantKill = true
         };
 
-        // Level 3 - Toxic Grounds
         levels[2] = new LevelData
         {
             levelName = "Toxic Grounds",
@@ -92,10 +89,9 @@ public class LevelManager : MonoBehaviour
             hasFire = false,
             hasPoison = true,
             hasMines = false,
-            cobraInstantKill = true  // Level 3: Cobra touch = instant death
+            cobraInstantKill = true
         };
 
-        // Level 4 - Divorce Papers
         levels[3] = new LevelData
         {
             levelName = "Divorce Papers",
@@ -109,23 +105,6 @@ public class LevelManager : MonoBehaviour
             hasFire = true,
             hasPoison = true,
             hasMines = true,
-            cobraInstantKill = false  // Level 4: Normal damage (15 HP per hit)
-        };
-
-        // Level 5 - Penguin Ice Runner (Endless Runner Minigame)
-        levels[4] = new LevelData
-        {
-            levelName = "Ice Cave Runner",
-            sceneName = "PenguinDodgeGame",
-            description = "Endless runner minigame! Jump (W) and duck (S) to avoid ice obstacles",
-            targetScore = 5000,
-            survivalTime = 0f,
-            hasHealthSystem = false,
-            hasShield = false,
-            hasSlowMotion = false,
-            hasFire = false,
-            hasPoison = false,
-            hasMines = false,
             cobraInstantKill = false
         };
     }
