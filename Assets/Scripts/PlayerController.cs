@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     // Component references
     private HealthSystem healthSystem;
     private AbilitySystem abilitySystem;
+    private Animator animator;
 
     void Start()
     {
@@ -29,6 +30,7 @@ public class PlayerController : MonoBehaviour
         // Get component references
         healthSystem = GetComponent<HealthSystem>();
         abilitySystem = GetComponent<AbilitySystem>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -98,6 +100,9 @@ public class PlayerController : MonoBehaviour
         // Move the player with smooth velocity
         transform.position += currentVelocity * Time.deltaTime;
 
+        // Update animator parameters for 4-directional animation
+        UpdateAnimator(horizontal, vertical);
+
         // Keep player in bounds
         float boundX = 4f;
         float boundY = 3f;
@@ -111,6 +116,15 @@ public class PlayerController : MonoBehaviour
     void CalculateVelocity()
     {
         velocity = transform.position - previousPosition;
+    }
+
+    void UpdateAnimator(float horizontal, float vertical)
+    {
+        if (animator == null) return;
+
+        // Update MoveX and MoveY parameters for directional animation
+        animator.SetFloat("MoveX", horizontal);
+        animator.SetFloat("MoveY", vertical);
     }
 
     public void CollectShard(int points)
