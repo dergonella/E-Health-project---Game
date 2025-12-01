@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
     }
 
     [Header("Level Definitions")]
-    public LevelData[] levels = new LevelData[5];
+    public LevelData[] levels = new LevelData[4];
 
     void Awake()
     {
@@ -110,23 +110,6 @@ public class LevelManager : MonoBehaviour
             hasPoison = true,
             hasMines = true,
             cobraInstantKill = false  // Level 4: Normal damage (15 HP per hit)
-        };
-
-        // Level 5 - Penguin Ice Runner (Endless Runner Minigame)
-        levels[4] = new LevelData
-        {
-            levelName = "Ice Cave Runner",
-            sceneName = "PenguinDodgeGame",
-            description = "Endless runner minigame! Jump (W) and duck (S) to avoid ice obstacles",
-            targetScore = 5000,
-            survivalTime = 0f,
-            hasHealthSystem = false,
-            hasShield = false,
-            hasSlowMotion = false,
-            hasFire = false,
-            hasPoison = false,
-            hasMines = false,
-            cobraInstantKill = false
         };
     }
 
