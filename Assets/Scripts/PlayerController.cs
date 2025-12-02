@@ -9,6 +9,10 @@ public class PlayerController : MonoBehaviour
     public float deceleration = 30f;  // Quick stops for testing
     public float size = 0.2f;
 
+    [Header("Death Movement Settings")]
+    public float deathMovementDistance = 2f; // How far player can move after death (in meters)
+    public float deathMovementDelay = 1.5f; // How long player can move after death (in seconds)
+
     [Header("Stats")]
     public int shardsCollected = 0;
     public int score = 0;
@@ -17,6 +21,11 @@ public class PlayerController : MonoBehaviour
     private Vector3 previousPosition;
     public Vector3 velocity { get; private set; }
     private Vector3 currentVelocity = Vector3.zero; // Actual smooth velocity
+
+    // Death movement tracking
+    private bool isDead = false;
+    private Vector3 deathPosition;
+    private float deathTime;
 
     // Component references
     private HealthSystem healthSystem;
@@ -44,6 +53,28 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
+        // If player is dead, check if they can still move
+        if (isDead)
+        {
+            float timeSinceDeath = Time.time - deathTime;
+            float distanceSinceDeath = Vector3.Distance(transform.position, deathPosition);
+
+            // Check if death movement period has expired (either by time OR distance)
+            if (timeSinceDeath >= deathMovementDelay || distanceSinceDeath >= deathMovementDistance)
+            {
+                // Stop all movement and trigger game over
+                currentVelocity = Vector3.zero;
+
+                // Trigger game over if not already triggered
+                if (GameManager.Instance != null && !GameManager.Instance.IsGameOver())
+                {
+                    GameManager.Instance.GameOver(false);
+                }
+                return;
+            }
+            // If still within death movement window, allow movement (continue with normal movement code below)
+        }
+
         // Check if stunned - if stunned, decelerate to stop
         if (healthSystem != null && healthSystem.isStunned)
         {
@@ -136,6 +167,21 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.UpdateScore(score);
         }
+    }
+
+    /// <summary>
+    /// Called when player is killed. Allows limited movement before game over.
+    /// Player can move for deathMovementDelay seconds OR deathMovementDistance meters (whichever comes first).
+    /// </summary>
+    public void Die()
+    {
+        if (isDead) return; // Already dead, prevent multiple calls
+
+        isDead = true;
+        deathPosition = transform.position;
+        deathTime = Time.time;
+
+        Debug.Log($"Player died! Can move {deathMovementDistance}m or for {deathMovementDelay}s before game over.");
     }
 
     void OnTriggerEnter2D(Collider2D other)
