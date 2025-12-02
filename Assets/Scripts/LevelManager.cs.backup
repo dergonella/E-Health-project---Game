@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
     }
 
     [Header("Level Definitions")]
-    public LevelData[] levels = new LevelData[5];
+    public LevelData[] levels = new LevelData[4];
 
     void Awake()
     {
@@ -105,22 +105,6 @@ public class LevelManager : MonoBehaviour
             hasFire = true,
             hasPoison = true,
             hasMines = true,
-            cobraInstantKill = false
-        };
-
-        levels[4] = new LevelData
-        {
-            levelName = "Dino Runner",
-            sceneName = "Level4_DinoRunner",
-            description = "Chrome Dino endless runner - Jump to survive!",
-            targetScore = 1000,
-            survivalTime = 0f,
-            hasHealthSystem = false,
-            hasShield = false,
-            hasSlowMotion = false,
-            hasFire = false,
-            hasPoison = false,
-            hasMines = false,
             cobraInstantKill = false
         };
     }
