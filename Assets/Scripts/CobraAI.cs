@@ -484,7 +484,7 @@ public class CobraAI : MonoBehaviour
     void InitializePackHunter()
     {
         // Find all cobras in the scene
-        allCobras = FindObjectsOfType<CobraAI>();
+        allCobras = Object.FindObjectsByType<CobraAI>(FindObjectsSortMode.None);
         isCoordinating = false;
     }
 

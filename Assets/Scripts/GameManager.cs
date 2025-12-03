@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
         // Get target score from current level
         if (LevelManager.Instance != null)
         {
-            LevelData currentLevel = LevelManager.Instance.GetCurrentLevelData();
+            LevelManager.LevelData currentLevel = LevelManager.Instance.GetCurrentLevelData();
             if (currentLevel != null && currentScore >= currentLevel.targetScore)
             {
                 Debug.Log($"Level Complete! Reached target score of {currentLevel.targetScore}");

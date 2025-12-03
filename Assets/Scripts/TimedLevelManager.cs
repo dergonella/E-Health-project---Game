@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 
+// Timed Level Manager for Level 0.1
 /// <summary>
 /// Timed Level Manager - Handles countdown timer for Level 0.1
 /// Player must reach target score (2000) within time limit (30 seconds)
@@ -187,7 +188,7 @@ public class TimedLevelManager : MonoBehaviour
             if (currentLevel != null && currentLevel.convertExcessPointsToMoney)
             {
                 // Get PointsToMoneyConverter component (should be on same GameObject or in scene)
-                PointsToMoneyConverter converter = FindObjectOfType<PointsToMoneyConverter>();
+                PointsToMoneyConverter converter = Object.FindFirstObjectByType<PointsToMoneyConverter>();
 
                 if (converter != null)
                 {
