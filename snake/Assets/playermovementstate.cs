@@ -14,6 +14,18 @@ public class playermovementstate : MonoBehaviour
 
     public MoveState CurrentMoveState { get; private set; }
 
+    [Header("Movement Settings")]
+    public float speed = 5f;
+
+    // --- ADDED: Boundary Settings ---
+    // Change these numbers in the Inspector to match the size of your background image
+    [Header("Map Boundaries")]
+    public float minX = -7.5f; // Left Limit
+    public float maxX = 7.5f;  // Right Limit
+    // Updated based on user request
+    public float minY = -1.0f; // Bottom Limit
+    public float maxY = 1.0f;  // Top Limit
+
     // Removed [SerializeField] to avoid confusion. We now find it automatically in Awake().
     private Animator animator;
 
@@ -37,14 +49,50 @@ public class playermovementstate : MonoBehaviour
         }
     }
 
+    // --- ADDED: Update Loop to handle Movement & Input ---
+    private void Update()
+    {
+        // 1. Read Input (WASD or Arrow Keys)
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
+
+        // 2. Move the Player based on Speed
+        Vector3 movement = new Vector3(moveX, moveY, 0).normalized;
+        transform.Translate(movement * speed * Time.deltaTime);
+
+        // 3. --- ADDED: Keep Player Inside Boundaries ---
+        Vector3 clampedPosition = transform.position;
+        clampedPosition.x = Mathf.Clamp(clampedPosition.x, minX, maxX);
+        clampedPosition.y = Mathf.Clamp(clampedPosition.y, minY, maxY);
+        transform.position = clampedPosition;
+
+        // 4. Determine Animation State based on Input
+        if (moveX > 0)
+        {
+            SetMoveState(MoveState.OwletRunRight);
+        }
+        else if (moveX < 0)
+        {
+            SetMoveState(MoveState.OwletRunLeft);
+        }
+        else if (moveY > 0)
+        {
+            SetMoveState(MoveState.OwletRunUp);
+        }
+        else if (moveY < 0)
+        {
+            SetMoveState(MoveState.OwletRunDown);
+        }
+        else
+        {
+            SetMoveState(MoveState.Idle);
+        }
+    }
+
     public void SetMoveState(MoveState movestate)
     {
         // If we are already playing this animation, don't restart it
         if (movestate == CurrentMoveState) return;
-
-        // --- FIX 2: Print to Console so we know if input is working ---
-        // If you don't see this message in the Console when you move, the PlayerMovement script is broken.
-        Debug.Log("Attempting to play animation: " + movestate);
 
         switch (movestate)
         {
@@ -82,5 +130,16 @@ public class playermovementstate : MonoBehaviour
         {
             Debug.LogError("Cannot play animation because the Animator component is missing!");
         }
+    }
+
+    // --- DEBUG VISUALS ---
+    // This draws a Green Box in the Scene View to show you the current limits
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        // Calculate the center and size of the box based on min/max values
+        Vector3 center = new Vector3((minX + maxX) / 2, (minY + maxY) / 2, transform.position.z);
+        Vector3 size = new Vector3(maxX - minX, maxY - minY, 1);
+        Gizmos.DrawWireCube(center, size);
     }
 }

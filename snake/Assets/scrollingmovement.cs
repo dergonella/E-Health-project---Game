@@ -5,7 +5,7 @@ public class scrollingmovement : MonoBehaviour
     public float speed;
 
     // Limit for the background loop (based on your previous code)
-    private float scrollLimit = 135f;
+    private float scrollLimit = 110f;
 
     private playermovementstate playerStateScript;
 
