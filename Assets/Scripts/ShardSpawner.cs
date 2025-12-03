@@ -104,6 +104,7 @@ public class ShardSpawner : MonoBehaviour
         if (!newShard.CompareTag("Shard"))
         {
             newShard.tag = "Shard";
+            Debug.Log($"ShardSpawner: Set tag 'Shard' on {newShard.name}");
         }
 
         // CRITICAL FIX #2: Ensure shard has trigger collider
@@ -111,6 +112,11 @@ public class ShardSpawner : MonoBehaviour
         if (col != null)
         {
             col.isTrigger = true; // Must be trigger for player to collect
+            Debug.Log($"ShardSpawner: Shard {newShard.name} - Tag: {newShard.tag}, Collider: {col.GetType().Name}, IsTrigger: {col.isTrigger}");
+        }
+        else
+        {
+            Debug.LogError($"ShardSpawner: Shard {newShard.name} has NO COLLIDER! Player won't be able to collect it!");
         }
 
         // Store reference

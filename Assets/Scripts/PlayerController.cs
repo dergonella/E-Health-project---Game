@@ -186,6 +186,8 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log($"Player collision detected with: {other.gameObject.name}, Tag: {other.tag}");
+
         // Check collision with cobra
         if (other.CompareTag("Cobra"))
         {
@@ -227,12 +229,22 @@ public class PlayerController : MonoBehaviour
         // Check collision with shard
         if (other.CompareTag("Shard"))
         {
+            Debug.Log($"Player touched shard: {other.gameObject.name}");
             ShardController shard = other.GetComponent<ShardController>();
             if (shard != null)
             {
+                Debug.Log($"ShardController found! Collecting shard...");
                 CollectShard(100);
                 shard.Respawn();
             }
+            else
+            {
+                Debug.LogError($"Shard {other.gameObject.name} has no ShardController component!");
+            }
+        }
+        else
+        {
+            Debug.Log($"Object {other.gameObject.name} does NOT have 'Shard' tag. It has: '{other.tag}'");
         }
     }
 }

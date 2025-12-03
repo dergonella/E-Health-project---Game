@@ -51,6 +51,25 @@ public class GameManager : MonoBehaviour
         {
             uiManager.UpdateScore(score);
         }
+
+        // Check for win condition based on target score
+        CheckWinCondition();
+    }
+
+    private void CheckWinCondition()
+    {
+        if (gameOver) return;
+
+        // Get target score from current level
+        if (LevelManager.Instance != null)
+        {
+            LevelData currentLevel = LevelManager.Instance.GetCurrentLevelData();
+            if (currentLevel != null && currentScore >= currentLevel.targetScore)
+            {
+                Debug.Log($"Level Complete! Reached target score of {currentLevel.targetScore}");
+                GameOver(true); // Win!
+            }
+        }
     }
 
     public void GameOver(bool won)

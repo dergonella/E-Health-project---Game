@@ -23,10 +23,13 @@ public class LevelManager : MonoBehaviour
         public bool hasPoison;
         public bool hasMines;
         public bool cobraInstantKill;
+        public bool hasTimedChallenge;  // NEW: For Level 0.1 timed mode
+        public float timeLimitSeconds;  // NEW: Time limit for timed challenges
+        public bool convertExcessPointsToMoney; // NEW: Enable points-to-money conversion
     }
 
     [Header("Level Definitions")]
-    public LevelData[] levels = new LevelData[5];
+    public LevelData[] levels = new LevelData[6]; // Expanded to include Level 0.1
 
     void Awake()
     {
@@ -57,10 +60,33 @@ public class LevelManager : MonoBehaviour
             hasFire = false,
             hasPoison = false,
             hasMines = false,
-            cobraInstantKill = true
+            cobraInstantKill = true,
+            hasTimedChallenge = false,
+            timeLimitSeconds = 0f,
+            convertExcessPointsToMoney = false
         };
 
+        // NEW: Level 0.1 - Timed Challenge
         levels[1] = new LevelData
+        {
+            levelName = "Timed Challenge",
+            sceneName = "Level0_1_TimedChallenge",
+            description = "Reach 2000 points in 30 seconds! Excess points = Money!",
+            targetScore = 2000,
+            survivalTime = 0f,
+            hasHealthSystem = false,
+            hasShield = false,
+            hasSlowMotion = false,
+            hasFire = false,
+            hasPoison = false,
+            hasMines = false,
+            cobraInstantKill = true,
+            hasTimedChallenge = true,
+            timeLimitSeconds = 30f,
+            convertExcessPointsToMoney = true
+        };
+
+        levels[2] = new LevelData
         {
             levelName = "Contact Zone",
             sceneName = "Level1_ContactZone",
@@ -73,10 +99,13 @@ public class LevelManager : MonoBehaviour
             hasFire = true,
             hasPoison = false,
             hasMines = false,
-            cobraInstantKill = true
+            cobraInstantKill = true,
+            hasTimedChallenge = false,
+            timeLimitSeconds = 0f,
+            convertExcessPointsToMoney = false
         };
 
-        levels[2] = new LevelData
+        levels[3] = new LevelData
         {
             levelName = "Toxic Grounds",
             sceneName = "Level2_ToxicGrounds",
@@ -89,10 +118,13 @@ public class LevelManager : MonoBehaviour
             hasFire = false,
             hasPoison = true,
             hasMines = false,
-            cobraInstantKill = true
+            cobraInstantKill = true,
+            hasTimedChallenge = false,
+            timeLimitSeconds = 0f,
+            convertExcessPointsToMoney = false
         };
 
-        levels[3] = new LevelData
+        levels[4] = new LevelData
         {
             levelName = "Divorce Papers",
             sceneName = "Level3_DivorcePapers",
@@ -105,10 +137,13 @@ public class LevelManager : MonoBehaviour
             hasFire = true,
             hasPoison = true,
             hasMines = true,
-            cobraInstantKill = false
+            cobraInstantKill = false,
+            hasTimedChallenge = false,
+            timeLimitSeconds = 0f,
+            convertExcessPointsToMoney = false
         };
 
-        levels[4] = new LevelData
+        levels[5] = new LevelData
         {
             levelName = "Dino Runner",
             sceneName = "Level4_DinoRunner",
@@ -121,7 +156,10 @@ public class LevelManager : MonoBehaviour
             hasFire = false,
             hasPoison = false,
             hasMines = false,
-            cobraInstantKill = false
+            cobraInstantKill = false,
+            hasTimedChallenge = false,
+            timeLimitSeconds = 0f,
+            convertExcessPointsToMoney = false
         };
     }
 

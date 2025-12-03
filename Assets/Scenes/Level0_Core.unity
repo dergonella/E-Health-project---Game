@@ -1870,7 +1870,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4546961489888114255, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
       propertyPath: m_Radius
-      value: 0.1
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546961489888114255, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5351708098731624822, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5351708098731624822, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
+      propertyPath: m_GravityScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5351708098731624822, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7612548411300304657, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
       propertyPath: m_Name
