@@ -29,7 +29,7 @@ public class LevelManager : MonoBehaviour
     }
 
     [Header("Level Definitions")]
-    public LevelData[] levels = new LevelData[6]; // Expanded to include Level 0.1
+    public LevelData[] levels = new LevelData[7]; // Expanded to include Level 0.1 and 0.2
 
     void Awake()
     {
@@ -86,7 +86,27 @@ public class LevelManager : MonoBehaviour
             convertExcessPointsToMoney = true
         };
 
+        // NEW: Level 0.2 - Growing Snakes Maze
         levels[2] = new LevelData
+        {
+            levelName = "Growing Snakes",
+            sceneName = "Level0_2_GrowingSnakes",
+            description = "Navigate the maze - Snakes grow longer as you play!",
+            targetScore = 3000,
+            survivalTime = 0f,
+            hasHealthSystem = false,
+            hasShield = false,
+            hasSlowMotion = false,
+            hasFire = false,
+            hasPoison = false,
+            hasMines = false,
+            cobraInstantKill = true,
+            hasTimedChallenge = false,
+            timeLimitSeconds = 0f,
+            convertExcessPointsToMoney = false
+        };
+
+        levels[3] = new LevelData
         {
             levelName = "Contact Zone",
             sceneName = "Level1_ContactZone",

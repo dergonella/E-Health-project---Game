@@ -560,7 +560,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShardSpawner
   shardPrefab: {fileID: 3237766897325159634, guid: ff745287e32ae024c93ac9f8fcbd7708, type: 3}
-  shardCount: 12
+  shardCount: 15
   boundX: 3
   boundY: 3
   wallBuffer: 0.6
@@ -1027,7 +1027,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1505132511
 RectTransform:
   m_ObjectHideFlags: 0

@@ -67,6 +67,27 @@ public class GameManager : MonoBehaviour
             if (currentLevel != null && currentScore >= currentLevel.targetScore)
             {
                 Debug.Log($"Level Complete! Reached target score of {currentLevel.targetScore}");
+
+                // Notify TimedLevelManager if this is a timed level (Level 0.1)
+                if (currentLevel.hasTimedChallenge)
+                {
+                    TimedLevelManager timedManager = Object.FindFirstObjectByType<TimedLevelManager>();
+                    if (timedManager != null)
+                    {
+                        timedManager.OnLevelComplete();
+                    }
+                }
+
+                GameOver(true); // Win!
+            }
+        }
+        else
+        {
+            // Fallback: If LevelManager doesn't exist, use default target score
+            Debug.LogWarning("LevelManager.Instance is null! Using fallback win condition.");
+            if (currentScore >= 2000)
+            {
+                Debug.Log($"Level Complete! Reached fallback target score of 2000");
                 GameOver(true); // Win!
             }
         }

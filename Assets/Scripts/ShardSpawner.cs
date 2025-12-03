@@ -45,6 +45,12 @@ public class ShardSpawner : MonoBehaviour
 
     void Update()
     {
+        // Safety check: Don't update if activeShards hasn't been initialized
+        if (activeShards == null || activeShards.Length == 0)
+        {
+            return;
+        }
+
         // Difficulty-based shard repositioning
         if (enableDifficultyRepositioning && GameManager.Instance != null && !GameManager.Instance.IsGameOver())
         {
@@ -137,15 +143,31 @@ public class ShardSpawner : MonoBehaviour
     /// </summary>
     private void RepositionAllShards()
     {
+        // Safety check: Make sure activeShards array exists
+        if (activeShards == null || activeShards.Length == 0)
+        {
+            Debug.LogWarning("ShardSpawner: Cannot reposition shards - array not initialized!");
+            return;
+        }
+
         for (int i = 0; i < activeShards.Length; i++)
         {
-            if (activeShards[i] != null)
+            // Check if shard exists and is still active
+            if (activeShards[i] != null && activeShards[i].activeInHierarchy)
             {
                 // Get new valid position
                 Vector3 newPosition = GetValidSpawnPosition();
 
                 // Move shard to new position
                 activeShards[i].transform.position = newPosition;
+
+                Debug.Log($"ShardSpawner: Repositioned shard {i} to {newPosition}");
+            }
+            else if (activeShards[i] == null)
+            {
+                // Shard was destroyed, respawn it
+                Debug.LogWarning($"ShardSpawner: Shard {i} was null, respawning...");
+                SpawnShard(i);
             }
         }
     }
