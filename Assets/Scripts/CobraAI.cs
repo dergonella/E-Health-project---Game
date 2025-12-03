@@ -345,13 +345,11 @@ public class CobraAI : MonoBehaviour
                     Debug.Log("Cobra instant kill blocked by shield!");
                     return;
                 }
-            }
 
-            // Instant kill mode (levels 1-3) - no shield active
-            if (GameManager.Instance != null)
-            {
-                Debug.Log("Cobra touch! Instant death (Instant Kill Mode - Levels 1-3)");
-                GameManager.Instance.GameOver(false);
+                // Instant kill mode (levels 0-3) - no shield active
+                // Call Die() on player to allow limited movement before game over
+                Debug.Log("Cobra caught player! Player can still move briefly before game over...");
+                player.Die();
             }
         }
         // For level 4 (non-instant kill), PlayerController handles damage
@@ -486,7 +484,7 @@ public class CobraAI : MonoBehaviour
     void InitializePackHunter()
     {
         // Find all cobras in the scene
-        allCobras = FindObjectsOfType<CobraAI>();
+        allCobras = Object.FindObjectsByType<CobraAI>(FindObjectsSortMode.None);
         isCoordinating = false;
     }
 

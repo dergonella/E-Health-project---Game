@@ -11,7 +11,11 @@ public class ShardController : MonoBehaviour
     private float pulseTimer = 0f;
     private SpriteRenderer spriteRenderer;
 
-    // Bounds for respawn
+    // Reference to spawner (set by ShardSpawner)
+    [HideInInspector] public ShardSpawner spawner;
+    [HideInInspector] public int shardIndex;
+
+    // Bounds for respawn (legacy - now handled by ShardSpawner)
     private float boundX = 4f;
     private float boundY = 3f;
 
@@ -29,12 +33,28 @@ public class ShardController : MonoBehaviour
         transform.localScale = baseScale * pulseFactor;
     }
 
+    /// <summary>
+    /// Called when player collects this shard.
+    /// Notifies the spawner to respawn this shard at a new location.
+    /// </summary>
     public void Respawn()
     {
-        // Brief visual feedback - disable then re-enable
-        StartCoroutine(RespawnWithEffect());
+        // If we have a spawner, let it handle respawning (new multi-spawn system)
+        if (spawner != null)
+        {
+            spawner.OnShardCollected(shardIndex);
+        }
+        else
+        {
+            // Legacy single-shard respawn (fallback for old scenes)
+            StartCoroutine(RespawnWithEffect());
+        }
     }
 
+    /// <summary>
+    /// Legacy respawn method for backwards compatibility.
+    /// Used when shard is not managed by ShardSpawner.
+    /// </summary>
     private System.Collections.IEnumerator RespawnWithEffect()
     {
         // Hide shard briefly
@@ -50,7 +70,7 @@ public class ShardController : MonoBehaviour
             col.enabled = false;
         }
 
-        // Wait longer to ensure player has moved away (increased from 0.1 to 0.5)
+        // Wait longer to ensure player has moved away
         yield return new WaitForSeconds(0.5f);
 
         // Find valid position avoiding walls
