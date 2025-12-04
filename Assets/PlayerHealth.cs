@@ -1,17 +1,18 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.UI; // Required for UI manipulation if you have it
+using UnityEngine.UI; 
+using TMPro; // <--- 1. ADDED THIS NAMESPACE
 
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health Settings")]
     public int maxLives = 3;
     private int currentLives;
-    public bool isInvisible = false; // Is the player currently invisible?
+    public bool isInvisible = false; 
 
     [Header("Hurt Effects")]
     public Color hurtColor = new Color(1f, 0.5f, 0.5f, 0.7f); 
-    public Color invisibleColor = new Color(1f, 1f, 1f, 0.3f); // Ghostly transparent
+    public Color invisibleColor = new Color(1f, 1f, 1f, 0.3f); 
     public float knockbackForce = 3f;
     public float knockbackDuration = 0.2f;
 
@@ -20,8 +21,9 @@ public class PlayerHealth : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private playermovementstate movementScript;
     
-    // Optional: Reference to a Text Mesh in the scene to show status updates
-    public Text statusText; 
+    // <--- 2. UPDATED THIS VARIABLE
+    // Changed from "Text" to "TMP_Text" so you can drag TextMeshPro objects here
+    public TMP_Text statusText; 
 
     private const string DEATH_ANIM = "owlet death";
     private const string HURT_ANIM = "owlet hurt"; 
@@ -34,12 +36,11 @@ public class PlayerHealth : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         movementScript = GetComponent<playermovementstate>();
         
-        if (statusText != null) statusText.text = ""; // Clear text at start
+        if (statusText != null) statusText.text = ""; 
     }
 
     public void TakeDamage(Vector3 attackerPosition)
     {
-        // 1. CHECK INVISIBILITY: If invisible, ignore damage!
         if (isInvisible) return;
 
         if (currentLives <= 0) return; 
@@ -91,10 +92,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (movementScript != null)
         {
-            // ACTIVATE SPEED BOOST
-            // We multiply the speed variable in your movement script
             movementScript.speed *= multiplier; 
-            
             Debug.Log("Speed Boost Activated!");
             ShowStatusText("Speed Up!");
         }
@@ -103,8 +101,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (movementScript != null)
         {
-            // DEACTIVATE SPEED BOOST
-            movementScript.speed /= multiplier; // Return to normal speed
+            movementScript.speed /= multiplier; 
             Debug.Log("Speed Boost Ended");
         }
     }
@@ -114,13 +111,11 @@ public class PlayerHealth : MonoBehaviour
         isInvisible = true;
         ShowStatusText("Invisible!");
         
-        // Visual Effect: Make sprite transparent
         Color originalColor = spriteRenderer.color;
         spriteRenderer.color = invisibleColor;
 
         yield return new WaitForSeconds(duration);
 
-        // Reset
         isInvisible = false;
         spriteRenderer.color = originalColor;
         ShowStatusText("");

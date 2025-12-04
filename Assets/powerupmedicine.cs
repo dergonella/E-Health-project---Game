@@ -1,55 +1,74 @@
 using UnityEngine;
+using System.Collections;
 
 public class PowerUpMedicine : MonoBehaviour
 {
-    // Define the 3 types you requested
     public enum MedicineType
     {
-        LifeMed,   // Adds a life
-        SpeedMed,  // Makes player faster
-        MagicMed   // Makes player invisible
+        LifeMed,
+        SpeedMed,
+        MagicMed
     }
 
     [Header("Configuration")]
     public MedicineType medicineType;
-    public int charges = 3; // Item stays until touched 3 times
-    public float cooldown = 1.0f; // Wait time between touches
+    public float respawnTime = 5.0f; // How many seconds before it appears again?
 
     [Header("Effect Settings")]
-    public float speedMultiplier = 2.0f; // How much faster? (2x)
-    public float effectDuration = 3.0f;  // How long does Speed/Magic last?
+    public float speedMultiplier = 2.0f;
+    public float effectDuration = 3.0f;
 
-    private float lastPickupTime;
-    private bool canBePickedUp = true;
+    [Header("Audio Settings")]
+    public AudioClip pickupSound; // Drag your MP3/WAV sound here
+
+    // Components to hide/show
+    private SpriteRenderer spriteRenderer;
+    private Collider2D circleCollider;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        circleCollider = GetComponent<Collider2D>();
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!canBePickedUp) return;
-
         if (other.CompareTag("Player"))
         {
-            // Check Cooldown so you don't use all 3 charges instantly
-            if (Time.time - lastPickupTime < cooldown) return;
-
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
 
             if (playerHealth != null)
             {
+                // 1. Apply the Power-Up
                 ApplyEffect(playerHealth);
                 
-                // Reduce charges
-                charges--;
-                lastPickupTime = Time.time;
-                
-                Debug.Log($"Used {medicineType}. Charges left: {charges}");
-
-                // Visual: If out of charges, destroy the object
-                if (charges <= 0)
+                // 2. Play Sound Effect (Fire and Forget)
+                if (pickupSound != null)
                 {
-                    Destroy(gameObject);
+                    // This creates a temporary object to play the sound so it isn't cut off
+                    AudioSource.PlayClipAtPoint(pickupSound, transform.position);
                 }
+
+                // 3. Start the Respawn Cycle (Disappear -> Wait -> Reappear)
+                StartCoroutine(RespawnRoutine());
             }
         }
+    }
+
+    private IEnumerator RespawnRoutine()
+    {
+        // --- DISAPPEAR ---
+        spriteRenderer.enabled = false; // Hide the image
+        circleCollider.enabled = false; // Stop it from being touched
+        Debug.Log($"{medicineType} picked up! Respawning in {respawnTime} seconds...");
+
+        // --- WAIT ---
+        yield return new WaitForSeconds(respawnTime);
+
+        // --- REAPPEAR ---
+        spriteRenderer.enabled = true; // Show image
+        circleCollider.enabled = true; // Enable touch
+        Debug.Log($"{medicineType} has respawned!");
     }
 
     private void ApplyEffect(PlayerHealth player)
@@ -57,16 +76,14 @@ public class PowerUpMedicine : MonoBehaviour
         switch (medicineType)
         {
             case MedicineType.LifeMed:
-                player.Heal(); // Adds 1 Life
+                player.Heal();
                 break;
 
             case MedicineType.SpeedMed:
-                // Calls the Speed Boost function in PlayerHealth
                 player.ActivateSpeedBoost(effectDuration, speedMultiplier);
                 break;
 
             case MedicineType.MagicMed:
-                // Calls the Invisibility function in PlayerHealth
                 player.ActivateInvisibility(effectDuration);
                 break;
         }
