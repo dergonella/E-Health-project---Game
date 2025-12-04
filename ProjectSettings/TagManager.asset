@@ -3,15 +3,20 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Cobra
+  - Wall
+  - Shard
+  - Obstacle
+  - Ground
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - 
+  - Ground
   - 
   - 
   - 
@@ -40,9 +45,6 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: player
-    uniqueID: 1862430293
     locked: 0
   m_RenderingLayers:
   - Default
