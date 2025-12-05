@@ -115,6 +115,8 @@ public class TimedLevelManager : MonoBehaviour
 
     private void TimeUp()
     {
+        if (levelCompleted) return; // Already won, don't trigger loss
+
         StopTimer();
 
         Debug.Log("TimedLevelManager: Time's up!");
@@ -122,6 +124,13 @@ public class TimedLevelManager : MonoBehaviour
         // Check if player reached target score
         if (GameManager.Instance != null)
         {
+            // Check if game is already over (player won)
+            if (GameManager.Instance.IsGameOver())
+            {
+                Debug.Log("TimedLevelManager: Game already over (player won), skipping time up logic");
+                return;
+            }
+
             int score = GameManager.Instance.GetScore();
             int targetScore = 2000;
 
@@ -144,14 +153,15 @@ public class TimedLevelManager : MonoBehaviour
             {
                 // Player failed to reach target in time
                 Debug.Log($"Time's up! Score: {score}/{targetScore} - Game Over");
+
+                if (timerText != null)
+                {
+                    timerText.text = "TIME'S UP!";
+                    timerText.color = criticalColor;
+                }
+
                 GameManager.Instance.GameOver(false); // Loss
             }
-        }
-
-        if (timerText != null)
-        {
-            timerText.text = "TIME'S UP!";
-            timerText.color = criticalColor;
         }
     }
 
