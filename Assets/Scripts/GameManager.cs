@@ -3,11 +3,12 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Main game manager for the E-Health chase levels (not the dino runner)
-/// LEVEL 0.1 SPECIAL BEHAVIOR:
-/// - Game only ends when timer reaches 0 (not when reaching 2000 points)
-/// - If score >= 2000 when timer ends: WIN + convert points to money
-/// - If score < 2000 when timer ends: LOSE
+/// LEVEL 0.1 and 0.2 SPECIAL BEHAVIOR:
+/// - Game only ends when timer reaches 0 (not when reaching target score)
+/// - If score >= target score when timer ends: WIN + convert points to money
+/// - If score < target score when timer ends: LOSE
 /// - If snake touches player anytime: LOSE immediately
+/// - Level 0.2 adds: Growing snakes in maze environment
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour
 
     private UIManager uiManager;
     private bool isLevel01 = false;
+    private bool isLevel02 = false;
 
     void Awake()
     {
@@ -46,9 +48,10 @@ public class GameManager : MonoBehaviour
         currentScore = 0;
         targetScoreReached = false;
 
-        // Check if this is Level 0.1
+        // Check if this is Level 0.1 or Level 0.2
         string loadedSceneName = SceneManager.GetActiveScene().name;
         isLevel01 = (loadedSceneName == "Level0.1" || loadedSceneName == "Level0_1_TimedChallenge");
+        isLevel02 = (loadedSceneName == "Level0.2" || loadedSceneName == "Level0_2_GrowingSnakes");
 
         // Get target score from LevelManager if available
         if (LevelManager.Instance != null)
@@ -58,21 +61,21 @@ public class GameManager : MonoBehaviour
             {
                 targetScore = currentLevel.targetScore;
 
-                // For Level 0.1, use time limit from level data
-                if (isLevel01 && currentLevel.hasTimedChallenge)
+                // For Level 0.1 and 0.2, use time limit from level data
+                if ((isLevel01 || isLevel02) && currentLevel.hasTimedChallenge)
                 {
                     timeLeft = currentLevel.timeLimitSeconds;
                 }
             }
         }
 
-        Debug.Log($"GameManager Start: isLevel01={isLevel01}, targetScore={targetScore}, timeLeft={timeLeft}");
+        Debug.Log($"GameManager Start: isLevel01={isLevel01}, isLevel02={isLevel02}, targetScore={targetScore}, timeLeft={timeLeft}");
     }
 
     void Update()
     {
-        // LEVEL 0.1: Timer-based gameplay
-        if (isLevel01 && !gameOver)
+        // LEVEL 0.1 and 0.2: Timer-based gameplay
+        if ((isLevel01 || isLevel02) && !gameOver)
         {
             // Timer counts down
             timeLeft -= Time.deltaTime;
@@ -111,8 +114,8 @@ public class GameManager : MonoBehaviour
             uiManager.UpdateScore(currentScore);
         }
 
-        // For Level 0.1: Check if target score reached (but don't end game!)
-        if (isLevel01)
+        // For Level 0.1 and 0.2: Check if target score reached (but don't end game!)
+        if (isLevel01 || isLevel02)
         {
             CheckTargetScoreReached();
         }
@@ -137,8 +140,8 @@ public class GameManager : MonoBehaviour
             uiManager.UpdateScore(score);
         }
 
-        // For Level 0.1: Check if target score reached (but don't end game!)
-        if (isLevel01)
+        // For Level 0.1 and 0.2: Check if target score reached (but don't end game!)
+        if (isLevel01 || isLevel02)
         {
             CheckTargetScoreReached();
         }
@@ -220,7 +223,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// LEVEL 0.1: End game when timer reaches 0
+    /// LEVEL 0.1 and 0.2: End game when timer reaches 0
     /// </summary>
     void EndGame()
     {

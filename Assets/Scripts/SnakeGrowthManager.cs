@@ -8,7 +8,7 @@ public class SnakeGrowthManager : MonoBehaviour
 {
     [Header("Growth Triggers")]
     [Tooltip("Should snakes grow over time?")]
-    [SerializeField] private bool growOverTime = true;
+    [SerializeField] private bool growOverTime = false;  // DISABLED: We use shard collection instead
 
     [Tooltip("How many seconds between growth")]
     [SerializeField] private float growthInterval = 10f;
@@ -16,12 +16,17 @@ public class SnakeGrowthManager : MonoBehaviour
     [Tooltip("How many segments to add each growth")]
     [SerializeField] private int segmentsPerGrowth = 1;
 
-    [Header("Growth on Events")]
+    [Header("Growth on Events (Level 0.2 - Option B)")]
     [Tooltip("Grow snakes when player collects shards?")]
-    [SerializeField] private bool growOnShardCollect = false;
+    [SerializeField] private bool growOnShardCollect = true;  // ENABLED: Snakes grow when player collects shards
 
-    [Tooltip("Segments to add per shard collected")]
-    [SerializeField] private int segmentsPerShard = 1;
+    [Tooltip("How many shards before snakes grow")]
+    [SerializeField] private int shardsPerGrowth = 3;  // Every 3 shards = snakes grow
+
+    [Tooltip("Segments to add when threshold reached")]
+    [SerializeField] private int segmentsPerGrowthEvent = 1;
+
+    private int shardsCollected = 0;  // Track shards collected
 
     [Header("Max Growth Limit")]
     [Tooltip("Maximum body segments per snake (0 = unlimited)")]
@@ -107,13 +112,23 @@ public class SnakeGrowthManager : MonoBehaviour
     /// <summary>
     /// Call this when player collects a shard (if growOnShardCollect is enabled)
     /// Hook this up to your shard collection event
+    /// LEVEL 0.2: Every 3 shards = snakes grow by 1 segment
     /// </summary>
     public void OnShardCollected()
     {
-        if (growOnShardCollect)
+        if (!growOnShardCollect) return;
+
+        shardsCollected++;
+        Debug.Log($"SnakeGrowthManager: Shard collected ({shardsCollected}/{shardsPerGrowth})");
+
+        // Check if we've collected enough shards to trigger growth
+        if (shardsCollected >= shardsPerGrowth)
         {
-            GrowAllSnakes(segmentsPerShard);
-            Debug.Log($"SnakeGrowthManager: Snakes grew by {segmentsPerShard} from shard collection!");
+            GrowAllSnakes(segmentsPerGrowthEvent);
+            Debug.Log($"SnakeGrowthManager: ALL SNAKES GREW! {shardsPerGrowth} shards collected.");
+
+            // Reset counter
+            shardsCollected = 0;
         }
     }
 

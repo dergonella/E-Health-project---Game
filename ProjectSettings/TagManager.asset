@@ -17,11 +17,11 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Walls
+  - SnakeBody
+  - Background
+  - Floor
+  - Player
   - 
   - 
   - 

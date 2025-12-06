@@ -25,6 +25,19 @@ public class SnakeBodyController : MonoBehaviour
     [Tooltip("How fast segments follow (0-1, higher = tighter following)")]
     [SerializeField] private float followSpeed = 0.15f;
 
+    [Header("Growth Settings (Level 0.2)")]
+    [Tooltip("Enable automatic growth over time")]
+    [SerializeField] private bool enableAutoGrowth = false;  // DISABLED by default - use GrowOnShardCollect instead
+
+    [Tooltip("Grow when player collects shards")]
+    [SerializeField] private bool growOnShardCollect = true;  // ENABLED: Snakes grow when player gets points
+
+    [Tooltip("How many seconds between each growth (if auto-growth enabled)")]
+    [SerializeField] private float growthInterval = 5f;
+
+    [Tooltip("How many segments to add each time")]
+    [SerializeField] private int segmentsPerGrowth = 1;
+
     [Header("Layer Setup")]
     [Tooltip("Layer for body segments (should not collide with each other)")]
     [SerializeField] private string bodyLayerName = "SnakeBody";
@@ -36,6 +49,7 @@ public class SnakeBodyController : MonoBehaviour
     private List<Transform> segments = new List<Transform>();
     private List<Vector3> positionHistory = new List<Vector3>();
     private int maxHistorySize = 200; // Limits memory usage
+    private float growthTimer = 0f; // Timer for automatic growth
 
     void Start()
     {
@@ -65,15 +79,33 @@ public class SnakeBodyController : MonoBehaviour
         Debug.Log($"SnakeBodyController: {gameObject.name} initialized with {segments.Count} body segments");
     }
 
+    void Update()
+    {
+        // Handle automatic growth timer (Level 0.2 feature)
+        if (enableAutoGrowth && growthInterval > 0f)
+        {
+            growthTimer += Time.deltaTime;
+
+            if (growthTimer >= growthInterval)
+            {
+                growthTimer = 0f;
+                Grow(segmentsPerGrowth);
+            }
+        }
+    }
+
     void FixedUpdate()
     {
-        if (head == null || segments.Count == 0) return;
+        if (head == null) return;
 
         // 1. Record head's current position in history
         RecordHeadPosition();
 
         // 2. Update all body segments to follow the position history
-        UpdateSegmentPositions();
+        if (segments.Count > 0)
+        {
+            UpdateSegmentPositions();
+        }
     }
 
     /// <summary>
@@ -179,6 +211,9 @@ public class SnakeBodyController : MonoBehaviour
 
             // Configure segment
             newSegment.name = $"BodySegment_{segments.Count}";
+
+            // Set tag so player collision detection works (same as head)
+            newSegment.tag = "Cobra";
 
             // Set layer (prevents self-collision)
             int bodyLayer = LayerMask.NameToLayer(bodyLayerName);

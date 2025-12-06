@@ -86,24 +86,24 @@ public class LevelManager : MonoBehaviour
             convertExcessPointsToMoney = true
         };
 
-        // NEW: Level 0.2 - Growing Snakes Maze
+        // NEW: Level 0.2 - Growing Snakes Maze (with Health System)
         levels[2] = new LevelData
         {
-            levelName = "Growing Snakes",
-            sceneName = "Level0_2_GrowingSnakes",
-            description = "Navigate the maze - Snakes grow longer as you play!",
-            targetScore = 3000,
+            levelName = "Growing Snakes Maze",
+            sceneName = "Level0.2",
+            description = "Navigate the maze - Avoid growing snakes! 30 seconds to collect 2000 points.",
+            targetScore = 2000,
             survivalTime = 0f,
-            hasHealthSystem = false,
-            hasShield = false,
+            hasHealthSystem = true,  // ENABLED: Use health damage instead of instant kill
+            hasShield = true,        // Player can use shield to block damage
             hasSlowMotion = false,
             hasFire = false,
             hasPoison = false,
             hasMines = false,
-            cobraInstantKill = true,
-            hasTimedChallenge = false,
-            timeLimitSeconds = 0f,
-            convertExcessPointsToMoney = false
+            cobraInstantKill = false,  // DISABLED: Snakes deal damage, not instant kill
+            hasTimedChallenge = true,   // ENABLED: 30 second timer like Level 0.1
+            timeLimitSeconds = 30f,
+            convertExcessPointsToMoney = true  // ENABLED: Convert points to money on win
         };
 
         levels[3] = new LevelData

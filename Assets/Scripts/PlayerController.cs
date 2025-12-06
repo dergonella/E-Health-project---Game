@@ -167,6 +167,13 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.UpdateScore(score);
         }
+
+        // LEVEL 0.2: Notify SnakeGrowthManager when shard is collected
+        SnakeGrowthManager growthManager = Object.FindFirstObjectByType<SnakeGrowthManager>();
+        if (growthManager != null)
+        {
+            growthManager.OnShardCollected();
+        }
     }
 
     /// <summary>
