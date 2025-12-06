@@ -347,9 +347,15 @@ public class CobraAI : MonoBehaviour
                 }
 
                 // Instant kill mode (levels 0-3) - no shield active
-                // Call Die() on player to allow limited movement before game over
-                Debug.Log("Cobra caught player! Player can still move briefly before game over...");
-                player.Die();
+                // LEVEL 0.1: Immediate game over (no movement window)
+                // Other levels: Call Die() to allow limited movement before game over
+                Debug.Log("Cobra caught player! Instant game over!");
+
+                // Trigger immediate game over
+                if (GameManager.Instance != null && !GameManager.Instance.IsGameOver())
+                {
+                    GameManager.Instance.GameOver(false); // LOSE
+                }
             }
         }
         // For level 4 (non-instant kill), PlayerController handles damage
