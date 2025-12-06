@@ -2500,10 +2500,7 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-<<<<<<< Updated upstream
   - {fileID: 437625642}
-=======
->>>>>>> Stashed changes
   - {fileID: 1031735742}
   - {fileID: 1789449720}
   - {fileID: 1561547235}
