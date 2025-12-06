@@ -33,7 +33,7 @@ public class SnakeGrowthManager : MonoBehaviour
     void Start()
     {
         // Find all snakes in the scene
-        allSnakes = FindObjectsOfType<SnakeBodyController>();
+        allSnakes = Object.FindObjectsByType<SnakeBodyController>(FindObjectsSortMode.None);
 
         if (allSnakes.Length == 0)
         {

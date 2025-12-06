@@ -125,7 +125,7 @@ public class LevelManager : MonoBehaviour
             convertExcessPointsToMoney = false
         };
 
-        levels[3] = new LevelData
+        levels[4] = new LevelData
         {
             levelName = "Toxic Grounds",
             sceneName = "Level2_ToxicGrounds",
@@ -144,7 +144,7 @@ public class LevelManager : MonoBehaviour
             convertExcessPointsToMoney = false
         };
 
-        levels[4] = new LevelData
+        levels[5] = new LevelData
         {
             levelName = "Divorce Papers",
             sceneName = "Level3_DivorcePapers",
@@ -163,7 +163,7 @@ public class LevelManager : MonoBehaviour
             convertExcessPointsToMoney = false
         };
 
-        levels[5] = new LevelData
+        levels[6] = new LevelData
         {
             levelName = "Dino Runner",
             sceneName = "Level4_DinoRunner",
