@@ -3,15 +3,16 @@ using TMPro;
 
 // Timed Level Manager for Level 0.1
 /// <summary>
-/// Timed Level Manager - DEPRECATED - Timer logic now handled by GameManager
-/// This script is kept for backward compatibility
-/// You can disable this component - GameManager handles all Level 0.1 timer logic
+/// Timed Level Manager - Handles countdown timer for Level 0.1
+/// Player must reach target score (2000) within time limit (30 seconds)
+/// Displays countdown timer on screen
+/// Converts excess points to money on completion
 /// </summary>
 public class TimedLevelManager : MonoBehaviour
 {
     [Header("Timer Settings")]
     [SerializeField] private float timeLimit = 30f; // 30 seconds for Level 0.1
-    [SerializeField] private bool enableTimer = false; // DISABLED - GameManager handles timer now
+    [SerializeField] private bool enableTimer = true;
 
     [Header("UI Display")]
     [SerializeField] private TextMeshProUGUI timerText;
@@ -35,8 +36,7 @@ public class TimedLevelManager : MonoBehaviour
 
     void Update()
     {
-        // REMOVED levelCompleted check - we want timer to keep running even after reaching target score!
-        if (!timerRunning) return;
+        if (!timerRunning || levelCompleted) return;
 
         // Check if game is over
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver())
@@ -45,7 +45,7 @@ public class TimedLevelManager : MonoBehaviour
             return;
         }
 
-        // Countdown - keep counting down even if levelCompleted is true!
+        // Countdown
         currentTime -= Time.deltaTime;
 
         // Update UI
@@ -99,13 +99,7 @@ public class TimedLevelManager : MonoBehaviour
         timerText.text = $"{minutes:00}:{seconds:00}.{milliseconds:00}";
 
         // Change color based on remaining time
-        // BUT if levelCompleted is true (reached 2000 points), keep timer GREEN!
-        if (levelCompleted)
-        {
-            // Target score reached - timer stays green even as it counts down
-            timerText.color = Color.green;
-        }
-        else if (currentTime <= criticalThreshold)
+        if (currentTime <= criticalThreshold)
         {
             timerText.color = criticalColor;
         }
@@ -121,6 +115,8 @@ public class TimedLevelManager : MonoBehaviour
 
     private void TimeUp()
     {
+        if (levelCompleted) return; // Already won, don't trigger loss
+
         StopTimer();
 
         Debug.Log("TimedLevelManager: Time's up!");
@@ -128,6 +124,13 @@ public class TimedLevelManager : MonoBehaviour
         // Check if player reached target score
         if (GameManager.Instance != null)
         {
+            // Check if game is already over (player won)
+            if (GameManager.Instance.IsGameOver())
+            {
+                Debug.Log("TimedLevelManager: Game already over (player won), skipping time up logic");
+                return;
+            }
+
             int score = GameManager.Instance.GetScore();
             int targetScore = 2000;
 
@@ -142,31 +145,19 @@ public class TimedLevelManager : MonoBehaviour
 
             if (score >= targetScore)
             {
-                // Player reached target and time ran out - WIN!
-                // Convert all excess points to money!
-                Debug.Log($"Time's up! Final score: {score}/{targetScore} - YOU WIN!");
-
-                if (timerText != null)
-                {
-                    timerText.text = "TIME'S UP!";
-                    timerText.color = Color.green; // Green because they won
-                }
-
-                // Convert points to money BEFORE ending game
-                ConvertPointsToMoney();
-
-                // Now trigger win
-                GameManager.Instance.GameOver(true); // Win!
+                // Player reached target before time expired - this shouldn't happen
+                // because GameManager should have already triggered win
+                Debug.Log("Time up but player already won!");
             }
             else
             {
-                // Player failed to reach target in time - LOSE!
+                // Player failed to reach target in time
                 Debug.Log($"Time's up! Score: {score}/{targetScore} - Game Over");
 
                 if (timerText != null)
                 {
                     timerText.text = "TIME'S UP!";
-                    timerText.color = criticalColor; // Red because they lost
+                    timerText.color = criticalColor;
                 }
 
                 GameManager.Instance.GameOver(false); // Loss
@@ -175,27 +166,24 @@ public class TimedLevelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when target score is reached (player reached 2000 points)
-    /// But DON'T stop the game - let player keep collecting until timer expires!
+    /// Called when level is completed successfully (reached target score in time)
     /// </summary>
     public void OnLevelComplete()
     {
         if (levelCompleted) return;
 
         levelCompleted = true;
-        // DON'T set levelCompleted flag yet - that would stop the timer in Update()!
-        // We want timer to KEEP RUNNING so player can collect more points!
+        StopTimer();
 
-        Debug.Log($"TimedLevelManager: Target score reached! Timer is GREEN but still counting down!");
+        Debug.Log($"TimedLevelManager: Level completed with {currentTime:F2} seconds remaining!");
 
-        // Change timer color to green to show target was reached
         if (timerText != null)
         {
             timerText.color = Color.green;
         }
 
-        // DON'T convert points yet - wait for timer to expire
-        // DON'T call GameOver() yet - let timer run out first!
+        // Convert excess points to money if enabled for this level
+        ConvertPointsToMoney();
     }
 
     /// <summary>

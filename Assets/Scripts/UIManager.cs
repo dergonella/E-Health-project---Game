@@ -6,14 +6,10 @@ public class UIManager : MonoBehaviour
 {
     [Header("Basic UI References")]
     public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI timerText; // For Level 0.1 timer display
     public GameObject winScreen;
     public GameObject loseScreen;
     public TextMeshProUGUI winScoreText;
     public TextMeshProUGUI loseScoreText;
-
-    [Header("Level 0.1 Money Display")]
-    public TextMeshProUGUI moneyEarnedText; // Shows "You earned X coins!" for Level 0.1
 
     [Header("Health & Focus UI")]
     public Slider healthBar;
@@ -156,30 +152,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Show Level 0.1 win screen with money earned display
-    /// </summary>
-    public void ShowLevel01WinScreen(int finalScore, int moneyEarned)
-    {
-        if (winScreen != null)
-        {
-            winScreen.SetActive(true);
-        }
-
-        if (winScoreText != null)
-        {
-            winScoreText.text = $"LEVEL FINISHED!\n\nFinal Score: {finalScore}";
-        }
-
-        if (moneyEarnedText != null)
-        {
-            moneyEarnedText.text = $"You earned {moneyEarned} coins!";
-            moneyEarnedText.gameObject.SetActive(true);
-        }
-
-        Debug.Log($"Level 0.1 Complete! Score: {finalScore}, Money Earned: {moneyEarned} coins");
-    }
-
     public void ShowLoseScreen(int finalScore)
     {
         if (loseScreen != null)
@@ -189,12 +161,6 @@ public class UIManager : MonoBehaviour
         if (loseScoreText != null)
         {
             loseScoreText.text = $"Total Score: {finalScore}";
-        }
-
-        // Hide money text on lose screen
-        if (moneyEarnedText != null)
-        {
-            moneyEarnedText.gameObject.SetActive(false);
         }
     }
 
