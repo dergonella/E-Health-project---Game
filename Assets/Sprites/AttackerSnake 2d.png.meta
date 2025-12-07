@@ -1,0 +1,442 @@
+fileFormatVersion: 2
+guid: 9aaa035396127b944a85088446770326
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3949441376570088497
+    second: AttackerSnake 2d_0
+  - first:
+      213: 6864023495867130175
+    second: AttackerSnake 2d_1
+  - first:
+      213: 8993232608051859909
+    second: AttackerSnake 2d_2
+  - first:
+      213: 1747537724037556322
+    second: AttackerSnake 2d_3
+  - first:
+      213: -1979153584577381399
+    second: AttackerSnake 2d_4
+  - first:
+      213: -1235877676131896926
+    second: AttackerSnake 2d_5
+  - first:
+      213: 5129000738789966892
+    second: AttackerSnake 2d_6
+  - first:
+      213: -5356922739074191790
+    second: AttackerSnake 2d_7
+  - first:
+      213: 3141123478730669127
+    second: AttackerSnake 2d_8
+  - first:
+      213: -7512541715603017079
+    second: AttackerSnake 2d_9
+  - first:
+      213: 1134230028558697653
+    second: AttackerSnake 2d_10
+  - first:
+      213: 3508178305662572195
+    second: AttackerSnake 2d_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: AttackerSnake 2d_0
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 3263
+        width: 290
+        height: 514
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13c90b7c10c3fc630800000000000000
+      internalID: 3949441376570088497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_1
+      rect:
+        serializedVersion: 2
+        x: 1375
+        y: 3423
+        width: 290
+        height: 322
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3168199009e14f50800000000000000
+      internalID: 6864023495867130175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_2
+      rect:
+        serializedVersion: 2
+        x: 2399
+        y: 3455
+        width: 322
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c11469a8616ecc70800000000000000
+      internalID: 8993232608051859909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_3
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 2431
+        width: 322
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2686ad81d40804810800000000000000
+      internalID: 1747537724037556322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_4
+      rect:
+        serializedVersion: 2
+        x: 1439
+        y: 2463
+        width: 162
+        height: 194
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ebf2530d42a884e0800000000000000
+      internalID: -1979153584577381399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_5
+      rect:
+        serializedVersion: 2
+        x: 2463
+        y: 2463
+        width: 194
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a1b2503dc749dee0800000000000000
+      internalID: -1235877676131896926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_6
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 1439
+        width: 194
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c24ca405ffedd2740800000000000000
+      internalID: 5129000738789966892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_7
+      rect:
+        serializedVersion: 2
+        x: 1439
+        y: 1407
+        width: 162
+        height: 258
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25e2548a62368a5b0800000000000000
+      internalID: -5356922739074191790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_8
+      rect:
+        serializedVersion: 2
+        x: 2431
+        y: 1439
+        width: 258
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74c71695923879b20800000000000000
+      internalID: 3141123478730669127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_9
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 255
+        width: 322
+        height: 354
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 982bd21ec171eb790800000000000000
+      internalID: -7512541715603017079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_10
+      rect:
+        serializedVersion: 2
+        x: 1407
+        y: 255
+        width: 322
+        height: 354
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b482d993389dbf00800000000000000
+      internalID: 1134230028558697653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AttackerSnake 2d_11
+      rect:
+        serializedVersion: 2
+        x: 2175
+        y: 415
+        width: 706
+        height: 322
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a6dfb5f49d8fa030800000000000000
+      internalID: 3508178305662572195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      AttackerSnake 2d_0: 3949441376570088497
+      AttackerSnake 2d_1: 6864023495867130175
+      AttackerSnake 2d_10: 1134230028558697653
+      AttackerSnake 2d_11: 3508178305662572195
+      AttackerSnake 2d_2: 8993232608051859909
+      AttackerSnake 2d_3: 1747537724037556322
+      AttackerSnake 2d_4: -1979153584577381399
+      AttackerSnake 2d_5: -1235877676131896926
+      AttackerSnake 2d_6: 5129000738789966892
+      AttackerSnake 2d_7: -5356922739074191790
+      AttackerSnake 2d_8: 3141123478730669127
+      AttackerSnake 2d_9: -7512541715603017079
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

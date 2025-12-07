@@ -149,12 +149,12 @@ TextureImporter:
       name: Walking Woman_0
       rect:
         serializedVersion: 2
-        x: 278
-        y: 3471
-        width: 560
-        height: 901
+        x: 0
+        y: 3456
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -171,12 +171,12 @@ TextureImporter:
       name: Walking Woman_1
       rect:
         serializedVersion: 2
-        x: 1394
-        y: 3440
-        width: 560
-        height: 932
+        x: 1152
+        y: 3456
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -193,12 +193,12 @@ TextureImporter:
       name: Walking Woman_2
       rect:
         serializedVersion: 2
-        x: 2510
-        y: 3440
-        width: 560
-        height: 932
+        x: 2304
+        y: 3456
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -215,12 +215,12 @@ TextureImporter:
       name: Walking Woman_3
       rect:
         serializedVersion: 2
-        x: 278
-        y: 2355
-        width: 560
-        height: 901
+        x: 3456
+        y: 3456
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -237,12 +237,12 @@ TextureImporter:
       name: Walking Woman_4
       rect:
         serializedVersion: 2
-        x: 1394
-        y: 2324
-        width: 560
-        height: 932
+        x: 0
+        y: 2304
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -259,12 +259,12 @@ TextureImporter:
       name: Walking Woman_5
       rect:
         serializedVersion: 2
-        x: 2510
-        y: 2324
-        width: 560
-        height: 932
+        x: 1152
+        y: 2304
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -281,12 +281,12 @@ TextureImporter:
       name: Walking Woman_6
       rect:
         serializedVersion: 2
-        x: 340
-        y: 1239
-        width: 436
-        height: 901
+        x: 2304
+        y: 2304
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -303,12 +303,12 @@ TextureImporter:
       name: Walking Woman_7
       rect:
         serializedVersion: 2
-        x: 1425
-        y: 1239
-        width: 436
-        height: 901
+        x: 3456
+        y: 2304
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -325,12 +325,12 @@ TextureImporter:
       name: Walking Woman_8
       rect:
         serializedVersion: 2
-        x: 2510
-        y: 1239
-        width: 467
-        height: 901
+        x: 0
+        y: 1152
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -347,12 +347,12 @@ TextureImporter:
       name: Walking Woman_9
       rect:
         serializedVersion: 2
-        x: 340
-        y: 123
-        width: 436
-        height: 901
+        x: 1152
+        y: 1152
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -369,12 +369,12 @@ TextureImporter:
       name: Walking Woman_10
       rect:
         serializedVersion: 2
-        x: 1487
-        y: 123
-        width: 436
-        height: 901
+        x: 2304
+        y: 1152
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -391,12 +391,12 @@ TextureImporter:
       name: Walking Woman_11
       rect:
         serializedVersion: 2
-        x: 2603
-        y: 123
-        width: 467
-        height: 901
+        x: 3456
+        y: 1152
+        width: 1152
+        height: 1152
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -409,11 +409,99 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Walking Woman_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1152
+        height: 1152
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fb2a30521b2d5c44870ffd47e6b3c9d
+      internalID: -2102092075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walking Woman_13
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 1152
+        height: 1152
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c30045562f42c7c47b908588c5b24eb4
+      internalID: -1010707519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walking Woman_14
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 0
+        width: 1152
+        height: 1152
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb517219b5e77ee42bfcb6c350ac0077
+      internalID: -194020246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walking Woman_15
+      rect:
+        serializedVersion: 2
+        x: 3456
+        y: 0
+        width: 1152
+        height: 1152
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f26adb00b8c820645b2bffd2ea344036
+      internalID: -767953161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 2e1c26c592352144096b2b003f5b4700
     internalID: 0
     vertices: []
     indices: 
@@ -421,12 +509,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":4.0,"y":4.0},"gridSpriteSize":{"x":1152.0,"y":1152.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Walking Woman_0: 8196894726290622494
       Walking Woman_1: -1423444842751927520
       Walking Woman_10: -5795421556431050457
       Walking Woman_11: -7586992790043398919
+      Walking Woman_12: -2102092075
+      Walking Woman_13: -1010707519
+      Walking Woman_14: -194020246
+      Walking Woman_15: -767953161
       Walking Woman_2: 6640025485619524194
       Walking Woman_3: 6930264883457929639
       Walking Woman_4: -958493679387645916

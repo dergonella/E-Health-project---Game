@@ -52,7 +52,12 @@ public class GameManager : MonoBehaviour
             uiManager.UpdateScore(score);
         }
 
-        // Check for win condition based on target score
+        // For timed levels (Level 0.1): DON'T check win condition here!
+        // Game ONLY ends when:
+        // 1. Timer expires (TimedLevelManager handles win/loss)
+        // 2. Player dies (snake collision)
+
+        // For non-timed levels: Check win condition
         CheckWinCondition();
     }
 
@@ -60,30 +65,39 @@ public class GameManager : MonoBehaviour
     {
         if (gameOver) return;
 
-        // Get target score from current level
+        // Get current level data
         if (LevelManager.Instance != null)
         {
             LevelManager.LevelData currentLevel = LevelManager.Instance.GetCurrentLevelData();
+
+            // IMPORTANT: For timed challenges (Level 0.1), NEVER end game based on score!
+            // Timer handles everything
+            if (currentLevel != null && currentLevel.hasTimedChallenge)
+            {
+                return; // Do nothing - let timer handle it
+            }
+
+            // For non-timed levels, end game when target score is reached
             if (currentLevel != null && currentScore >= currentLevel.targetScore)
             {
                 Debug.Log($"Level Complete! Reached target score of {currentLevel.targetScore}");
-
-                // Notify TimedLevelManager if this is a timed level (Level 0.1)
-                if (currentLevel.hasTimedChallenge)
-                {
-                    TimedLevelManager timedManager = Object.FindFirstObjectByType<TimedLevelManager>();
-                    if (timedManager != null)
-                    {
-                        timedManager.OnLevelComplete();
-                    }
-                }
-
                 GameOver(true); // Win!
             }
         }
         else
         {
-            // Fallback: If LevelManager doesn't exist, use default target score
+            // Fallback: If LevelManager doesn't exist
+            // For Level 0.1 (timed challenge), NEVER end game based on score!
+            // If TimedLevelManager exists in scene, it's a timed level - do nothing
+            TimedLevelManager timedManager = Object.FindFirstObjectByType<TimedLevelManager>();
+            if (timedManager != null)
+            {
+                // This is a timed level - don't end game based on score
+                Debug.Log("Timed level detected (fallback) - timer will handle game end");
+                return;
+            }
+
+            // For non-timed levels without LevelManager, use default target score
             Debug.LogWarning("LevelManager.Instance is null! Using fallback win condition.");
             if (currentScore >= 2000)
             {

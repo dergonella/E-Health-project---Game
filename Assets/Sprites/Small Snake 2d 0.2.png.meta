@@ -1,0 +1,442 @@
+fileFormatVersion: 2
+guid: 9a75dbd4e0f03444c9df75999605199c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2372278979009653630
+    second: Small Snake 2d 0.2_0
+  - first:
+      213: 707302727154712137
+    second: Small Snake 2d 0.2_1
+  - first:
+      213: -277726245401068514
+    second: Small Snake 2d 0.2_2
+  - first:
+      213: -7979500966041749483
+    second: Small Snake 2d 0.2_3
+  - first:
+      213: -6547159247595569653
+    second: Small Snake 2d 0.2_4
+  - first:
+      213: -3778741545600928898
+    second: Small Snake 2d 0.2_5
+  - first:
+      213: -6661701197746623281
+    second: Small Snake 2d 0.2_6
+  - first:
+      213: 805049728093306950
+    second: Small Snake 2d 0.2_7
+  - first:
+      213: -6734041116059668607
+    second: Small Snake 2d 0.2_8
+  - first:
+      213: 1947472346464875502
+    second: Small Snake 2d 0.2_9
+  - first:
+      213: 4424903637837461037
+    second: Small Snake 2d 0.2_10
+  - first:
+      213: 6370862146963777947
+    second: Small Snake 2d 0.2_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_0
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 3263
+        width: 290
+        height: 514
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7b2ffb99270ce020800000000000000
+      internalID: 2372278979009653630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_1
+      rect:
+        serializedVersion: 2
+        x: 1375
+        y: 3423
+        width: 290
+        height: 322
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94eb8b83518d0d900800000000000000
+      internalID: 707302727154712137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_2
+      rect:
+        serializedVersion: 2
+        x: 2399
+        y: 3455
+        width: 322
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1cf0168371552cf0800000000000000
+      internalID: -277726245401068514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_3
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 2431
+        width: 322
+        height: 290
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 518f13a062e134190800000000000000
+      internalID: -7979500966041749483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_4
+      rect:
+        serializedVersion: 2
+        x: 1439
+        y: 2463
+        width: 162
+        height: 194
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0ef6274a51d325a0800000000000000
+      internalID: -6547159247595569653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_5
+      rect:
+        serializedVersion: 2
+        x: 2463
+        y: 2463
+        width: 194
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e73327cb5963f8bc0800000000000000
+      internalID: -3778741545600928898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_6
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 1439
+        width: 194
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcca48c4e02ec83a0800000000000000
+      internalID: -6661701197746623281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_7
+      rect:
+        serializedVersion: 2
+        x: 1439
+        y: 1407
+        width: 162
+        height: 258
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 640c68d567c1c2b00800000000000000
+      internalID: 805049728093306950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_8
+      rect:
+        serializedVersion: 2
+        x: 2431
+        y: 1439
+        width: 258
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18f636e8841eb82a0800000000000000
+      internalID: -6734041116059668607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_9
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 255
+        width: 322
+        height: 354
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee37fece7cfc60b10800000000000000
+      internalID: 1947472346464875502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_10
+      rect:
+        serializedVersion: 2
+        x: 1407
+        y: 255
+        width: 322
+        height: 354
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d26b2aa1a6a686d30800000000000000
+      internalID: 4424903637837461037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Small Snake 2d 0.2_11
+      rect:
+        serializedVersion: 2
+        x: 2175
+        y: 415
+        width: 706
+        height: 322
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9922ce4e59d96850800000000000000
+      internalID: 6370862146963777947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Small Snake 2d 0.2_0: 2372278979009653630
+      Small Snake 2d 0.2_1: 707302727154712137
+      Small Snake 2d 0.2_10: 4424903637837461037
+      Small Snake 2d 0.2_11: 6370862146963777947
+      Small Snake 2d 0.2_2: -277726245401068514
+      Small Snake 2d 0.2_3: -7979500966041749483
+      Small Snake 2d 0.2_4: -6547159247595569653
+      Small Snake 2d 0.2_5: -3778741545600928898
+      Small Snake 2d 0.2_6: -6661701197746623281
+      Small Snake 2d 0.2_7: 805049728093306950
+      Small Snake 2d 0.2_8: -6734041116059668607
+      Small Snake 2d 0.2_9: 1947472346464875502
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
