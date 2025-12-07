@@ -333,6 +333,16 @@ public class CobraAI : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        HandlePlayerCollision(other.gameObject);
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        HandlePlayerCollision(collision.gameObject);
+    }
+
+    void HandlePlayerCollision(GameObject other)
+    {
         if (other.CompareTag("Player") && isInstantKillMode)
         {
             // Check if player has shield active
@@ -350,6 +360,13 @@ public class CobraAI : MonoBehaviour
                 // Call Die() on player to allow limited movement before game over
                 Debug.Log("Cobra caught player! Player can still move briefly before game over...");
                 player.Die();
+
+                // LEVEL 0.2: Trigger snake growth on player kill (if SnakeGrowthTrigger exists)
+                SnakeGrowthTrigger growthTrigger = GetComponent<SnakeGrowthTrigger>();
+                if (growthTrigger != null)
+                {
+                    growthTrigger.OnPlayerKilled();
+                }
             }
         }
         // For level 4 (non-instant kill), PlayerController handles damage

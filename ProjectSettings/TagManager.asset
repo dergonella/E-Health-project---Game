@@ -9,6 +9,7 @@ TagManager:
   - Shard
   - Obstacle
   - Ground
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -16,9 +17,9 @@ TagManager:
   - Ground
   - Water
   - UI
-  - Ground
-  - 
-  - 
+  - Background
+  - Wall
+  - SnakeBody
   - 
   - 
   - 
