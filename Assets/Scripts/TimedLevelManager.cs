@@ -115,8 +115,6 @@ public class TimedLevelManager : MonoBehaviour
 
     private void TimeUp()
     {
-        if (levelCompleted) return; // Already won, don't trigger loss
-
         StopTimer();
 
         Debug.Log("TimedLevelManager: Time's up!");
@@ -124,10 +122,10 @@ public class TimedLevelManager : MonoBehaviour
         // Check if player reached target score
         if (GameManager.Instance != null)
         {
-            // Check if game is already over (player won)
+            // Check if game is already over
             if (GameManager.Instance.IsGameOver())
             {
-                Debug.Log("TimedLevelManager: Game already over (player won), skipping time up logic");
+                Debug.Log("TimedLevelManager: Game already over, skipping time up logic");
                 return;
             }
 
@@ -145,14 +143,26 @@ public class TimedLevelManager : MonoBehaviour
 
             if (score >= targetScore)
             {
-                // Player reached target before time expired - this shouldn't happen
-                // because GameManager should have already triggered win
-                Debug.Log("Time up but player already won!");
+                // Player reached target and time expired - WIN!
+                // Convert points to money and show win screen
+                Debug.Log($"Time's up! Score: {score}/{targetScore} - YOU WIN!");
+
+                if (timerText != null)
+                {
+                    timerText.text = "TIME'S UP!";
+                    timerText.color = Color.green;
+                }
+
+                // Mark as completed and convert points
+                levelCompleted = true;
+                ConvertPointsToMoney();
+
+                GameManager.Instance.GameOver(true); // Win!
             }
             else
             {
-                // Player failed to reach target in time
-                Debug.Log($"Time's up! Score: {score}/{targetScore} - Game Over");
+                // Player failed to reach target in time - LOSE!
+                Debug.Log($"Time's up! Score: {score}/{targetScore} - Game Over (didn't reach 2000)");
 
                 if (timerText != null)
                 {
@@ -165,26 +175,6 @@ public class TimedLevelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Called when level is completed successfully (reached target score in time)
-    /// </summary>
-    public void OnLevelComplete()
-    {
-        if (levelCompleted) return;
-
-        levelCompleted = true;
-        StopTimer();
-
-        Debug.Log($"TimedLevelManager: Level completed with {currentTime:F2} seconds remaining!");
-
-        if (timerText != null)
-        {
-            timerText.color = Color.green;
-        }
-
-        // Convert excess points to money if enabled for this level
-        ConvertPointsToMoney();
-    }
 
     /// <summary>
     /// Convert excess points above target score to money (for Level 0.1).

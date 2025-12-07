@@ -153,9 +153,52 @@ public class PlayerController : MonoBehaviour
     {
         if (animator == null) return;
 
-        // Update MoveX and MoveY parameters for directional animation
-        animator.SetFloat("MoveX", horizontal);
-        animator.SetFloat("MoveY", vertical);
+        // Use SetBool for cleaner state transitions
+        // Reset all direction bools first
+        animator.SetBool("MovingRight", false);
+        animator.SetBool("MovingLeft", false);
+        animator.SetBool("MovingUp", false);
+        animator.SetBool("MovingDown", false);
+
+        // Priority: horizontal movement over vertical
+        if (horizontal > 0.01f)
+        {
+            // Moving right
+            animator.SetBool("MovingRight", true);
+            Debug.Log("Animation: Moving RIGHT");
+        }
+        else if (horizontal < -0.01f)
+        {
+            // Moving left
+            animator.SetBool("MovingLeft", true);
+        }
+        else if (vertical > 0.01f)
+        {
+            // Moving up
+            animator.SetBool("MovingUp", true);
+        }
+        else if (vertical < -0.01f)
+        {
+            // Moving down
+            animator.SetBool("MovingDown", true);
+        }
+
+        // Also keep the float parameters for backward compatibility
+        if (Mathf.Abs(horizontal) > 0.01f)
+        {
+            animator.SetFloat("MoveX", horizontal);
+            animator.SetFloat("MoveY", 0f);
+        }
+        else if (Mathf.Abs(vertical) > 0.01f)
+        {
+            animator.SetFloat("MoveX", 0f);
+            animator.SetFloat("MoveY", vertical);
+        }
+        else
+        {
+            animator.SetFloat("MoveX", 0f);
+            animator.SetFloat("MoveY", 0f);
+        }
     }
 
     public void CollectShard(int points)
@@ -186,16 +229,42 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Player collision detected with: {other.gameObject.name}, Tag: {other.tag}");
+        HandleCollision(other.gameObject);
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        HandleCollision(collision.gameObject);
+    }
+
+    void HandleCollision(GameObject other)
+    {
+        Debug.Log($"Player collision detected with: {other.name}, Tag: {other.tag}");
 
         // Check collision with cobra
         if (other.CompareTag("Cobra"))
         {
-            // Check if cobra is in instant kill mode (levels 1-3)
+            // Check if cobra is in instant kill mode (levels 0-3)
             CobraAI cobraAI = other.GetComponent<CobraAI>();
             if (cobraAI != null && cobraAI.isInstantKillMode)
             {
-                // CobraAI handles instant kill - do nothing here
+                // CobraAI handles instant kill - it calls Die() which allows brief movement
+                // But for timed levels (Level 0.1), we want immediate game over
+                if (LevelManager.Instance != null)
+                {
+                    var levelData = LevelManager.Instance.GetCurrentLevelData();
+                    if (levelData != null && levelData.hasTimedChallenge)
+                    {
+                        // Immediate game over for timed challenges - no delayed movement
+                        Debug.Log("Cobra hit in timed challenge! Immediate game over!");
+                        if (GameManager.Instance != null && !GameManager.Instance.IsGameOver())
+                        {
+                            GameManager.Instance.GameOver(false);
+                        }
+                        return;
+                    }
+                }
+                // For other instant-kill levels, CobraAI handles it (allows brief movement)
                 return;
             }
 
@@ -229,7 +298,7 @@ public class PlayerController : MonoBehaviour
         // Check collision with shard
         if (other.CompareTag("Shard"))
         {
-            Debug.Log($"Player touched shard: {other.gameObject.name}");
+            Debug.Log($"Player touched shard: {other.name}");
             ShardController shard = other.GetComponent<ShardController>();
             if (shard != null)
             {
@@ -239,12 +308,12 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"Shard {other.gameObject.name} has no ShardController component!");
+                Debug.LogError($"Shard {other.name} has no ShardController component!");
             }
         }
         else
         {
-            Debug.Log($"Object {other.gameObject.name} does NOT have 'Shard' tag. It has: '{other.tag}'");
+            Debug.Log($"Object {other.name} does NOT have 'Shard' tag. It has: '{other.tag}'");
         }
     }
 }
