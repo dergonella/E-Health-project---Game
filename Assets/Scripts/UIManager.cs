@@ -29,12 +29,20 @@ public class UIManager : MonoBehaviour
     public GameObject poisonIndicator;
     public GameObject stunIndicator;
 
+    [Header("Inventory UI (New System)")]
+    public TextMeshProUGUI medkitCountText;
+    public TextMeshProUGUI shieldCountText;
+    public Slider shieldActiveBar;
+    public TextMeshProUGUI shieldStatusText;
+
     [Header("Back to Menu")]
     public Button backToMenuButton;
 
     private PlayerController player;
     private HealthSystem healthSystem;
     private AbilitySystem abilitySystem;
+    private PlayerInventory playerInventory;
+    private SlowMotionAbility slowMotionAbility;
 
     void Start()
     {
@@ -86,6 +94,7 @@ public class UIManager : MonoBehaviour
             player = playerObj.GetComponent<PlayerController>();
             healthSystem = playerObj.GetComponent<HealthSystem>();
             abilitySystem = playerObj.GetComponent<AbilitySystem>();
+            playerInventory = playerObj.GetComponent<PlayerInventory>();
 
             // Subscribe to health events
             if (healthSystem != null)
@@ -96,13 +105,35 @@ public class UIManager : MonoBehaviour
                 healthSystem.OnStunStatusChanged += UpdateStunIndicator;
             }
 
-            // Subscribe to ability events
+            // Subscribe to ability events (legacy system)
             if (abilitySystem != null)
             {
                 abilitySystem.OnShieldStatusChanged += UpdateShieldStatus;
                 abilitySystem.OnShieldCooldownChanged += UpdateShieldCooldown;
                 abilitySystem.OnSlowMotionStatusChanged += UpdateSlowMotionStatus;
                 abilitySystem.OnSlowMotionCooldownChanged += UpdateSlowMotionCooldown;
+            }
+
+            // Subscribe to inventory events (new system)
+            if (playerInventory != null)
+            {
+                playerInventory.OnMedkitCountChanged += UpdateMedkitUI;
+                playerInventory.OnShieldCountChanged += UpdateShieldCountUI;
+                playerInventory.OnShieldActiveChanged += UpdateShieldActiveUI;
+                playerInventory.OnShieldTimerChanged += UpdateShieldTimerUI;
+
+                // Initialize UI with current values
+                UpdateMedkitUI(playerInventory.MedkitCount);
+                UpdateShieldCountUI(playerInventory.ShieldCount);
+                UpdateShieldActiveUI(false);
+            }
+
+            // Subscribe to slow motion events (new system)
+            slowMotionAbility = playerObj.GetComponent<SlowMotionAbility>();
+            if (slowMotionAbility != null)
+            {
+                slowMotionAbility.OnSlowMotionActiveChanged += UpdateNewSlowMotionStatus;
+                slowMotionAbility.OnCooldownChanged += UpdateNewSlowMotionCooldown;
             }
         }
     }
@@ -265,6 +296,100 @@ public class UIManager : MonoBehaviour
             else
             {
                 slowMotionCooldownText.text = $"Slow (E)\n{Mathf.CeilToInt(max - current)}s";
+            }
+        }
+    }
+
+    // ===== NEW INVENTORY UI METHODS =====
+
+    void UpdateMedkitUI(int count)
+    {
+        if (medkitCountText != null)
+        {
+            medkitCountText.text = $"Medkit (H): {count}";
+        }
+    }
+
+    void UpdateShieldCountUI(int count)
+    {
+        if (shieldCountText != null)
+        {
+            shieldCountText.text = $"Shield (F): {count}";
+        }
+    }
+
+    void UpdateShieldActiveUI(bool isActive)
+    {
+        if (shieldActiveBar != null)
+        {
+            shieldActiveBar.gameObject.SetActive(isActive);
+        }
+
+        if (shieldStatusText != null)
+        {
+            if (isActive)
+            {
+                shieldStatusText.text = "SHIELD ACTIVE";
+                shieldStatusText.color = Color.cyan;
+            }
+            else
+            {
+                shieldStatusText.text = "Shield Ready";
+                shieldStatusText.color = Color.white;
+            }
+        }
+    }
+
+    void UpdateShieldTimerUI(float remaining, float max)
+    {
+        if (shieldActiveBar != null)
+        {
+            shieldActiveBar.maxValue = max;
+            shieldActiveBar.value = remaining;
+        }
+
+        if (shieldStatusText != null && remaining > 0)
+        {
+            shieldStatusText.text = $"SHIELD: {remaining:F1}s";
+        }
+    }
+
+    // ===== NEW SLOW MOTION UI METHODS =====
+
+    void UpdateNewSlowMotionStatus(bool isActive)
+    {
+        if (slowMotionCooldownText != null)
+        {
+            if (isActive)
+            {
+                slowMotionCooldownText.text = "SLOW MOTION ACTIVE!";
+                slowMotionCooldownText.color = Color.yellow;
+            }
+            else
+            {
+                slowMotionCooldownText.color = Color.white;
+            }
+        }
+
+        if (slowMotionIcon != null)
+        {
+            slowMotionIcon.color = isActive ? Color.yellow : Color.white;
+        }
+    }
+
+    void UpdateNewSlowMotionCooldown(float remaining, float max)
+    {
+        if (slowMotionCooldownText != null)
+        {
+            if (remaining <= 0)
+            {
+                slowMotionCooldownText.text = "Slow Motion (Q): READY";
+                slowMotionCooldownText.color = Color.green;
+            }
+            else
+            {
+                slowMotionCooldownText.text = $"Slow Motion (Q): {remaining:F1}s";
+                slowMotionCooldownText.color = Color.white;
             }
         }
     }

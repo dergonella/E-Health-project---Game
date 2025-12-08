@@ -52,9 +52,18 @@ public class Projectile : MonoBehaviour
             if (player != null)
             {
                 HealthSystem healthSystem = player.GetComponent<HealthSystem>();
+                PlayerInventory inventory = player.GetComponent<PlayerInventory>();
                 AbilitySystem abilitySystem = player.GetComponent<AbilitySystem>();
 
-                // Check if shield is active
+                // Check if shield is active (new inventory system)
+                if (inventory != null && inventory.IsShieldActive)
+                {
+                    Debug.Log($"{type} projectile blocked by shield!");
+                    Destroy(gameObject);
+                    return;
+                }
+
+                // Legacy check for old AbilitySystem shield
                 if (abilitySystem != null && abilitySystem.isShieldActive)
                 {
                     Debug.Log("Projectile blocked by shield!");
@@ -67,10 +76,10 @@ public class Projectile : MonoBehaviour
                 {
                     // TakeDamage already checks invulnerability, so just call it
                     healthSystem.TakeDamage(damage);
-                    Debug.Log("Projectile hit player! Dealing " + damage + " damage.");
+                    Debug.Log($"{type} projectile hit player! Dealing {damage} damage.");
 
                     // Apply poison if this is a poison projectile
-                    if (appliesPoison)
+                    if (type == ProjectileType.Poison || appliesPoison)
                     {
                         healthSystem.ApplyPoison();
                     }

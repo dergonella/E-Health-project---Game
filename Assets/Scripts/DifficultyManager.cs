@@ -72,7 +72,7 @@ public class DifficultyManager : MonoBehaviour
         gameActive = true;
 
         // Find all cobras
-        allCobras = FindObjectsOfType<CobraAI>();
+        allCobras = FindObjectsByType<CobraAI>(FindObjectsSortMode.None);
     }
 
     void UpdateDifficulty()
@@ -96,7 +96,7 @@ public class DifficultyManager : MonoBehaviour
     {
         if (allCobras == null || allCobras.Length == 0)
         {
-            allCobras = FindObjectsOfType<CobraAI>();
+            allCobras = FindObjectsByType<CobraAI>(FindObjectsSortMode.None);
         }
 
         foreach (CobraAI cobra in allCobras)
