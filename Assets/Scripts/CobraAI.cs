@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CobraAI : MonoBehaviour
 {
-    public enum AIType { Chase, Attack, Random, Ambusher, Patroller, PackHunter, Sniper }
+    public enum AIType { Chase, Attack, Random, Ambusher, Patroller, PackHunter }
     public enum PersonalityTrait { Aggressive, Cautious, Tactical, Erratic }
 
     [Header("AI Settings")]
@@ -57,14 +57,6 @@ public class CobraAI : MonoBehaviour
     [Header("Instant Kill Mode")]
     [HideInInspector] public bool isInstantKillMode = false;  // Set by GameManager for levels 1-3
 
-    [Header("Wall Collision Settings")]
-    [Tooltip("Enable wall avoidance using raycasts")]
-    public bool useWallAvoidance = true;
-    [Tooltip("Distance to check for walls ahead")]
-    public float wallCheckDistance = 0.5f;
-    [Tooltip("Layer mask for walls (set in Inspector or uses 'Wall' layer)")]
-    public LayerMask wallLayer;
-
     private Transform playerTransform;
     private PlayerController playerController;
     private Vector3 randomTarget;
@@ -83,16 +75,11 @@ public class CobraAI : MonoBehaviour
 
     // Pack hunter state
     private CobraAI[] allCobras;
-    #pragma warning disable CS0414 // Field assigned but never used
     private bool isCoordinating;
-    #pragma warning restore CS0414
 
     // Bounds
     private float boundX = 4f;
     private float boundY = 3f;
-
-    // Wall collision
-    private Rigidbody2D rb;
 
     void Start()
     {
@@ -105,42 +92,12 @@ public class CobraAI : MonoBehaviour
         }
 
         previousPosition = transform.position;
-        lastPosition = transform.position;
-        stuckDirection = Random.value > 0.5f ? 1 : -1; // Randomize initial unstuck direction
 
         // Get sprite renderer for visual feedback
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
-        }
-
-        // Get Rigidbody2D for wall collision
-        rb = GetComponent<Rigidbody2D>();
-        if (rb != null && useWallAvoidance)
-        {
-            rb.bodyType = RigidbodyType2D.Dynamic;
-            rb.gravityScale = 0f;
-            rb.freezeRotation = true;
-            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-
-            // Ensure collider is NOT a trigger for wall collision to work
-            Collider2D col = GetComponent<Collider2D>();
-            if (col != null && col.isTrigger)
-            {
-                Debug.LogWarning($"[CobraAI] {gameObject.name} collider is set as Trigger - wall collision won't work! Disabling trigger mode.");
-                col.isTrigger = false;
-            }
-        }
-
-        // Auto-setup wall layer if not set
-        if (wallLayer == 0)
-        {
-            int wallLayerIndex = LayerMask.NameToLayer("Wall");
-            if (wallLayerIndex != -1)
-            {
-                wallLayer = 1 << wallLayerIndex;
-            }
         }
 
         // Initialize based on AI type
@@ -221,9 +178,6 @@ public class CobraAI : MonoBehaviour
             case AIType.PackHunter:
                 PackHunterAI();
                 break;
-            case AIType.Sniper:
-                SniperAI();
-                break;
         }
     }
 
@@ -267,206 +221,84 @@ public class CobraAI : MonoBehaviour
         }
     }
 
-    // Stuck detection variables
-    private Vector3 lastPosition;
-    private float stuckTimer = 0f;
-    private int stuckDirection = 1; // 1 or -1 for alternating unstuck direction
-    private float unstuckForceTimer = 0f; // Timer to force movement when severely stuck
-
     void ChaseAI()
     {
-        Vector3 toPlayer = playerTransform.position - transform.position;
-        float distance = toPlayer.magnitude;
-        Vector3 direction = toPlayer.normalized;
-
-        // Check if stuck (not moving much)
-        float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        if (movementDelta < 0.01f)
-        {
-            stuckTimer += Time.deltaTime;
-            unstuckForceTimer += Time.deltaTime;
-        }
-        else
-        {
-            stuckTimer = 0f;
-            unstuckForceTimer = 0f;
-        }
-        lastPosition = transform.position;
-
-        // If severely stuck for too long, teleport slightly
-        if (unstuckForceTimer > 2f)
-        {
-            // Force unstuck by small random offset
-            Vector3 randomOffset = new Vector3(Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f), 0f);
-            transform.position += randomOffset;
-            unstuckForceTimer = 0f;
-            stuckTimer = 0f;
-            Debug.Log($"[CobraAI] {gameObject.name} was stuck, forcing unstuck");
-            return;
-        }
-
-        // If stuck, try to move perpendicular to get unstuck
-        if (stuckTimer > 0.15f)
-        {
-            // Move perpendicular to player direction to get around obstacle
-            Vector3 perpendicular = new Vector3(-direction.y, direction.x, 0f) * stuckDirection;
-            direction = (direction + perpendicular * 2f).normalized;
-
-            // Alternate direction more frequently
-            if (stuckTimer > 0.4f)
-            {
-                stuckDirection *= -1;
-                stuckTimer = 0.15f;
-            }
-        }
-
-        MoveWithWallAvoidance(direction, speed);
-    }
-
-    /// <summary>
-    /// Moves the cobra in the given direction, avoiding walls if enabled.
-    /// Uses wall sliding for smooth movement through narrow passages.
-    /// </summary>
-    private void MoveWithWallAvoidance(Vector3 direction, float moveSpeed)
-    {
-        if (useWallAvoidance && wallLayer != 0)
-        {
-            // Check multiple rays for better wall detection
-            float[] rayAngles = { 0f, 25f, -25f, 45f, -45f };
-            bool anyWallHit = false;
-            Vector3 bestDirection = direction;
-            float bestDistance = 0f;
-
-            foreach (float angle in rayAngles)
-            {
-                Vector3 rayDir = Quaternion.Euler(0, 0, angle) * direction;
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDir, wallCheckDistance, wallLayer);
-
-                if (hit.collider != null)
-                {
-                    anyWallHit = true;
-                }
-                else
-                {
-                    // This direction is clear - check how far we can go
-                    RaycastHit2D farHit = Physics2D.Raycast(transform.position, rayDir, wallCheckDistance * 3f, wallLayer);
-                    float clearDistance = farHit.collider != null ? farHit.distance : wallCheckDistance * 3f;
-
-                    if (clearDistance > bestDistance)
-                    {
-                        bestDistance = clearDistance;
-                        bestDirection = rayDir;
-                    }
-                }
-            }
-
-            if (anyWallHit)
-            {
-                // Check straight ahead
-                RaycastHit2D directHit = Physics2D.Raycast(transform.position, direction, wallCheckDistance, wallLayer);
-
-                if (directHit.collider != null)
-                {
-                    // Wall directly ahead - use best alternative direction
-                    if (bestDistance > 0)
-                    {
-                        direction = bestDirection.normalized;
-                    }
-                    else
-                    {
-                        // All directions blocked - slide along wall
-                        Vector3 wallNormal = directHit.normal;
-                        Vector3 slideDir = direction - Vector3.Dot(direction, wallNormal) * (Vector3)wallNormal;
-
-                        if (slideDir.magnitude > 0.1f)
-                        {
-                            direction = slideDir.normalized;
-                        }
-                        else
-                        {
-                            // Try random perpendicular
-                            direction = new Vector3(-direction.y, direction.x, 0f) * stuckDirection;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Apply movement
-        if (rb != null && useWallAvoidance)
-        {
-            rb.linearVelocity = direction * moveSpeed;
-        }
-        else
-        {
-            transform.position += direction * moveSpeed * Time.deltaTime;
-        }
+        // Simple chase - follow player directly
+        Vector3 direction = (playerTransform.position - transform.position).normalized;
+        transform.position += direction * speed * Time.deltaTime;
     }
 
     void AttackAI()
     {
-        // Advanced Predator AI - predicts player movement and intercepts
+        // Advanced Predator AI - analyzes escape routes and cuts off player
         Vector3 toPlayer = playerTransform.position - transform.position;
         float distance = toPlayer.magnitude;
-        Vector3 direction = toPlayer.normalized;
 
-        // Check if stuck
-        float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        if (movementDelta < 0.005f)
+        // Predict player's future position based on velocity
+        float predictionMult = Mathf.Min(distance / 0.8f, 4.0f);
+        Vector3 predicted = playerTransform.position + (playerController.velocity * predictionMult * predictionMultiplier);
+
+        // Analyze player's position relative to screen edges
+        float escapeLeft = playerTransform.position.x + boundX;
+        float escapeRight = boundX - playerTransform.position.x;
+        float escapeUp = boundY - playerTransform.position.y;
+        float escapeDown = playerTransform.position.y + boundY;
+
+        // Determine likely escape direction
+        bool escapingLeft = escapeLeft > escapeRight;
+        bool escapingUp = escapeUp > escapeDown;
+
+        Vector3 futurePos;
+
+        // If player is moving, predict continuation
+        if (playerController.velocity.magnitude > 0.05f)
         {
-            stuckTimer += Time.deltaTime;
+            futurePos = predicted;
         }
         else
         {
-            stuckTimer = 0f;
-        }
-        lastPosition = transform.position;
-
-        // If stuck, move perpendicular to get unstuck
-        if (stuckTimer > 0.2f)
-        {
-            Vector3 perpendicular = new Vector3(-direction.y, direction.x, 0f) * stuckDirection;
-            direction = (direction + perpendicular * 1.5f).normalized;
-
-            if (stuckTimer > 0.5f)
-            {
-                stuckDirection *= -1;
-                stuckTimer = 0.2f;
-            }
-
-            MoveWithWallAvoidance(direction, speed);
-            return;
+            // Player stationary - predict they'll flee toward largest escape route
+            futurePos = playerTransform.position;
+            futurePos.x += escapingLeft ? -1f : 1f;
+            futurePos.y += escapingUp ? 1f : -1f;
         }
 
-        // Predict where player will be
-        Vector3 targetPos;
-        if (playerController != null && playerController.velocity.magnitude > 0.1f)
+        // Calculate intercept point
+        Vector3 interceptPos;
+        if (distance > 1f)
         {
-            // Player is moving - predict future position
-            float predictionTime = Mathf.Min(distance / speed, 1.5f);
-            targetPos = playerTransform.position + playerController.velocity * predictionTime * predictionMultiplier;
+            // Far away - aggressively cut off escape route
+            Vector3 escapeVector = futurePos - playerTransform.position;
+            interceptPos = futurePos + escapeVector * 0.5f;
         }
         else
         {
-            // Player stationary - go directly toward them
-            targetPos = playerTransform.position;
+            // Close range - go straight for predicted position
+            interceptPos = futurePos;
         }
 
-        // Keep target in bounds
-        targetPos.x = Mathf.Clamp(targetPos.x, -boundX + 0.3f, boundX - 0.3f);
-        targetPos.y = Mathf.Clamp(targetPos.y, -boundY + 0.3f, boundY - 0.3f);
+        // Keep intercept in bounds
+        interceptPos.x = Mathf.Clamp(interceptPos.x, -boundX + 0.5f, boundX - 0.5f);
+        interceptPos.y = Mathf.Clamp(interceptPos.y, -boundY + 0.5f, boundY - 0.5f);
+        interceptPos.z = 0f;
 
-        // Move toward predicted position
-        direction = (targetPos - transform.position).normalized;
+        // Move toward intercept with slight randomization
+        Vector3 interceptDir = (interceptPos - transform.position).normalized;
+        float angle = Mathf.Atan2(interceptDir.y, interceptDir.x);
 
-        // Speed boost when close
-        float currentSpeed = speed;
+        // Add random variation
+        float variation = (Random.value - 0.5f) * 0.3f;
+        angle += variation;
+
+        Vector3 moveDir = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+        transform.position += moveDir * speed * Time.deltaTime;
+
+        // Emergency acceleration when very close - final lunge
         if (distance < closeRangeDistance)
         {
-            currentSpeed = speed * (1f + boostMultiplier);
+            Vector3 boostDir = (playerTransform.position - transform.position).normalized;
+            transform.position += boostDir * (speed * boostMultiplier * Time.deltaTime);
         }
-
-        MoveWithWallAvoidance(direction, currentSpeed);
     }
 
     void RandomAI()
@@ -486,7 +318,7 @@ public class CobraAI : MonoBehaviour
 
         if (distanceToTarget > 0.05f)
         {
-            MoveWithWallAvoidance(direction, speed);
+            transform.position += direction * speed * Time.deltaTime;
         }
     }
 
@@ -513,11 +345,20 @@ public class CobraAI : MonoBehaviour
     {
         if (other.CompareTag("Player") && isInstantKillMode)
         {
-            // Simple instant kill - no shield check for Level 0.2
+            // Check if player has shield active
             PlayerController player = other.GetComponent<PlayerController>();
             if (player != null)
             {
-                Debug.Log("Cobra caught player! Instant kill!");
+                AbilitySystem abilitySystem = player.GetComponent<AbilitySystem>();
+                if (abilitySystem != null && abilitySystem.isShieldActive)
+                {
+                    Debug.Log("Cobra instant kill blocked by shield!");
+                    return;
+                }
+
+                // Instant kill mode (levels 0-3) - no shield active
+                // Call Die() on player to allow limited movement before game over
+                Debug.Log("Cobra caught player! Player can still move briefly before game over...");
                 player.Die();
 
                 // LEVEL 0.2: Trigger snake growth on player kill (if SnakeGrowthTrigger exists)
@@ -528,6 +369,7 @@ public class CobraAI : MonoBehaviour
                 }
             }
         }
+        // For level 4 (non-instant kill), PlayerController handles damage
     }
 
     // ===== NEW AI BEHAVIORS =====
@@ -580,7 +422,7 @@ public class CobraAI : MonoBehaviour
         {
             // Aggressive strike at player
             Vector3 strikeDirection = (playerTransform.position - transform.position).normalized;
-            MoveWithWallAvoidance(strikeDirection, strikeSpeed);
+            transform.position += strikeDirection * strikeSpeed * Time.deltaTime;
 
             // Return to hiding if player escapes
             if (distanceToPlayer > ambushRange * 2f)
@@ -635,7 +477,7 @@ public class CobraAI : MonoBehaviour
             // Aggressive chase when alerted
             Vector3 chaseDirection = (playerTransform.position - transform.position).normalized;
             float chaseSpeed = speed * chaseSpeedMultiplier;
-            MoveWithWallAvoidance(chaseDirection, chaseSpeed);
+            transform.position += chaseDirection * chaseSpeed * Time.deltaTime;
         }
         else
         {
@@ -650,7 +492,7 @@ public class CobraAI : MonoBehaviour
                 currentPatrolPoint = (currentPatrolPoint + 1) % patrolPoints.Length;
             }
 
-            MoveWithWallAvoidance(patrolDirection, patrolSpeed);
+            transform.position += patrolDirection * patrolSpeed * Time.deltaTime;
         }
     }
     #endregion
@@ -692,7 +534,7 @@ public class CobraAI : MonoBehaviour
                 Vector3 toPlayer = (playerTransform.position - transform.position).normalized;
                 Vector3 balancedDirection = (toAlly + toPlayer * 2f).normalized;
 
-                MoveWithWallAvoidance(balancedDirection, speed);
+                transform.position += balancedDirection * speed * Time.deltaTime;
             }
         }
         else
@@ -723,7 +565,7 @@ public class CobraAI : MonoBehaviour
 
         // Move toward flanking position
         Vector3 moveDirection = (flankTarget - transform.position).normalized;
-        MoveWithWallAvoidance(moveDirection, speed);
+        transform.position += moveDirection * speed * Time.deltaTime;
     }
 
     CobraAI FindNearestCobra()
@@ -744,101 +586,6 @@ public class CobraAI : MonoBehaviour
         }
 
         return nearest;
-    }
-
-    /// <summary>
-    /// Sniper AI - Keeps distance from player and focuses on shooting.
-    /// Perfect for poison snakes that want to apply DoT from range.
-    /// </summary>
-    void SniperAI()
-    {
-        if (playerTransform == null) return;
-
-        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-        Vector3 toPlayer = (playerTransform.position - transform.position).normalized;
-        Vector3 awayFromPlayer = -toPlayer;
-
-        // Check if stuck
-        float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        if (movementDelta < 0.01f)
-        {
-            stuckTimer += Time.deltaTime;
-            unstuckForceTimer += Time.deltaTime;
-        }
-        else
-        {
-            stuckTimer = 0f;
-            unstuckForceTimer = 0f;
-        }
-        lastPosition = transform.position;
-
-        // If severely stuck, force unstuck
-        if (unstuckForceTimer > 2f)
-        {
-            Vector3 randomOffset = new Vector3(Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f), 0f);
-            transform.position += randomOffset;
-            unstuckForceTimer = 0f;
-            stuckTimer = 0f;
-            return;
-        }
-
-        // Ideal range: between minShootingDistance and shootingRange
-        float idealMinDistance = minShootingDistance + 0.5f;
-        float idealMaxDistance = shootingRange - 1f;
-
-        Vector3 moveDirection = Vector3.zero;
-
-        if (distanceToPlayer < idealMinDistance)
-        {
-            // Too close - back away while strafing
-            Vector3 strafe = new Vector3(-toPlayer.y, toPlayer.x, 0f) * (Mathf.Sin(Time.time * 2f) * 0.5f);
-            moveDirection = (awayFromPlayer + strafe).normalized;
-            SetVisualState(alertColor); // Orange = retreating
-
-            // If stuck while retreating, try perpendicular escape
-            if (stuckTimer > 0.2f)
-            {
-                Vector3 perpendicular = new Vector3(-toPlayer.y, toPlayer.x, 0f) * stuckDirection;
-                moveDirection = perpendicular;
-                if (stuckTimer > 0.5f)
-                {
-                    stuckDirection *= -1;
-                    stuckTimer = 0.2f;
-                }
-            }
-        }
-        else if (distanceToPlayer > idealMaxDistance)
-        {
-            // Too far - move closer but cautiously
-            moveDirection = toPlayer * 0.7f;
-            SetVisualState(originalColor);
-
-            // Handle stuck while approaching
-            if (stuckTimer > 0.2f)
-            {
-                Vector3 perpendicular = new Vector3(-toPlayer.y, toPlayer.x, 0f) * stuckDirection;
-                moveDirection = (toPlayer + perpendicular * 1.5f).normalized;
-                if (stuckTimer > 0.5f)
-                {
-                    stuckDirection *= -1;
-                    stuckTimer = 0.2f;
-                }
-            }
-        }
-        else
-        {
-            // In ideal range - strafe to make it harder to dodge projectiles
-            float strafeSpeed = 1.5f;
-            float strafeDirection = Mathf.Sin(Time.time * strafeSpeed + GetInstanceID());
-            moveDirection = new Vector3(-toPlayer.y, toPlayer.x, 0f) * strafeDirection;
-            SetVisualState(huntingColor); // Red = attacking
-        }
-
-        // Apply movement with wall avoidance
-        if (moveDirection.magnitude > 0.1f)
-        {
-            MoveWithWallAvoidance(moveDirection, speed * 0.8f); // Slightly slower for tactical movement
-        }
     }
     #endregion
 

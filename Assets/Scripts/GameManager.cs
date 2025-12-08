@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        uiManager = FindFirstObjectByType<UIManager>();
+        uiManager = FindObjectOfType<UIManager>();
         gameOver = false;
         currentScore = 0;
     }

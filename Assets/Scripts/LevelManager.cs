@@ -90,7 +90,7 @@ public class LevelManager : MonoBehaviour
         levels[2] = new LevelData
         {
             levelName = "Growing Snakes",
-            sceneName = "Level0.2",  // FIXED: Matches actual scene file name
+            sceneName = "Level0_2_GrowingSnakes",
             description = "Navigate the maze - Snakes grow longer as you play!",
             targetScore = 3000,
             survivalTime = 0f,

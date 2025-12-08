@@ -78,44 +78,28 @@ public class ShardController : MonoBehaviour
         int attempts = 0;
         Vector3 newPosition = Vector3.zero;
 
-        // Use SpawnValidator if available (for maze levels)
-        if (SpawnValidator.Instance != null)
+        while (!validPosition && attempts < 50)
         {
-            newPosition = SpawnValidator.Instance.GetValidCollectibleSpawn(
-                new Vector3(
-                    Random.Range(-boundX + 0.4f, boundX - 0.4f),
-                    Random.Range(-boundY + 0.4f, boundY - 0.4f),
-                    0f
-                )
+            newPosition = new Vector3(
+                Random.Range(-boundX + 0.4f, boundX - 0.4f),
+                Random.Range(-boundY + 0.4f, boundY - 0.4f),
+                0f
             );
+
+            // Check if position overlaps with walls
+            Collider2D[] overlaps = Physics2D.OverlapCircleAll(newPosition, 0.15f);
             validPosition = true;
-        }
-        else
-        {
-            // Fallback: Legacy wall detection
-            while (!validPosition && attempts < 50)
+
+            foreach (Collider2D overlap in overlaps)
             {
-                newPosition = new Vector3(
-                    Random.Range(-boundX + 0.4f, boundX - 0.4f),
-                    Random.Range(-boundY + 0.4f, boundY - 0.4f),
-                    0f
-                );
-
-                // Check if position overlaps with walls
-                Collider2D[] overlaps = Physics2D.OverlapCircleAll(newPosition, 0.15f);
-                validPosition = true;
-
-                foreach (Collider2D overlap in overlaps)
+                if (overlap.CompareTag("Wall"))
                 {
-                    if (overlap.CompareTag("Wall"))
-                    {
-                        validPosition = false;
-                        break;
-                    }
+                    validPosition = false;
+                    break;
                 }
-
-                attempts++;
             }
+
+            attempts++;
         }
 
         transform.position = newPosition;

@@ -13,7 +13,7 @@ public class Level02Diagnostic : MonoBehaviour
         Debug.Log("===== LEVEL 0.2 DIAGNOSTIC =====");
 
         // Check for Tilemaps
-        Tilemap[] tilemaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+        Tilemap[] tilemaps = FindObjectsOfType<Tilemap>();
         Debug.Log($"[Diagnostic] Found {tilemaps.Length} Tilemap(s) in scene");
 
         foreach (Tilemap tilemap in tilemaps)
@@ -24,7 +24,7 @@ public class Level02Diagnostic : MonoBehaviour
             TilemapCollider2D tileCollider = tilemap.GetComponent<TilemapCollider2D>();
             if (tileCollider != null)
             {
-                Debug.Log($"    ✓ Has TilemapCollider2D (CompositeOperation: {tileCollider.compositeOperation})");
+                Debug.Log($"    ✓ Has TilemapCollider2D (UsedByComposite: {tileCollider.usedByComposite})");
             }
             else
             {
@@ -87,7 +87,7 @@ public class Level02Diagnostic : MonoBehaviour
         }
 
         // Check for Snakes
-        SnakeBodyController[] snakes = FindObjectsByType<SnakeBodyController>(FindObjectsSortMode.None);
+        SnakeBodyController[] snakes = FindObjectsOfType<SnakeBodyController>();
         Debug.Log($"[Diagnostic] Found {snakes.Length} Snake(s) with SnakeBodyController");
 
         foreach (SnakeBodyController snake in snakes)
@@ -107,7 +107,7 @@ public class Level02Diagnostic : MonoBehaviour
         }
 
         // Check for CobraAI
-        CobraAI[] cobras = FindObjectsByType<CobraAI>(FindObjectsSortMode.None);
+        CobraAI[] cobras = FindObjectsOfType<CobraAI>();
         Debug.Log($"[Diagnostic] Found {cobras.Length} Cobra(s) with CobraAI");
 
         Debug.Log("===== END DIAGNOSTIC =====");
