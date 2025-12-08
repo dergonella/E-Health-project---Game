@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdc765de0f2b8c4dbbe8f1cd96967fb, type: 3}
+  m_Name: Lvl9_PersonaC
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  defaultBackground: {fileID: 0}
+  speakerName: 
+  sentences:
+  - text: "You have done it. The serpent\u2019s subtle grip has finally broken, and
+      Stonegrove breathes freely once more."
+    frameImage: {fileID: -8131127735439275408, guid: a08952d3465cf1349800362a277916cc, type: 3}
+  - text: "The haze lifts, sunlight warms the forest floor, and life returns to its
+      steady harmony. Stonegrove stands balanced again\u2026 thanks to you!"
+    frameImage: {fileID: -3354921494050320329, guid: 2972ec34aef44604abba9e5553a779fe, type: 3}

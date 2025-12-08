@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdc765de0f2b8c4dbbe8f1cd96967fb, type: 3}
+  m_Name: Lvl0_PersonaB
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  defaultBackground: {fileID: 0}
+  speakerName: 'naration '
+  sentences:
+  - text: '"Welcome to Silvergrove, a vibrant woodland village where every day begins
+      with purpose. The campfires burn bright, tools clink rhythmically, and each
+      villager moves with intention. Here, life runs smoothly busy, but beautifully
+      balanced."'
+    frameImage: {fileID: -1279786486724770065, guid: a00c13f8b545d8e4599b6086ee8e5842, type: 3}
+  - text: "\"But suddenly\u2026 the steady rhythm of Silvergrove is disrupted by
+      soft hissing from the great oak above the camp.\""
+    frameImage: {fileID: 829889831637714566, guid: 1d69022a80385f241ae8c34c628e331d, type: 3}
+  - text: "Snake 1: \n\"Look at them\u2026 working so hard, keeping everything running
+      so perfectly. What an ideal place for us.\""
+    frameImage: {fileID: -8764062104198830869, guid: 4c7f83d88fe6e914b9fe055e6b206cb2, type: 3}
+  - text: "Snake 2: \n\"Perfect indeed\u2026 but a little too bright. Let\u2019s
+      coil up here, high above them. A little pressure\u2026 a little distraction\u2026
+      and soon their focus will be ours to twist.\u201D"
+    frameImage: {fileID: 4242178379103631058, guid: f7733577d6a52da4482769f7e1670d93, type: 3}
+  - text: '"the clarity, the strength, and the insight to confront their influence.
+      Only you can protect Silvergrove, restore its steady rhythm, and keep its people
+      thriving."'
+    frameImage: {fileID: -8667466294985060184, guid: e2ea5468b3d32d344ba469d42644f861, type: 3}
