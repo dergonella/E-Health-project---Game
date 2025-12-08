@@ -40,15 +40,15 @@ public class DinoGameManager : MonoBehaviour
 
     private void Start()
     {
-        player = FindFirstObjectByType<DinoPlayer>();
-        spawner = FindFirstObjectByType<DinoSpawner>();
+        player = FindObjectOfType<DinoPlayer>();
+        spawner = FindObjectOfType<DinoSpawner>();
 
         NewGame();
     }
 
     public void NewGame()
     {
-        DinoObstacle[] obstacles = FindObjectsByType<DinoObstacle>(FindObjectsSortMode.None);
+        DinoObstacle[] obstacles = FindObjectsOfType<DinoObstacle>();
 
         foreach (var obstacle in obstacles) {
             Destroy(obstacle.gameObject);
