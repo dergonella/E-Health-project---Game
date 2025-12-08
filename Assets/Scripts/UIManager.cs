@@ -21,9 +21,6 @@ public class UIManager : MonoBehaviour
     public GameObject shieldUI;
     public TextMeshProUGUI shieldCooldownText;
     public Image shieldIcon;
-    public GameObject slowMotionUI;
-    public TextMeshProUGUI slowMotionCooldownText;
-    public Image slowMotionIcon;
 
     [Header("Status Effects")]
     public GameObject poisonIndicator;
@@ -42,7 +39,6 @@ public class UIManager : MonoBehaviour
     private HealthSystem healthSystem;
     private AbilitySystem abilitySystem;
     private PlayerInventory playerInventory;
-    private SlowMotionAbility slowMotionAbility;
 
     void Start()
     {
@@ -81,7 +77,6 @@ public class UIManager : MonoBehaviour
 
                 // Show/hide ability UI based on level
                 if (shieldUI != null) shieldUI.SetActive(levelData.hasShield);
-                if (slowMotionUI != null) slowMotionUI.SetActive(levelData.hasSlowMotion);
             }
         }
     }
@@ -110,8 +105,6 @@ public class UIManager : MonoBehaviour
             {
                 abilitySystem.OnShieldStatusChanged += UpdateShieldStatus;
                 abilitySystem.OnShieldCooldownChanged += UpdateShieldCooldown;
-                abilitySystem.OnSlowMotionStatusChanged += UpdateSlowMotionStatus;
-                abilitySystem.OnSlowMotionCooldownChanged += UpdateSlowMotionCooldown;
             }
 
             // Subscribe to inventory events (new system)
@@ -128,13 +121,6 @@ public class UIManager : MonoBehaviour
                 UpdateShieldActiveUI(false);
             }
 
-            // Subscribe to slow motion events (new system)
-            slowMotionAbility = playerObj.GetComponent<SlowMotionAbility>();
-            if (slowMotionAbility != null)
-            {
-                slowMotionAbility.OnSlowMotionActiveChanged += UpdateNewSlowMotionStatus;
-                slowMotionAbility.OnCooldownChanged += UpdateNewSlowMotionCooldown;
-            }
         }
     }
 
@@ -276,30 +262,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    void UpdateSlowMotionStatus(bool isActive)
-    {
-        if (slowMotionIcon != null)
-        {
-            Color color = isActive ? Color.yellow : Color.white;
-            slowMotionIcon.color = color;
-        }
-    }
-
-    void UpdateSlowMotionCooldown(float current, float max)
-    {
-        if (slowMotionCooldownText != null)
-        {
-            if (current >= max)
-            {
-                slowMotionCooldownText.text = "Slow (E)\nREADY";
-            }
-            else
-            {
-                slowMotionCooldownText.text = $"Slow (E)\n{Mathf.CeilToInt(max - current)}s";
-            }
-        }
-    }
-
     // ===== NEW INVENTORY UI METHODS =====
 
     void UpdateMedkitUI(int count)
@@ -351,46 +313,6 @@ public class UIManager : MonoBehaviour
         if (shieldStatusText != null && remaining > 0)
         {
             shieldStatusText.text = $"SHIELD: {remaining:F1}s";
-        }
-    }
-
-    // ===== NEW SLOW MOTION UI METHODS =====
-
-    void UpdateNewSlowMotionStatus(bool isActive)
-    {
-        if (slowMotionCooldownText != null)
-        {
-            if (isActive)
-            {
-                slowMotionCooldownText.text = "SLOW MOTION ACTIVE!";
-                slowMotionCooldownText.color = Color.yellow;
-            }
-            else
-            {
-                slowMotionCooldownText.color = Color.white;
-            }
-        }
-
-        if (slowMotionIcon != null)
-        {
-            slowMotionIcon.color = isActive ? Color.yellow : Color.white;
-        }
-    }
-
-    void UpdateNewSlowMotionCooldown(float remaining, float max)
-    {
-        if (slowMotionCooldownText != null)
-        {
-            if (remaining <= 0)
-            {
-                slowMotionCooldownText.text = "Slow Motion (Q): READY";
-                slowMotionCooldownText.color = Color.green;
-            }
-            else
-            {
-                slowMotionCooldownText.text = $"Slow Motion (Q): {remaining:F1}s";
-                slowMotionCooldownText.color = Color.white;
-            }
         }
     }
 }

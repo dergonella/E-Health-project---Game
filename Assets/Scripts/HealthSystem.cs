@@ -192,6 +192,13 @@ public class HealthSystem : MonoBehaviour
     {
         OnDeath?.Invoke();
         Debug.Log("Player died!");
+
+        // Trigger game over
+        if (GameManager.Instance != null && !GameManager.Instance.IsGameOver())
+        {
+            GameManager.Instance.GameOver(false);
+            Debug.Log("[HealthSystem] Game Over triggered - player health reached 0!");
+        }
     }
 
     public void ResetHealth()
