@@ -172,6 +172,22 @@ public class HealthSystem : MonoBehaviour
         return 1f;
     }
 
+    /// <summary>
+    /// Returns health as percentage (0-1)
+    /// </summary>
+    public float GetHealthPercent()
+    {
+        return currentHealth / maxHealth;
+    }
+
+    /// <summary>
+    /// Check if player is alive
+    /// </summary>
+    public bool IsAlive()
+    {
+        return currentHealth > 0f;
+    }
+
     void Die()
     {
         OnDeath?.Invoke();
