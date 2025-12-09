@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdc765de0f2b8c4dbbe8f1cd96967fb, type: 3}
+  m_Name: Lvl3_PersonaA
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  defaultBackground: {fileID: 0}
+  speakerName: Brightgrove
+  sentences:
+  - text: "\u201CYou have come this far!   \nYou\u2019ve weakened the serpent\u2019s
+      hold. The fog has stopped spreading, and a faint warmth returns to the ground.
+      Brightgrove may still feel heavy, but your courage is beginning to reach the
+      villagers.\u201D"
+    frameImage: {fileID: -1473307230337846020, guid: f11cb04941c7a034b9f96ba04918a85d, type: 3}

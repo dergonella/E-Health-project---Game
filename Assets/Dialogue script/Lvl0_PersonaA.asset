@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdc765de0f2b8c4dbbe8f1cd96967fb, type: 3}
+  m_Name: Lvl0_PersonaA
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  defaultBackground: {fileID: 0}
+  speakerName: 
+  sentences:
+  - text: '"Welcome to Brightgrove, a hidden village deep within the old forest.
+      Here, each day begins with laughter and shared moments. At night, everyone
+      gathers around the fire, and the bonds between friends run as deep as the roots
+      beneath the earth."'
+    frameImage: {fileID: -5853957616262885276, guid: 84d2f4d9b37b9a642818f932c08d7a4b, type: 3}
+  - text: "\"But one day, the peaceful silence is broken\u2026 by a long, cold hiss
+      echoing through the trees.\""
+    frameImage: {fileID: -1343518637512107228, guid: 3b41cf304d97c204880b2307d404c84e, type: 3}
+  - text: "Snake: \n\"People of Brightgrove! Your bright days are over. Your fires,
+      your stories, your joy, they will all belong to me.\""
+    frameImage: {fileID: -507227580528638452, guid: 04184b8de55aadc49aa426ca6c4883aa, type: 3}
+  - text: "Snake: \n\"Do not run. Do not hide. The fog that follows me will claim
+      you all. Bow, and you may live in its shadow. Resist\u2026 and you will discover
+      the true meaning of fear.\u201D"
+    frameImage: {fileID: -507227580528638452, guid: 04184b8de55aadc49aa426ca6c4883aa, type: 3}
+  - text: "\"Darkness and fog have swallowed the forest, but hope remains. You carry
+      the light needed to break this silence and restore warmth to Brightgrove. Defeat
+      the serpent\u2019s influence, level by level, and bring the woods back to life.\""
+    frameImage: {fileID: 5323667809464736900, guid: 0e0300aba802cf24dbad8f3a777ca253, type: 3}

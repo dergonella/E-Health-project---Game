@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdc765de0f2b8c4dbbe8f1cd96967fb, type: 3}
+  m_Name: Lvl9_PersonaB
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  defaultBackground: {fileID: 0}
+  speakerName: 
+  sentences:
+  - text: "\"You have done it. The serpents\u2019 influence has completely faded,
+      and Silvergrove\u2019s true rhythm returns steady, bright, and alive. The villagers
+      work, speak, and laugh freely again. Silvergrove thrives because of you.\""
+    frameImage: {fileID: -5600906179414552225, guid: 9cf352101bf9d2b42b8574a09557abb1, type: 3}
+  - text: Silvergrove thrives because of you!
+    frameImage: {fileID: -5853957616262885276, guid: 84d2f4d9b37b9a642818f932c08d7a4b, type: 3}

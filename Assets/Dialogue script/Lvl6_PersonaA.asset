@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdc765de0f2b8c4dbbe8f1cd96967fb, type: 3}
+  m_Name: Lvl6_PersonaA
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  defaultBackground: {fileID: 0}
+  speakerName: story teller
+  sentences:
+  - text: "\u201CLook how far you\u2019ve brought Brightgrove. Light now reaches
+      places the serpent once claimed. The villagers are reconnecting, step by step.
+      They believe in you, more than ever.\u201D"
+    frameImage: {fileID: 7013178416735596096, guid: e679cb617733f5742938d1b69c82e8a3, type: 3}

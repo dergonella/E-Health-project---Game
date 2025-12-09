@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdc765de0f2b8c4dbbe8f1cd96967fb, type: 3}
+  m_Name: Lvl0_PersonaC
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  defaultBackground: {fileID: 0}
+  speakerName: 
+  sentences:
+  - text: '"Welcome to Stonegrove, a steady woodland village where each day follows
+      a familiar, comforting rhythm. The trees stand tall, the paths are well-trodden,
+      and the forest hums with the quiet harmony of everyday life."'
+    frameImage: {fileID: -8131127735439275408, guid: a08952d3465cf1349800362a277916cc, type: 3}
+  - text: "\"But then, without warning, that rhythm falters. A sleek shadow glides
+      between the trees\u2026 too quiet to catch, yet leaving a chill woven through
+      the branches.\""
+    frameImage: {fileID: 1403652824625717687, guid: 0c69eb9357f097e4488a2db8c45b6421, type: 3}
+  - text: "Snake:\r\n\"Hmm\u2026 this forest has promise. A little shift here, a
+      little disruption there\u2026 and soon Stonegrove will bend exactly as I wish.
+      Taking over will be simple.\""
+    frameImage: {fileID: 4772961431583226569, guid: bdd95996e0d65da46819727e9a9f9e4a, type: 3}
+  - text: '"A soft darkness settles over the forest, subtle yet impossible to ignore.
+      But all is not lost. In this fragile moment, a new chapter begins your chapter"'
+    frameImage: {fileID: -5717955848578990100, guid: 687e8a6afcb528547873910eab71f5eb, type: 3}
