@@ -29,8 +29,8 @@ public class LevelConfig : ScriptableObject
     [Tooltip("Enable shield usage (F key)")]
     public bool enableShield = true;
 
-    [Tooltip("Enable slow motion (Q key) - typically Level 2+")]
-    public bool enableSlowMotion = false;
+    [Tooltip("Enable bullet slowdown (O key) - Level 2 and 3")]
+    public bool enableBulletSlowdown = false;
 
     [Header("Player Starting Resources")]
     public int startingMedkits = 3;
@@ -71,12 +71,12 @@ public class LevelConfig : ScriptableObject
         config.poisonSnakeCount = 0;
         config.enableMedkit = true;
         config.enableShield = true;
-        config.enableSlowMotion = false;
+        config.enableBulletSlowdown = false; // No slowdown in Level 1
         return config;
     }
 
     /// <summary>
-    /// Create a default Level 2 config (3 poison snakes + slow motion)
+    /// Create a default Level 2 config (3 poison snakes + bullet slowdown)
     /// </summary>
     public static LevelConfig CreateLevel2Default()
     {
@@ -88,12 +88,12 @@ public class LevelConfig : ScriptableObject
         config.poisonSnakeCount = 3;
         config.enableMedkit = true;
         config.enableShield = true;
-        config.enableSlowMotion = true;
+        config.enableBulletSlowdown = true; // Slowdown enabled in Level 2
         return config;
     }
 
     /// <summary>
-    /// Create a default Level 3 config (2 fire + 1 poison)
+    /// Create a default Level 3 config (2 fire + 1 poison + bullet slowdown)
     /// </summary>
     public static LevelConfig CreateLevel3Default()
     {
@@ -105,7 +105,7 @@ public class LevelConfig : ScriptableObject
         config.poisonSnakeCount = 1;
         config.enableMedkit = true;
         config.enableShield = true;
-        config.enableSlowMotion = true;
+        config.enableBulletSlowdown = true; // Slowdown enabled in Level 3
         return config;
     }
 }

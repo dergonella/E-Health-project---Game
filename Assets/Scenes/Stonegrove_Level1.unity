@@ -1345,9 +1345,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7612548411300304657, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
       insertIndex: -1
       addedObject: {fileID: 345869693}
-    - targetCorrespondingSourceObject: {fileID: 7612548411300304657, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 345869692}
   m_SourcePrefab: {fileID: 100100000, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
 --- !u!1 &345869690 stripped
 GameObject:
@@ -1400,23 +1397,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 7}
   m_EdgeRadius: 0
---- !u!114 &345869692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 345869690}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9a6a2159b5486f44873e6787c134974, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SlowMotionAbility
-  slowTimeScale: 0.3
-  duration: 5
-  cooldown: 15
-  activateSound: {fileID: 0}
-  deactivateSound: {fileID: 0}
 --- !u!114 &345869693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1772,9 +1752,6 @@ MonoBehaviour:
   shieldUI: {fileID: 0}
   shieldCooldownText: {fileID: 0}
   shieldIcon: {fileID: 0}
-  slowMotionUI: {fileID: 0}
-  slowMotionCooldownText: {fileID: 0}
-  slowMotionIcon: {fileID: 0}
   poisonIndicator: {fileID: 0}
   stunIndicator: {fileID: 0}
   medkitCountText: {fileID: 275691435}
@@ -2668,7 +2645,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CAUGHT!
+  m_text: YOU DIE!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -12,8 +12,11 @@ public class MainLevelSetup : MonoBehaviour
     public LevelConfig levelConfig;
 
     [Header("Auto-Detection (if no LevelConfig assigned)")]
-    [Tooltip("Level number (1, 2, or 3) - used if LevelConfig is null")]
+    [Tooltip("Level number (1, 2, or 3) - used if LevelConfig is null AND GameState.CurrentLevel is 0")]
     public int levelNumber = 1;
+
+    [Tooltip("Force enable BulletSlowdown even if level config doesn't enable it (for testing)")]
+    public bool forceEnableBulletSlowdown = false;
 
     [Header("Snake Prefabs")]
     [Tooltip("Fire snake prefab (shoots fire projectiles)")]
@@ -33,17 +36,23 @@ public class MainLevelSetup : MonoBehaviour
     private PlayerController playerController;
     private HealthSystem healthSystem;
     private PlayerInventory inventory;
-    private SlowMotionAbility slowMotion;
+    private BulletSlowdown bulletSlowdown;
 
     void Start()
     {
-        Debug.Log($"=== MAIN LEVEL SETUP: {GameState.SelectedPersona} Level {GameState.CurrentLevel} ===");
+        Debug.Log($"=== MAIN LEVEL SETUP START ===");
+        Debug.Log($"[MainLevelSetup] GameState.SelectedPersona: {GameState.SelectedPersona}");
+        Debug.Log($"[MainLevelSetup] GameState.CurrentLevel: {GameState.CurrentLevel}");
+        Debug.Log($"[MainLevelSetup] Inspector levelNumber: {levelNumber}");
 
         // Get or create level config
         if (levelConfig == null)
         {
             levelConfig = CreateDefaultConfig();
         }
+
+        Debug.Log($"[MainLevelSetup] Using config: {levelConfig.levelName} (Level {levelConfig.levelNumber})");
+        Debug.Log($"[MainLevelSetup] BulletSlowdown enabled in config: {levelConfig.enableBulletSlowdown}");
 
         // Find player if not assigned
         if (player == null)
@@ -53,15 +62,17 @@ public class MainLevelSetup : MonoBehaviour
 
         if (player == null)
         {
-            Debug.LogError("No Player found in scene!");
+            Debug.LogError("[MainLevelSetup] No Player found in scene!");
             return;
         }
+
+        Debug.Log($"[MainLevelSetup] Found player: {player.name}");
 
         // Get player components
         playerController = player.GetComponent<PlayerController>();
         healthSystem = player.GetComponent<HealthSystem>();
         inventory = player.GetComponent<PlayerInventory>();
-        slowMotion = player.GetComponent<SlowMotionAbility>();
+        bulletSlowdown = player.GetComponent<BulletSlowdown>();
 
         // Setup everything
         SetupPlayer();
@@ -73,10 +84,28 @@ public class MainLevelSetup : MonoBehaviour
 
     LevelConfig CreateDefaultConfig()
     {
-        // Use GameState level if available, otherwise use inspector value
-        int level = GameState.CurrentLevel > 0 ? GameState.CurrentLevel : levelNumber;
+        // Priority: GameState.CurrentLevel > Inspector levelNumber > default 1
+        int level;
 
-        Debug.Log($"Creating default config for Level {level}");
+        if (GameState.CurrentLevel > 0 && GameState.CurrentLevel <= 3)
+        {
+            level = GameState.CurrentLevel;
+            Debug.Log($"[MainLevelSetup] Using GameState.CurrentLevel: {level}");
+        }
+        else if (levelNumber >= 1 && levelNumber <= 3)
+        {
+            level = levelNumber;
+            Debug.Log($"[MainLevelSetup] GameState.CurrentLevel not set, using inspector levelNumber: {level}");
+            // Also update GameState so other systems know
+            GameState.CurrentLevel = level;
+        }
+        else
+        {
+            level = 1;
+            Debug.Log($"[MainLevelSetup] No valid level set, defaulting to Level 1");
+        }
+
+        Debug.Log($"[MainLevelSetup] Creating default config for Level {level}");
 
         switch (level)
         {
@@ -125,21 +154,38 @@ public class MainLevelSetup : MonoBehaviour
             inventory.enabled = false;
         }
 
-        // Setup slow motion (Level 2+)
-        if (levelConfig.enableSlowMotion)
+        // Setup Bullet Slowdown (Level 2 and 3 only, or if forced)
+        bool shouldEnableBulletSlowdown = levelConfig.enableBulletSlowdown || forceEnableBulletSlowdown;
+        Debug.Log($"[MainLevelSetup] Checking BulletSlowdown...");
+        Debug.Log($"[MainLevelSetup]   - Config enableBulletSlowdown: {levelConfig.enableBulletSlowdown}");
+        Debug.Log($"[MainLevelSetup]   - Force enable (inspector): {forceEnableBulletSlowdown}");
+        Debug.Log($"[MainLevelSetup]   - Final decision: {shouldEnableBulletSlowdown}");
+
+        if (shouldEnableBulletSlowdown)
         {
-            if (slowMotion == null)
+            if (bulletSlowdown == null)
             {
-                slowMotion = player.AddComponent<SlowMotionAbility>();
-                Debug.Log("  + Added SlowMotionAbility");
+                bulletSlowdown = player.AddComponent<BulletSlowdown>();
+                Debug.Log("[MainLevelSetup] + ADDED BulletSlowdown component to Player!");
             }
-            slowMotion.enabled = true;
-            Debug.Log("  Slow Motion: ENABLED (Q key)");
+            else
+            {
+                Debug.Log("[MainLevelSetup] BulletSlowdown already exists on Player");
+            }
+            bulletSlowdown.enabled = true;
+            Debug.Log("[MainLevelSetup] ========================================");
+            Debug.Log("[MainLevelSetup] *** BULLET SLOWDOWN: ENABLED ***");
+            Debug.Log("[MainLevelSetup] *** Press O key to activate! ***");
+            Debug.Log("[MainLevelSetup] ========================================");
         }
-        else if (slowMotion != null)
+        else
         {
-            slowMotion.enabled = false;
-            Debug.Log("  Slow Motion: DISABLED");
+            Debug.Log("[MainLevelSetup] BulletSlowdown NOT enabled for this level");
+            if (bulletSlowdown != null)
+            {
+                bulletSlowdown.enabled = false;
+                Debug.Log("[MainLevelSetup] Disabled existing BulletSlowdown component");
+            }
         }
 
         // Enable wall collision for maze
