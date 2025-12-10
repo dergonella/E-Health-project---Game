@@ -1481,12 +1481,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2910460359161350416, guid: fc04f86f48374fd47988f3d1007e39cd, type: 3}
       propertyPath: projectileType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2910460359161350416, guid: fc04f86f48374fd47988f3d1007e39cd, type: 3}
       propertyPath: projectilePrefab
       value: 
-      objectReference: {fileID: 3086076814800086471, guid: e58fd1fba29db7c4488adb36f6aacf48, type: 3}
+      objectReference: {fileID: 697370627861820208, guid: fcd1bc304c363914e9c8c783a0a13483, type: 3}
     - target: {fileID: 2910460359161350416, guid: fc04f86f48374fd47988f3d1007e39cd, type: 3}
       propertyPath: canShootProjectiles
       value: 1

@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -116,12 +116,12 @@ TextureImporter:
       name: Maze Walls - Friendly Field_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 2528
-        height: 1696
+        x: 334
+        y: 1432
+        width: 297
+        height: 231
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -134,11 +134,363 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_1
+      rect:
+        serializedVersion: 2
+        x: 841
+        y: 1434
+        width: 182
+        height: 233
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce009b4ed8201c64c848900ec2d019fb
+      internalID: -1420985007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_2
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1433
+        width: 191
+        height: 233
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb271ebe0ca4bc74bb31fd9b0f3057e0
+      internalID: -1109646005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_3
+      rect:
+        serializedVersion: 2
+        x: 1278
+        y: 1434
+        width: 190
+        height: 232
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7c647bf414067c4393e30465b1be4a8
+      internalID: -316483523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_4
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 1433
+        width: 184
+        height: 231
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d0304e6177df4a48a967196b825342c
+      internalID: 159172965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_5
+      rect:
+        serializedVersion: 2
+        x: 1891
+        y: 1431
+        width: 303
+        height: 234
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be12dedc7a9b39741a4f6a69b07a4461
+      internalID: -1244714626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_6
+      rect:
+        serializedVersion: 2
+        x: 2253
+        y: 1085
+        width: 164
+        height: 304
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8a6816a909396c489f321c5896b4267
+      internalID: -368173942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_7
+      rect:
+        serializedVersion: 2
+        x: 2252
+        y: 863
+        width: 165
+        height: 191
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efccda6a9d33a944885c40cab8ca6bf5
+      internalID: 598122996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_8
+      rect:
+        serializedVersion: 2
+        x: 2252
+        y: 641
+        width: 164
+        height: 191
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2be18fc04c238d94981c433678cfcc82
+      internalID: -1718999564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_9
+      rect:
+        serializedVersion: 2
+        x: 2253
+        y: 309
+        width: 162
+        height: 301
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18ed2ae9beff34f40a9a96fb4a70a82f
+      internalID: 1742928402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_10
+      rect:
+        serializedVersion: 2
+        x: 1279
+        y: 31
+        width: 190
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d642f1acfd1d5c4eb6a23dd5822637d
+      internalID: 638109791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_11
+      rect:
+        serializedVersion: 2
+        x: 1057
+        y: 34
+        width: 189
+        height: 212
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01dee515338e53c4989f4c242cd6657a
+      internalID: 2008036852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_12
+      rect:
+        serializedVersion: 2
+        x: 721
+        y: 36
+        width: 302
+        height: 211
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f115d5d3e504954b9b546ab0d29429d
+      internalID: 545282832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_13
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 35
+        width: 359
+        height: 210
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b859fd33b7421744ae19645e6247eb0
+      internalID: -1192294007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_14
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 311
+        width: 163
+        height: 295
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 142a06379609301469cecdc5d22e501a
+      internalID: -1690941705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_15
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 643
+        width: 160
+        height: 188
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50883aba3a18be249b53f91526ce2f2c
+      internalID: 1274377093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Friendly Field_16
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 866
+        width: 154
+        height: 189
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45435d7bd5915e04fa1525d35c8a8d9b
+      internalID: -604953433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 98f7f5746f2260742bad315c10acf341
     internalID: 0
     vertices: []
     indices: 
@@ -149,6 +501,22 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Maze Walls - Friendly Field_0: 4435095230434998638
+      Maze Walls - Friendly Field_1: -1420985007
+      Maze Walls - Friendly Field_10: 638109791
+      Maze Walls - Friendly Field_11: 2008036852
+      Maze Walls - Friendly Field_12: 545282832
+      Maze Walls - Friendly Field_13: -1192294007
+      Maze Walls - Friendly Field_14: -1690941705
+      Maze Walls - Friendly Field_15: 1274377093
+      Maze Walls - Friendly Field_16: -604953433
+      Maze Walls - Friendly Field_2: -1109646005
+      Maze Walls - Friendly Field_3: -316483523
+      Maze Walls - Friendly Field_4: 159172965
+      Maze Walls - Friendly Field_5: -1244714626
+      Maze Walls - Friendly Field_6: -368173942
+      Maze Walls - Friendly Field_7: 598122996
+      Maze Walls - Friendly Field_8: -1718999564
+      Maze Walls - Friendly Field_9: 1742928402
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
