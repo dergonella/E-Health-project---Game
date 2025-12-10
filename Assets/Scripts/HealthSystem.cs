@@ -30,12 +30,21 @@ public class HealthSystem : MonoBehaviour
     public bool isStunned = false;
     private float stunTimer = 0f;
 
+    // Shield reference (for blocking damage)
+    private PlayerInventory inventory;
+
     // Events
     public event Action<float, float> OnHealthChanged; // current, max
     public event Action<float, float> OnFocusChanged; // current, max
     public event Action OnDeath;
     public event Action<bool> OnPoisonStatusChanged;
     public event Action<bool> OnStunStatusChanged;
+
+    void Start()
+    {
+        // Get inventory reference for shield checking
+        inventory = GetComponent<PlayerInventory>();
+    }
 
     void Update()
     {
@@ -60,8 +69,9 @@ public class HealthSystem : MonoBehaviour
         {
             poisonTimer -= Time.deltaTime;
 
-            // Apply poison damage
-            TakeDamage(poisonDamagePerSecond * Time.deltaTime, false);
+            // Apply poison damage (bypass shield - poison DoT continues even with shield)
+            // But shield activation cures poison, so this is fair
+            TakeDamage(poisonDamagePerSecond * Time.deltaTime, false, true);
 
             // Check if poison expired
             if (poisonTimer <= 0f)
@@ -82,8 +92,15 @@ public class HealthSystem : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage, bool triggerInvulnerability = true)
+    public void TakeDamage(float damage, bool triggerInvulnerability = true, bool bypassShield = false)
     {
+        // Check if shield blocks this damage (unless bypassed - e.g., for poison DoT)
+        if (!bypassShield && inventory != null && inventory.IsShieldActive)
+        {
+            Debug.Log($"[HealthSystem] Shield blocked {damage} damage!");
+            return;
+        }
+
         if (isInvulnerable && triggerInvulnerability) return;
 
         currentHealth -= damage;
@@ -131,6 +148,13 @@ public class HealthSystem : MonoBehaviour
 
     public void ApplyPoison()
     {
+        // Shield blocks poison application
+        if (inventory != null && inventory.IsShieldActive)
+        {
+            Debug.Log("[HealthSystem] Shield blocked poison application!");
+            return;
+        }
+
         if (!isPoisoned)
         {
             isPoisoned = true;
@@ -172,10 +196,33 @@ public class HealthSystem : MonoBehaviour
         return 1f;
     }
 
+    /// <summary>
+    /// Returns health as percentage (0-1)
+    /// </summary>
+    public float GetHealthPercent()
+    {
+        return currentHealth / maxHealth;
+    }
+
+    /// <summary>
+    /// Check if player is alive
+    /// </summary>
+    public bool IsAlive()
+    {
+        return currentHealth > 0f;
+    }
+
     void Die()
     {
         OnDeath?.Invoke();
         Debug.Log("Player died!");
+
+        // Trigger game over
+        if (GameManager.Instance != null && !GameManager.Instance.IsGameOver())
+        {
+            GameManager.Instance.GameOver(false);
+            Debug.Log("[HealthSystem] Game Over triggered - player health reached 0!");
+        }
     }
 
     public void ResetHealth()
