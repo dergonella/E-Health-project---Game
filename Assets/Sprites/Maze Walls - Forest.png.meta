@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -116,12 +116,12 @@ TextureImporter:
       name: Maze Walls - Forest_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 2528
-        height: 1696
+        x: 331
+        y: 1436
+        width: 304
+        height: 230
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -134,11 +134,253 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_1
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 1434
+        width: 186
+        height: 231
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50e8dd15ea3b9b247ae75da4769fabad
+      internalID: 694239699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_2
+      rect:
+        serializedVersion: 2
+        x: 1891
+        y: 1431
+        width: 303
+        height: 234
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01d41e1e65c540b4ca2c8ca481659333
+      internalID: 1407127522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_3
+      rect:
+        serializedVersion: 2
+        x: 2254
+        y: 1090
+        width: 161
+        height: 295
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5d504d122864074898b815e982ab54b
+      internalID: -1938425067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_4
+      rect:
+        serializedVersion: 2
+        x: 2252
+        y: 865
+        width: 161
+        height: 191
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbc901a6114efd049bb3fe317c74065b
+      internalID: -625602464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_5
+      rect:
+        serializedVersion: 2
+        x: 2254
+        y: 643
+        width: 160
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9150a04d00dccc245a9b38aea4882455
+      internalID: 812224926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_6
+      rect:
+        serializedVersion: 2
+        x: 2253
+        y: 308
+        width: 163
+        height: 302
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f3f01d2bb54b2e43ae146fe7a79a0b9
+      internalID: 1155534899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_7
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 29
+        width: 360
+        height: 218
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bcb71f95bac260f439a07145b0ac8fd9
+      internalID: -122899120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_8
+      rect:
+        serializedVersion: 2
+        x: 721
+        y: 30
+        width: 306
+        height: 218
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8900174665ce586489a70f0d3e5761f3
+      internalID: 617541589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_9
+      rect:
+        serializedVersion: 2
+        x: 1055
+        y: 29
+        width: 194
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cf5c1e7997dbc042ac276af81d7135e
+      internalID: -1219730486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_10
+      rect:
+        serializedVersion: 2
+        x: 1277
+        y: 29
+        width: 194
+        height: 221
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 312475fdfc031ed41bc8f3b71c4f418e
+      internalID: -655591020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maze Walls - Forest_11
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 306
+        width: 165
+        height: 304
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ffbb53a6419f774d870bea1b2114426
+      internalID: 1621647529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: cccf2b4f73347ad469061742338ce100
     internalID: 0
     vertices: []
     indices: 
@@ -149,6 +391,17 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Maze Walls - Forest_0: -6372464963638212667
+      Maze Walls - Forest_1: 694239699
+      Maze Walls - Forest_10: -655591020
+      Maze Walls - Forest_11: 1621647529
+      Maze Walls - Forest_2: 1407127522
+      Maze Walls - Forest_3: -1938425067
+      Maze Walls - Forest_4: -625602464
+      Maze Walls - Forest_5: 812224926
+      Maze Walls - Forest_6: 1155534899
+      Maze Walls - Forest_7: -122899120
+      Maze Walls - Forest_8: 617541589
+      Maze Walls - Forest_9: -1219730486
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
