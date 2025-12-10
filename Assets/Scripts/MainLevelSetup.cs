@@ -29,6 +29,18 @@ public class MainLevelSetup : MonoBehaviour
     [Tooltip("Spawn points for snakes - assign transforms in scene")]
     public Transform[] snakeSpawnPoints;
 
+    [Header("Background Settings")]
+    [Tooltip("Background sprite for this level (optional)")]
+    public Sprite backgroundSprite;
+
+    [Tooltip("Background color if no sprite assigned")]
+    public Color backgroundColor = new Color(0.1f, 0.15f, 0.2f);
+
+    [Tooltip("Different backgrounds per persona (optional)")]
+    public Sprite brightgroveBackground;
+    public Sprite silvergroveBackground;
+    public Sprite stonegroveBackground;
+
     [Header("References (Auto-found if not set)")]
     public GameObject player;
 
@@ -37,6 +49,7 @@ public class MainLevelSetup : MonoBehaviour
     private HealthSystem healthSystem;
     private PlayerInventory inventory;
     private BulletSlowdown bulletSlowdown;
+    private BackgroundManager backgroundManager;
 
     void Start()
     {
@@ -75,11 +88,36 @@ public class MainLevelSetup : MonoBehaviour
         bulletSlowdown = player.GetComponent<BulletSlowdown>();
 
         // Setup everything
+        SetupBackground();
         SetupPlayer();
         SetupSnakes();
         SetupWinCondition();
 
         Debug.Log($"=== LEVEL SETUP COMPLETE ===");
+    }
+
+    void SetupBackground()
+    {
+        Debug.Log("[MainLevelSetup] Setting up background...");
+
+        // Check if BackgroundManager already exists in scene
+        backgroundManager = FindObjectOfType<BackgroundManager>();
+
+        if (backgroundManager == null)
+        {
+            // Create BackgroundManager
+            GameObject bgObj = new GameObject("BackgroundManager");
+            backgroundManager = bgObj.AddComponent<BackgroundManager>();
+        }
+
+        // Configure background
+        backgroundManager.backgroundSprite = backgroundSprite;
+        backgroundManager.backgroundColor = backgroundColor;
+        backgroundManager.brightgroveBackground = brightgroveBackground;
+        backgroundManager.silvergroveBackground = silvergroveBackground;
+        backgroundManager.stonegroveBackground = stonegroveBackground;
+
+        Debug.Log("[MainLevelSetup] Background setup complete");
     }
 
     LevelConfig CreateDefaultConfig()
