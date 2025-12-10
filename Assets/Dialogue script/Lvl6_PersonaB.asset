@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebdc765de0f2b8c4dbbe8f1cd96967fb, type: 3}
+  m_Name: Lvl6_PersonaB
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueData
+  defaultBackground: {fileID: 0}
+  speakerName: 
+  sentences:
+  - text: '"Silvergrove is finding its rhythm again. Tasks regain their flow, the
+      strain on the village eases, and the serpents struggle to keep their grip.
+      Your clarity and persistence are bringing balance back, step by step."'
+    frameImage: {fileID: 3153925782145978425, guid: 9ac6fa5685c646743b70675fadae0276, type: 3}
