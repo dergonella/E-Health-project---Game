@@ -20,13 +20,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level0_Core.unity
     guid: f8a1fa383cb948e45b87c359b6fe1937
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Level1_ContactZone.unity
     guid: cf3adc16884cb224facbd00a6d2737e1
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Level2_ToxicGrounds.unity
     guid: 4ac8c56b18d982e4d9dae66285d9dd5d
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Level3_DivorcePapers.unity
     guid: 9ab2d1af614c9c5468be6316d85390c1
   - enabled: 1
@@ -38,6 +38,42 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Dialogue IntroScene.unity
     guid: e238b19190ba9764aadc18b7c092c7f2
+  - enabled: 1
+    path: Assets/Scenes/Stonegrove_Level1.unity
+    guid: c77ec26c961376a42905f64bfadc1c4e
+  - enabled: 1
+    path: Assets/Scenes/Stonegrove_Level2.unity
+    guid: d7455a96bc915344db7423330c1e3a60
+  - enabled: 1
+    path: Assets/Scenes/Stonegrove_Level3.unity
+    guid: eaa8bdf5054a2a0488cff9e37be01104
+  - enabled: 1
+    path: Assets/Scenes/Silvergrove_Level1.unity
+    guid: d70afb093f5eb1f43844bc44553ec7d3
+  - enabled: 1
+    path: Assets/Scenes/Silvergrove_Level2.unity
+    guid: d81a55646b845dc419c2a9c91c7bf250
+  - enabled: 1
+    path: Assets/Scenes/Silvergrove_Level3.unity
+    guid: 1a2bc39dd44b34440bfaf4359039b336
+  - enabled: 1
+    path: Assets/Scenes/Brightgrove_Level1.unity
+    guid: be065f0ed85157345b5e478ce53b63f1
+  - enabled: 1
+    path: Assets/Scenes/Brightgrove_Level2.unity
+    guid: f76c3c94ae0b5f444ac08df039ec0c6d
+  - enabled: 1
+    path: Assets/Scenes/Brightgrove_Level3.unity
+    guid: 56d21f89611e81c418bbff9a418f9781
+  - enabled: 1
+    path: Assets/Scenes/Story_PostLvl3.unity
+    guid: 4e2bb1b68d720f844930e53917b93a27
+  - enabled: 1
+    path: Assets/Scenes/Story_PostLvl6.unity
+    guid: 1a20ecba93e4bed4abc35b1e94885137
+  - enabled: 1
+    path: Assets/Scenes/Story_PostLvl9.unity
+    guid: ce71727a5dcad044e80e5915ccb8acfd
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
