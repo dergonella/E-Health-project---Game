@@ -29,8 +29,8 @@ public class LevelConfig : ScriptableObject
     [Tooltip("Enable shield usage (F key)")]
     public bool enableShield = true;
 
-    [Tooltip("Enable bullet slowdown (O key) - Level 2 and 3")]
-    public bool enableBulletSlowdown = false;
+    [Tooltip("Enable bullet slowdown (O key) - All persona levels")]
+    public bool enableBulletSlowdown = true;
 
     [Header("Player Starting Resources")]
     public int startingMedkits = 3;
@@ -71,7 +71,7 @@ public class LevelConfig : ScriptableObject
         config.poisonSnakeCount = 0;
         config.enableMedkit = true;
         config.enableShield = true;
-        config.enableBulletSlowdown = false; // No slowdown in Level 1
+        config.enableBulletSlowdown = true; // Slowdown enabled for all levels
         return config;
     }
 
