@@ -113,6 +113,12 @@ public class GameManager : MonoBehaviour
 
         gameOver = true;
 
+        // Show restart button (like dino level format)
+        if (GameInputManager.Instance != null)
+        {
+            GameInputManager.Instance.ShowRestartButton();
+        }
+
         if (uiManager != null)
         {
             if (won)

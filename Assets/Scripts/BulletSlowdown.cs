@@ -11,6 +11,10 @@ using System;
 /// </summary>
 public class BulletSlowdown : MonoBehaviour
 {
+    [Header("Inventory")]
+    [Tooltip("Starting number of slow motion uses")]
+    public int startingSlowMotion = 3;
+
     [Header("Slowdown Settings")]
     [Tooltip("How slow enemies/projectiles become (0.1 = 10% speed, 90% slowdown)")]
     public float slowTimeScale = 0.1f;
@@ -25,11 +29,17 @@ public class BulletSlowdown : MonoBehaviour
     public AudioClip activateSound;
     public AudioClip deactivateSound;
 
+    // Inventory
+    public int SlowMotionCount { get; private set; }
+
     // State tracking
     public bool IsActive { get; private set; }
     public bool IsOnCooldown { get; private set; }
     public float RemainingDuration { get; private set; }
     public float RemainingCooldown { get; private set; }
+
+    // Event for UI (inventory count)
+    public event Action<int> OnCountChanged;
 
     // Store original values
     private float originalTimeScale = 1f;
@@ -84,12 +94,16 @@ public class BulletSlowdown : MonoBehaviour
         // Store original fixed delta time for physics compensation
         originalFixedDeltaTime = Time.fixedDeltaTime;
 
+        // Initialize inventory
+        SlowMotionCount = startingSlowMotion;
+        OnCountChanged?.Invoke(SlowMotionCount);
+
         // Ensure we start in normal state
         IsActive = false;
         IsOnCooldown = false;
         isInitialized = true;
 
-        Debug.Log("[BulletSlowdown] READY! Press O to activate bullet slowdown.");
+        Debug.Log($"[BulletSlowdown] READY! {SlowMotionCount} slow motions available. Press O to activate.");
     }
 
     void Update()
@@ -133,6 +147,12 @@ public class BulletSlowdown : MonoBehaviour
     /// </summary>
     public void TryActivate()
     {
+        if (SlowMotionCount <= 0)
+        {
+            Debug.Log("[BulletSlowdown] No slow motion available!");
+            return;
+        }
+
         if (IsActive)
         {
             Debug.Log("[BulletSlowdown] Already active!");
@@ -145,7 +165,21 @@ public class BulletSlowdown : MonoBehaviour
             return;
         }
 
+        // Use one from inventory
+        SlowMotionCount--;
+        OnCountChanged?.Invoke(SlowMotionCount);
+
         Activate();
+    }
+
+    /// <summary>
+    /// Add slow motion to inventory (from market/pickup).
+    /// </summary>
+    public void AddSlowMotion(int count = 1)
+    {
+        SlowMotionCount += count;
+        OnCountChanged?.Invoke(SlowMotionCount);
+        Debug.Log($"[BulletSlowdown] +{count}! Total: {SlowMotionCount}");
     }
 
     void Activate()
@@ -261,6 +295,10 @@ public class BulletSlowdown : MonoBehaviour
                 playerController.deceleration = originalPlayerDeceleration;
             }
         }
+
+        // Reset inventory
+        SlowMotionCount = startingSlowMotion;
+        OnCountChanged?.Invoke(SlowMotionCount);
 
         IsActive = false;
         IsOnCooldown = false;
