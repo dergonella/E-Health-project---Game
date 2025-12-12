@@ -22,7 +22,7 @@ public class MainMenuController : MonoBehaviour
 
     public void OnShopClicked()
     {
-        SceneManager.LoadScene("Shop");
+        SceneManager.LoadScene("Market_Scene");
     }
 
     public void OnSoundToggleClicked()
