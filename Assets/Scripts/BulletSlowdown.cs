@@ -25,12 +25,24 @@ public class BulletSlowdown : MonoBehaviour
     [Tooltip("Cooldown before ability can be used again")]
     public float cooldown = 15f;
 
+    [Header("Smooth Transition")]
+    [Tooltip("Duration of smooth transition when ending slow motion")]
+    public float transitionDuration = 0.5f;
+
     [Header("Audio (Optional)")]
     public AudioClip activateSound;
     public AudioClip deactivateSound;
 
     // Inventory
     public int SlowMotionCount { get; private set; }
+
+    // Smooth transition
+    private bool isTransitioning = false;
+    private float transitionTimer = 0f;
+    private float transitionStartTimeScale;
+    private float transitionStartSpeed;
+    private float transitionStartAccel;
+    private float transitionStartDecel;
 
     // State tracking
     public bool IsActive { get; private set; }
@@ -59,6 +71,10 @@ public class BulletSlowdown : MonoBehaviour
 
     private AudioSource audioSource;
     private bool isInitialized = false;
+
+    // Safety: Maximum time slow motion can be active (prevents infinite slow motion bug)
+    private const float MAX_SLOWMO_TIME = 30f;
+    private float totalActiveTime = 0f;
 
     void Awake()
     {
@@ -117,20 +133,67 @@ public class BulletSlowdown : MonoBehaviour
             TryActivate();
         }
 
+        // Handle smooth transition back to normal
+        if (isTransitioning)
+        {
+            transitionTimer += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(transitionTimer / transitionDuration);
+
+            // Smoothly lerp time scale back to normal
+            Time.timeScale = Mathf.Lerp(transitionStartTimeScale, originalTimeScale, t);
+            Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+            // Smoothly lerp player speed back to normal
+            if (playerController != null)
+            {
+                playerController.speed = Mathf.Lerp(transitionStartSpeed, originalPlayerSpeed, t);
+                playerController.acceleration = Mathf.Lerp(transitionStartAccel, originalPlayerAcceleration, t);
+                playerController.deceleration = Mathf.Lerp(transitionStartDecel, originalPlayerDeceleration, t);
+            }
+
+            // Transition complete
+            if (t >= 1f)
+            {
+                isTransitioning = false;
+                Time.timeScale = originalTimeScale;
+                Time.fixedDeltaTime = originalFixedDeltaTime;
+
+                if (playerController != null)
+                {
+                    playerController.speed = originalPlayerSpeed;
+                    playerController.acceleration = originalPlayerAcceleration;
+                    playerController.deceleration = originalPlayerDeceleration;
+                }
+
+                Debug.Log("[BulletSlowdown] Smooth transition complete!");
+            }
+            return; // Don't process other updates during transition
+        }
+
         // Handle active slowdown - use unscaledDeltaTime since we're modifying timeScale
         if (IsActive)
         {
-            RemainingDuration -= Time.unscaledDeltaTime;
+            float deltaTime = Time.unscaledDeltaTime;
+            RemainingDuration -= deltaTime;
+            totalActiveTime += deltaTime;
+
             OnDurationChanged?.Invoke(RemainingDuration, duration);
 
-            if (RemainingDuration <= 0f)
+            // Force deactivate if duration expired OR safety timeout reached
+            if (RemainingDuration < 0.01f || totalActiveTime > MAX_SLOWMO_TIME)
             {
+                if (totalActiveTime > MAX_SLOWMO_TIME)
+                {
+                    Debug.LogWarning("[BulletSlowdown] SAFETY: Force deactivating - exceeded max time!");
+                }
+                RemainingDuration = 0f;
+                totalActiveTime = 0f;
                 Deactivate();
             }
         }
 
         // Handle cooldown - use unscaledDeltaTime for consistent cooldown
-        if (IsOnCooldown && !IsActive)
+        if (IsOnCooldown && !IsActive && !isTransitioning)
         {
             RemainingCooldown -= Time.unscaledDeltaTime;
             OnCooldownChanged?.Invoke(RemainingCooldown, cooldown);
@@ -188,6 +251,7 @@ public class BulletSlowdown : MonoBehaviour
     {
         IsActive = true;
         RemainingDuration = duration;
+        totalActiveTime = 0f; // Reset safety timer
 
         // Store current time scale
         originalTimeScale = Time.timeScale;
@@ -238,25 +302,24 @@ public class BulletSlowdown : MonoBehaviour
         IsActive = false;
         RemainingDuration = 0f;
 
-        // Restore normal time
-        Time.timeScale = originalTimeScale;
-        Time.fixedDeltaTime = originalFixedDeltaTime;
+        // Start smooth transition instead of instant change
+        isTransitioning = true;
+        transitionTimer = 0f;
+        transitionStartTimeScale = Time.timeScale;
 
-        // Restore player's original speed
         if (playerController != null)
         {
-            playerController.speed = originalPlayerSpeed;
-            playerController.acceleration = originalPlayerAcceleration;
-            playerController.deceleration = originalPlayerDeceleration;
-            Debug.Log($"[BulletSlowdown] Player speed restored to {originalPlayerSpeed}");
+            transitionStartSpeed = playerController.speed;
+            transitionStartAccel = playerController.acceleration;
+            transitionStartDecel = playerController.deceleration;
         }
 
         // Start cooldown
         IsOnCooldown = true;
         RemainingCooldown = cooldown;
 
-        Debug.Log("[BulletSlowdown] ====== DEACTIVATED! ======");
-        Debug.Log($"[BulletSlowdown] TimeScale restored to {Time.timeScale}");
+        Debug.Log("[BulletSlowdown] ====== DEACTIVATING (smooth transition) ======");
+        Debug.Log($"[BulletSlowdown] Transition duration: {transitionDuration}s");
         Debug.Log($"[BulletSlowdown] Cooldown: {cooldown}s");
 
         OnSlowdownActiveChanged?.Invoke(false);

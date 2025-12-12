@@ -65,6 +65,7 @@ public class PlayerController : MonoBehaviour
             rb.gravityScale = 0f;  // No gravity for top-down game
             rb.freezeRotation = true;  // Don't rotate when hitting walls
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate; // Smoother movement
 
             // Reduce friction to prevent sticking to walls
             Collider2D col = GetComponent<Collider2D>();
@@ -83,6 +84,10 @@ public class PlayerController : MonoBehaviour
                 slipperyMaterial.bounciness = 0f;
                 col.sharedMaterial = slipperyMaterial;
             }
+
+            // Reduce linear drag to prevent sluggish movement near walls
+            rb.linearDamping = 0f;
+            rb.angularDamping = 0f;
         }
 
         // Auto-setup wall layer if not set
@@ -200,6 +205,37 @@ public class PlayerController : MonoBehaviour
         {
             // Use Rigidbody velocity for wall collision detection
             rb.linearVelocity = currentVelocity;
+
+            // Anti-stick: If touching a wall while trying to move perpendicular, apply small push-away
+            if (inputDirection.magnitude > 0.1f)
+            {
+                // Check all 4 directions for walls very close to player
+                float pushDistance = 0.05f;
+                float checkDistance = 0.15f;
+                Vector2 pushForce = Vector2.zero;
+
+                // Check each direction
+                RaycastHit2D hitUp = Physics2D.Raycast(transform.position, Vector2.up, checkDistance, wallLayer);
+                RaycastHit2D hitDown = Physics2D.Raycast(transform.position, Vector2.down, checkDistance, wallLayer);
+                RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, Vector2.left, checkDistance, wallLayer);
+                RaycastHit2D hitRight = Physics2D.Raycast(transform.position, Vector2.right, checkDistance, wallLayer);
+
+                // Add push away from close walls
+                if (hitUp.collider != null && hitUp.distance < checkDistance)
+                    pushForce.y -= pushDistance * (1f - hitUp.distance / checkDistance);
+                if (hitDown.collider != null && hitDown.distance < checkDistance)
+                    pushForce.y += pushDistance * (1f - hitDown.distance / checkDistance);
+                if (hitLeft.collider != null && hitLeft.distance < checkDistance)
+                    pushForce.x += pushDistance * (1f - hitLeft.distance / checkDistance);
+                if (hitRight.collider != null && hitRight.distance < checkDistance)
+                    pushForce.x -= pushDistance * (1f - hitRight.distance / checkDistance);
+
+                // Apply small push to prevent sticking
+                if (pushForce.magnitude > 0.001f)
+                {
+                    rb.linearVelocity += pushForce * speed * 0.5f;
+                }
+            }
         }
         else
         {
