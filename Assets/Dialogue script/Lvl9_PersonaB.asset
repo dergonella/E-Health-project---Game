@@ -15,9 +15,9 @@ MonoBehaviour:
   defaultBackground: {fileID: 0}
   speakerName: 
   sentences:
-  - text: "\"You have done it. The serpents\u2019 influence has completely faded,
-      and Silvergrove\u2019s true rhythm returns steady, bright, and alive. The villagers
-      work, speak, and laugh freely again. Silvergrove thrives because of you.\""
+  - text: "\"You have done it! The serpents\u2019 influence has faded, but the source
+      has not yet been severed. Silvergrove\u2019s true rhythm returns, yet it remains
+      fragile. Complete the final challenge to let the villagers laugh freely again.\""
     frameImage: {fileID: -5600906179414552225, guid: 9cf352101bf9d2b42b8574a09557abb1, type: 3}
   - text: "Silvergrove is gonna be whole again\u2026 because of you!\""
     frameImage: {fileID: -5853957616262885276, guid: 84d2f4d9b37b9a642818f932c08d7a4b, type: 3}
