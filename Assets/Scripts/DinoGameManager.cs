@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 [DefaultExecutionOrder(-1)]
 public class DinoGameManager : MonoBehaviour
@@ -16,11 +15,6 @@ public class DinoGameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hiscoreText;
     [SerializeField] private TextMeshProUGUI gameOverText;
     [SerializeField] private Button retryButton;
-
-    [Header("Menu Button")]
-    [SerializeField] private Button menuButton;
-    [Tooltip("Scene name to load when menu button is clicked")]
-    public string menuSceneName = "MainMenu";
 
     private DinoPlayer player;
     private DinoSpawner spawner;
@@ -49,19 +43,7 @@ public class DinoGameManager : MonoBehaviour
         player = FindFirstObjectByType<DinoPlayer>();
         spawner = FindFirstObjectByType<DinoSpawner>();
 
-        // Setup menu button
-        if (menuButton != null)
-        {
-            menuButton.onClick.AddListener(GoToMenu);
-        }
-
         NewGame();
-    }
-
-    public void GoToMenu()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(menuSceneName);
     }
 
     public void NewGame()
@@ -81,10 +63,6 @@ public class DinoGameManager : MonoBehaviour
         gameOverText.gameObject.SetActive(false);
         retryButton.gameObject.SetActive(false);
 
-        // Hide menu button during gameplay
-        if (menuButton != null)
-            menuButton.gameObject.SetActive(false);
-
         UpdateHiscore();
     }
 
@@ -97,10 +75,6 @@ public class DinoGameManager : MonoBehaviour
         spawner.gameObject.SetActive(false);
         gameOverText.gameObject.SetActive(true);
         retryButton.gameObject.SetActive(true);
-
-        // Show menu button on game over
-        if (menuButton != null)
-            menuButton.gameObject.SetActive(true);
 
         UpdateHiscore();
     }

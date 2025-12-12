@@ -368,11 +368,11 @@ MonoBehaviour:
   - {fileID: 1792034400}
   - {fileID: 1008928859}
   - {fileID: 1527383466}
-  backgroundSprite: {fileID: 7759839916282524982, guid: 45152ebf95fd45a4c95d548ea6461a18, type: 3}
+  backgroundSprite: {fileID: -7799852247173750866, guid: daa966d54944e6d48b5bbcf12121d854, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
-  brightgroveBackground: {fileID: 7759839916282524982, guid: 45152ebf95fd45a4c95d548ea6461a18, type: 3}
-  silvergroveBackground: {fileID: 7759839916282524982, guid: 45152ebf95fd45a4c95d548ea6461a18, type: 3}
-  stonegroveBackground: {fileID: 7759839916282524982, guid: 45152ebf95fd45a4c95d548ea6461a18, type: 3}
+  brightgroveBackground: {fileID: -7799852247173750866, guid: daa966d54944e6d48b5bbcf12121d854, type: 3}
+  silvergroveBackground: {fileID: -7799852247173750866, guid: daa966d54944e6d48b5bbcf12121d854, type: 3}
+  stonegroveBackground: {fileID: -7799852247173750866, guid: daa966d54944e6d48b5bbcf12121d854, type: 3}
   player: {fileID: 905235104}
 --- !u!4 &189714739
 Transform:
