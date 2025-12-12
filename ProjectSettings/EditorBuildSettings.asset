@@ -30,7 +30,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Level3_DivorcePapers.unity
     guid: 9ab2d1af614c9c5468be6316d85390c1
   - enabled: 1
-    path: Assets/Scenes/Level4_DinoRunner.unity
+    path: Assets/Scenes/Level 4_Dino Runner.unity
     guid: a20a670cdbf7f474c865e76e3195a41e
   - enabled: 1
     path: Assets/Scenes/Story_PostLvl0.unity
@@ -38,6 +38,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Dialogue IntroScene.unity
     guid: e238b19190ba9764aadc18b7c092c7f2
+  - enabled: 1
+    path: Assets/Scenes/Market_Scene.unity
+    guid: 087dc0613bda1d941a4985e049b55dc0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

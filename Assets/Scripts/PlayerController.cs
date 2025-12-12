@@ -66,12 +66,22 @@ public class PlayerController : MonoBehaviour
             rb.freezeRotation = true;  // Don't rotate when hitting walls
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
-            // Ensure collider is NOT a trigger for wall collision to work
+            // Reduce friction to prevent sticking to walls
             Collider2D col = GetComponent<Collider2D>();
-            if (col != null && col.isTrigger)
+            if (col != null)
             {
-                Debug.LogWarning("[PlayerController] Collider is set as Trigger - wall collision won't work! Disabling trigger mode.");
-                col.isTrigger = false;
+                // Ensure collider is NOT a trigger for wall collision to work
+                if (col.isTrigger)
+                {
+                    Debug.LogWarning("[PlayerController] Collider is set as Trigger - wall collision won't work! Disabling trigger mode.");
+                    col.isTrigger = false;
+                }
+
+                // Create a frictionless physics material to prevent wall sticking
+                PhysicsMaterial2D slipperyMaterial = new PhysicsMaterial2D("PlayerSlippery");
+                slipperyMaterial.friction = 0f;
+                slipperyMaterial.bounciness = 0f;
+                col.sharedMaterial = slipperyMaterial;
             }
         }
 
