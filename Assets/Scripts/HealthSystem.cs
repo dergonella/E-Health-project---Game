@@ -44,6 +44,14 @@ public class HealthSystem : MonoBehaviour
     {
         // Get inventory reference for shield checking
         inventory = GetComponent<PlayerInventory>();
+
+        // Initialize health to max at start
+        currentHealth = maxHealth;
+        currentFocus = maxFocus;
+
+        // Notify UI of initial values (fixes empty health bar at start)
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        OnFocusChanged?.Invoke(currentFocus, maxFocus);
     }
 
     void Update()

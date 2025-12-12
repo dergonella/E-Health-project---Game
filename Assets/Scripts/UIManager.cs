@@ -102,6 +102,11 @@ public class UIManager : MonoBehaviour
                 healthSystem.OnFocusChanged += UpdateFocusUI;
                 healthSystem.OnPoisonStatusChanged += UpdatePoisonIndicator;
                 healthSystem.OnStunStatusChanged += UpdateStunIndicator;
+
+                // IMPORTANT: Initialize health bar with current values immediately
+                // This fixes the empty health bar issue when UIManager starts after HealthSystem
+                UpdateHealthUI(healthSystem.currentHealth, healthSystem.maxHealth);
+                UpdateFocusUI(healthSystem.currentFocus, healthSystem.maxFocus);
             }
 
             // Subscribe to ability events (legacy system)
