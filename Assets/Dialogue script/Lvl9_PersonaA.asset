@@ -16,7 +16,7 @@ MonoBehaviour:
   speakerName: 
   sentences:
   - text: "\"You have done it. The serpent\u2019s darkness has finally dissolved,
-      and Brightgrove breathes freely once more.\""
+      and Brightgrove breathes freely once you do  more.\""
     frameImage: {fileID: 2436005943535727033, guid: 72399fc4e9522c541aa34f21f351a266, type: 3}
-  - text: "\"Brightgrove is whole again\u2026 because of you!\""
+  - text: "\"Brightgrove is gonna be whole again\u2026 because of you!\""
     frameImage: {fileID: -6521972297865619217, guid: a11d639a77836ba4289489e7a64800ef, type: 3}
