@@ -94,9 +94,11 @@ public class BulletSlowdown : MonoBehaviour
         // Store original fixed delta time for physics compensation
         originalFixedDeltaTime = Time.fixedDeltaTime;
 
-        // Initialize inventory
-        SlowMotionCount = startingSlowMotion;
+        // Initialize inventory (base + bonus from market)
+        SlowMotionCount = MarketData.GetTotalSlowMotion(startingSlowMotion);
         OnCountChanged?.Invoke(SlowMotionCount);
+
+        Debug.Log($"[BulletSlowdown] Loaded: {SlowMotionCount} slow motions (base {startingSlowMotion} + {MarketData.BonusSlowMotion} bonus)");
 
         // Ensure we start in normal state
         IsActive = false;
@@ -296,8 +298,8 @@ public class BulletSlowdown : MonoBehaviour
             }
         }
 
-        // Reset inventory
-        SlowMotionCount = startingSlowMotion;
+        // Reset inventory (includes market bonus)
+        SlowMotionCount = MarketData.GetTotalSlowMotion(startingSlowMotion);
         OnCountChanged?.Invoke(SlowMotionCount);
 
         IsActive = false;

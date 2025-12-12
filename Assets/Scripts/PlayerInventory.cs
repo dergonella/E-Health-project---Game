@@ -39,10 +39,13 @@ public class PlayerInventory : MonoBehaviour
     {
         healthSystem = GetComponent<HealthSystem>();
 
-        // Initialize inventory
-        MedkitCount = startingMedkits;
-        ShieldCount = startingShields;
+        // Initialize inventory (base + bonus from market)
+        MedkitCount = MarketData.GetTotalMedkits(startingMedkits);
+        ShieldCount = MarketData.GetTotalShields(startingShields);
         IsShieldActive = false;
+
+        Debug.Log($"[PlayerInventory] Loaded: {MedkitCount} medkits (base {startingMedkits} + {MarketData.BonusMedkits} bonus)");
+        Debug.Log($"[PlayerInventory] Loaded: {ShieldCount} shields (base {startingShields} + {MarketData.BonusShields} bonus)");
 
         // Notify UI of initial values
         OnMedkitCountChanged?.Invoke(MedkitCount);
@@ -181,12 +184,12 @@ public class PlayerInventory : MonoBehaviour
     }
 
     /// <summary>
-    /// Reset inventory to starting values.
+    /// Reset inventory to starting values (includes market bonus).
     /// </summary>
     public void ResetInventory()
     {
-        MedkitCount = startingMedkits;
-        ShieldCount = startingShields;
+        MedkitCount = MarketData.GetTotalMedkits(startingMedkits);
+        ShieldCount = MarketData.GetTotalShields(startingShields);
         IsShieldActive = false;
         shieldTimer = 0f;
 
