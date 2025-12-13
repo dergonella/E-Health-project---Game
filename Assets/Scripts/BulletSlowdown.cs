@@ -110,11 +110,14 @@ public class BulletSlowdown : MonoBehaviour
         // Store original fixed delta time for physics compensation
         originalFixedDeltaTime = Time.fixedDeltaTime;
 
-        // Initialize inventory (base + bonus from market)
-        SlowMotionCount = MarketData.GetTotalSlowMotion(startingSlowMotion);
+        // Initialize inventory if this is a new game
+        MarketData.InitializeIfNeeded(3, 3, startingSlowMotion);
+
+        // Load current inventory from persistent storage
+        SlowMotionCount = MarketData.SlowMotion;
         OnCountChanged?.Invoke(SlowMotionCount);
 
-        Debug.Log($"[BulletSlowdown] Loaded: {SlowMotionCount} slow motions (base {startingSlowMotion} + {MarketData.BonusSlowMotion} bonus)");
+        Debug.Log($"[BulletSlowdown] Loaded from save: {SlowMotionCount} slow motions");
 
         // Ensure we start in normal state
         IsActive = false;
@@ -230,21 +233,25 @@ public class BulletSlowdown : MonoBehaviour
             return;
         }
 
-        // Use one from inventory
-        SlowMotionCount--;
-        OnCountChanged?.Invoke(SlowMotionCount);
-
-        Activate();
+        // Use one from inventory and save to persistent storage
+        if (MarketData.UseSlowMotion())
+        {
+            SlowMotionCount = MarketData.SlowMotion; // Sync with saved value
+            OnCountChanged?.Invoke(SlowMotionCount);
+            Debug.Log($"[BulletSlowdown] Used slow motion! {SlowMotionCount} remaining (saved).");
+            Activate();
+        }
     }
 
     /// <summary>
-    /// Add slow motion to inventory (from market/pickup).
+    /// Add slow motion to inventory (from market/pickup). Saves to persistent storage.
     /// </summary>
     public void AddSlowMotion(int count = 1)
     {
-        SlowMotionCount += count;
+        MarketData.SlowMotion += count;
+        SlowMotionCount = MarketData.SlowMotion;
         OnCountChanged?.Invoke(SlowMotionCount);
-        Debug.Log($"[BulletSlowdown] +{count}! Total: {SlowMotionCount}");
+        Debug.Log($"[BulletSlowdown] Picked up {count} slow motion! Total: {SlowMotionCount}");
     }
 
     void Activate()
@@ -344,7 +351,7 @@ public class BulletSlowdown : MonoBehaviour
     }
 
     /// <summary>
-    /// Reset ability state (for level restart).
+    /// Reset ability state (for level restart). Refreshes from saved data.
     /// </summary>
     public void ResetAbility()
     {
@@ -361,8 +368,8 @@ public class BulletSlowdown : MonoBehaviour
             }
         }
 
-        // Reset inventory (includes market bonus)
-        SlowMotionCount = MarketData.GetTotalSlowMotion(startingSlowMotion);
+        // Refresh from saved data (don't reset - items are consumable)
+        SlowMotionCount = MarketData.SlowMotion;
         OnCountChanged?.Invoke(SlowMotionCount);
 
         IsActive = false;
@@ -371,6 +378,8 @@ public class BulletSlowdown : MonoBehaviour
         RemainingCooldown = 0f;
 
         OnSlowdownActiveChanged?.Invoke(false);
+
+        Debug.Log($"[BulletSlowdown] Refreshed: {SlowMotionCount} slow motions");
     }
 
     void OnDisable()

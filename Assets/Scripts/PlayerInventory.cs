@@ -3,22 +3,23 @@ using System;
 
 /// <summary>
 /// Manages player's inventory items: Medkits (H) and Shields (F)
+/// Classic game style: items are consumable and persist across levels.
 /// </summary>
 public class PlayerInventory : MonoBehaviour
 {
     [Header("Medkit Settings")]
-    [Tooltip("Starting number of medkits")]
+    [Tooltip("Starting number of medkits (only for new game)")]
     public int startingMedkits = 3;
     [Tooltip("Health restored per medkit")]
     public float medkitHealAmount = 50f;
 
     [Header("Shield Settings")]
-    [Tooltip("Starting number of shields")]
+    [Tooltip("Starting number of shields (only for new game)")]
     public int startingShields = 3;
     [Tooltip("Duration of shield protection")]
     public float shieldDuration = 5f;
 
-    // Current counts
+    // Current counts (synced with MarketData)
     public int MedkitCount { get; private set; }
     public int ShieldCount { get; private set; }
 
@@ -39,13 +40,15 @@ public class PlayerInventory : MonoBehaviour
     {
         healthSystem = GetComponent<HealthSystem>();
 
-        // Initialize inventory (base + bonus from market)
-        MedkitCount = MarketData.GetTotalMedkits(startingMedkits);
-        ShieldCount = MarketData.GetTotalShields(startingShields);
+        // Initialize inventory if this is a new game
+        MarketData.InitializeIfNeeded(startingMedkits, startingShields, 3);
+
+        // Load current inventory from persistent storage
+        MedkitCount = MarketData.Medkits;
+        ShieldCount = MarketData.Shields;
         IsShieldActive = false;
 
-        Debug.Log($"[PlayerInventory] Loaded: {MedkitCount} medkits (base {startingMedkits} + {MarketData.BonusMedkits} bonus)");
-        Debug.Log($"[PlayerInventory] Loaded: {ShieldCount} shields (base {startingShields} + {MarketData.BonusShields} bonus)");
+        Debug.Log($"[PlayerInventory] Loaded from save: {MedkitCount} medkits, {ShieldCount} shields");
 
         // Notify UI of initial values
         OnMedkitCountChanged?.Invoke(MedkitCount);
@@ -79,7 +82,7 @@ public class PlayerInventory : MonoBehaviour
     }
 
     /// <summary>
-    /// Use a medkit to restore health.
+    /// Use a medkit to restore health. Permanently consumes the item.
     /// </summary>
     public void UseMedkit()
     {
@@ -102,15 +105,19 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
 
-        MedkitCount--;
-        healthSystem.Heal(medkitHealAmount);
+        // Use medkit and save to persistent storage
+        if (MarketData.UseMedkit())
+        {
+            MedkitCount = MarketData.Medkits; // Sync with saved value
+            healthSystem.Heal(medkitHealAmount);
 
-        Debug.Log($"Used medkit! Healed {medkitHealAmount} HP. {MedkitCount} remaining.");
-        OnMedkitCountChanged?.Invoke(MedkitCount);
+            Debug.Log($"Used medkit! Healed {medkitHealAmount} HP. {MedkitCount} remaining (saved).");
+            OnMedkitCountChanged?.Invoke(MedkitCount);
+        }
     }
 
     /// <summary>
-    /// Activate shield to block fire and poison.
+    /// Activate shield to block fire and poison. Permanently consumes the item.
     /// </summary>
     public void UseShield()
     {
@@ -126,11 +133,15 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
 
-        ShieldCount--;
-        ActivateShield();
+        // Use shield and save to persistent storage
+        if (MarketData.UseShield())
+        {
+            ShieldCount = MarketData.Shields; // Sync with saved value
+            ActivateShield();
 
-        Debug.Log($"Shield activated! {shieldDuration}s protection. {ShieldCount} remaining.");
-        OnShieldCountChanged?.Invoke(ShieldCount);
+            Debug.Log($"Shield activated! {shieldDuration}s protection. {ShieldCount} remaining (saved).");
+            OnShieldCountChanged?.Invoke(ShieldCount);
+        }
     }
 
     void ActivateShield()
@@ -166,35 +177,62 @@ public class PlayerInventory : MonoBehaviour
     }
 
     /// <summary>
-    /// Add medkits to inventory (pickup).
+    /// Add medkits to inventory (pickup). Saves to persistent storage.
     /// </summary>
     public void AddMedkit(int count = 1)
     {
-        MedkitCount += count;
+        MarketData.Medkits += count;
+        MedkitCount = MarketData.Medkits;
         OnMedkitCountChanged?.Invoke(MedkitCount);
+        Debug.Log($"[PlayerInventory] Picked up {count} medkit(s)! Total: {MedkitCount}");
     }
 
     /// <summary>
-    /// Add shields to inventory (pickup).
+    /// Add shields to inventory (pickup). Saves to persistent storage.
     /// </summary>
     public void AddShield(int count = 1)
     {
-        ShieldCount += count;
+        MarketData.Shields += count;
+        ShieldCount = MarketData.Shields;
         OnShieldCountChanged?.Invoke(ShieldCount);
+        Debug.Log($"[PlayerInventory] Picked up {count} shield(s)! Total: {ShieldCount}");
     }
 
     /// <summary>
-    /// Reset inventory to starting values (includes market bonus).
+    /// Refresh inventory from saved data (call when returning from market).
+    /// Does NOT reset - just syncs with current saved values.
     /// </summary>
-    public void ResetInventory()
+    public void RefreshInventory()
     {
-        MedkitCount = MarketData.GetTotalMedkits(startingMedkits);
-        ShieldCount = MarketData.GetTotalShields(startingShields);
+        MedkitCount = MarketData.Medkits;
+        ShieldCount = MarketData.Shields;
         IsShieldActive = false;
         shieldTimer = 0f;
 
         OnMedkitCountChanged?.Invoke(MedkitCount);
         OnShieldCountChanged?.Invoke(ShieldCount);
         OnShieldActiveChanged?.Invoke(false);
+
+        Debug.Log($"[PlayerInventory] Refreshed: {MedkitCount} medkits, {ShieldCount} shields");
+    }
+
+    /// <summary>
+    /// Reset inventory to starting values (for new game only).
+    /// </summary>
+    public void ResetInventory()
+    {
+        MarketData.Medkits = startingMedkits;
+        MarketData.Shields = startingShields;
+
+        MedkitCount = MarketData.Medkits;
+        ShieldCount = MarketData.Shields;
+        IsShieldActive = false;
+        shieldTimer = 0f;
+
+        OnMedkitCountChanged?.Invoke(MedkitCount);
+        OnShieldCountChanged?.Invoke(ShieldCount);
+        OnShieldActiveChanged?.Invoke(false);
+
+        Debug.Log($"[PlayerInventory] Reset to starting values: {MedkitCount} medkits, {ShieldCount} shields");
     }
 }

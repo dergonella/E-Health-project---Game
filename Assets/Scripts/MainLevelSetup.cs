@@ -143,19 +143,13 @@ public class MainLevelSetup : MonoBehaviour
             Debug.Log($"[MainLevelSetup] No valid level set, defaulting to Level 1");
         }
 
-        Debug.Log($"[MainLevelSetup] Creating default config for Level {level}");
+        // Get persona from GameState (convert enum to string)
+        string persona = GameState.SelectedPersona.ToString();
+        Debug.Log($"[MainLevelSetup] Creating config for {persona} Level {level}");
 
-        switch (level)
-        {
-            case 1:
-                return LevelConfig.CreateLevel1Default();
-            case 2:
-                return LevelConfig.CreateLevel2Default();
-            case 3:
-                return LevelConfig.CreateLevel3Default();
-            default:
-                return LevelConfig.CreateLevel1Default();
-        }
+        // Create persona-specific config with TRIPLED fire rates per level
+        // Level 1: 1 shot/sec, Level 2: 3 shots/sec, Level 3: 9 shots/sec
+        return LevelConfig.CreateConfig(persona, level);
     }
 
     void SetupPlayer()
@@ -171,6 +165,11 @@ public class MainLevelSetup : MonoBehaviour
 
         // Reset health to full
         healthSystem.ResetHealth();
+
+        // Apply poison settings from level config (makes game harder each level)
+        healthSystem.poisonDamagePerSecond = levelConfig.poisonDamagePerSecond;
+        healthSystem.poisonSpeedReduction = levelConfig.poisonSpeedReduction;
+        Debug.Log($"[MainLevelSetup] Poison settings: {levelConfig.poisonDamagePerSecond} DPS per stack, {levelConfig.poisonSpeedReduction * 100}% speed reduction");
 
         // Setup inventory
         if (levelConfig.enableMedkit || levelConfig.enableShield)
@@ -292,10 +291,16 @@ public class MainLevelSetup : MonoBehaviour
     {
         // Enable projectiles
         snake.canShootProjectiles = levelConfig.snakesCanShoot;
-        snake.fireRate = 1f / levelConfig.snakeShootInterval; // Convert interval to rate
+        snake.fireRate = levelConfig.snakeFireRate;
+        snake.shootingRange = levelConfig.snakeShootingRange;
+        snake.minShootingDistance = levelConfig.snakeMinShootDistance;
 
         // Set projectile type
         snake.projectileType = isPoison ? Projectile.ProjectileType.Poison : Projectile.ProjectileType.Fire;
+
+        // Set projectile damage and speed (stored on snake, applied when shooting)
+        snake.projectileDamage = levelConfig.projectileDamage;
+        snake.projectileSpeed = levelConfig.projectileSpeed;
 
         // Enable wall avoidance for maze
         snake.useWallAvoidance = true;
@@ -307,7 +312,7 @@ public class MainLevelSetup : MonoBehaviour
         snake.isInstantKillMode = false;
 
         string snakeType = isPoison ? "Poison" : "Fire";
-        Debug.Log($"  - {snake.gameObject.name}: {snakeType} snake, shoot={snake.canShootProjectiles}");
+        Debug.Log($"  - {snake.gameObject.name}: {snakeType} snake, fireRate={snake.fireRate}, damage={snake.projectileDamage}, speed={snake.projectileSpeed}");
     }
 
     void SpawnSnake(bool isPoison, int index)

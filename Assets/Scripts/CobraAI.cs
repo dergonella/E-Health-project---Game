@@ -40,10 +40,20 @@ public class CobraAI : MonoBehaviour
     [Header("Projectile Settings")]
     public bool canShootProjectiles = false;
     public GameObject projectilePrefab;
-    public float fireRate = 2.0f; // Increased from 0.3 - shoot much faster! (2 shots per second)
-    public float shootingRange = 5f; // Reduced from 7 - shorter range for testing
-    public float minShootingDistance = 2f; // Increased from 1.5 - more safe space
+    [Tooltip("Shots per second (set by LevelConfig)")]
+    public float fireRate = 0.5f;
+    [Tooltip("Maximum shooting distance")]
+    public float shootingRange = 8f;
+    [Tooltip("Minimum distance before shooting (for fairness)")]
+    public float minShootingDistance = 2f;
     public Projectile.ProjectileType projectileType = Projectile.ProjectileType.Fire;
+
+    [Header("Projectile Damage (Set by LevelConfig)")]
+    [Tooltip("Damage dealt per projectile hit")]
+    public float projectileDamage = 10f;
+    [Tooltip("How fast projectiles travel")]
+    public float projectileSpeed = 3f;
+
     private float fireTimer = 0f;
 
     [Header("Visual Feedback")]
@@ -232,15 +242,34 @@ public class CobraAI : MonoBehaviour
 
     void HandleProjectileShooting()
     {
-        if (!canShootProjectiles || projectilePrefab == null || playerTransform == null) return;
+        // Debug: Log why shooting might not work
+        if (!canShootProjectiles)
+        {
+            return; // canShootProjectiles is disabled in Inspector
+        }
+        if (projectilePrefab == null)
+        {
+            Debug.LogWarning($"[CobraAI] {gameObject.name}: projectilePrefab is not assigned!");
+            return;
+        }
+        if (playerTransform == null)
+        {
+            Debug.LogWarning($"[CobraAI] {gameObject.name}: Player not found!");
+            return;
+        }
+
+        // Calculate fire interval (fireRate = shots per second)
+        float fireInterval = 1f / Mathf.Max(0.1f, fireRate);
 
         // Update fire timer
         fireTimer += Time.deltaTime;
 
         // Check if ready to fire
-        float fireInterval = 1f / fireRate;
         if (fireTimer >= fireInterval)
         {
+            // Reset timer FIRST (so we maintain consistent fire rate)
+            fireTimer = 0f;
+
             // Check distance to player
             float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
 
@@ -248,7 +277,15 @@ public class CobraAI : MonoBehaviour
             if (distanceToPlayer <= shootingRange && distanceToPlayer >= minShootingDistance)
             {
                 ShootProjectile();
-                fireTimer = 0f;
+                Debug.Log($"[CobraAI] {gameObject.name} FIRED! Distance: {distanceToPlayer:F1}, FireRate: {fireRate}");
+            }
+            else if (distanceToPlayer > shootingRange)
+            {
+                // Too far - don't spam this log
+            }
+            else if (distanceToPlayer < minShootingDistance)
+            {
+                // Too close - don't spam this log
             }
         }
     }
@@ -266,6 +303,9 @@ public class CobraAI : MonoBehaviour
 
         if (proj != null)
         {
+            // Apply damage and speed from LevelConfig (set via MainLevelSetup)
+            proj.damage = projectileDamage;
+            proj.speed = projectileSpeed;
             proj.Initialize(direction, projectileType);
         }
     }
