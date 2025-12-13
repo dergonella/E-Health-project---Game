@@ -409,8 +409,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13
-  m_fontSizeBase: 13
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -477,7 +477,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -2, y: 0}
+  m_AnchoredPosition: {x: -100, y: 0}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &401889514
@@ -808,21 +808,41 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
-  - first: {x: -1, y: -9, z: 0}
+  - first: {x: 0, y: -9, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 2
-      m_TileSpriteIndex: 3
+      m_TileIndex: 4
+      m_TileSpriteIndex: 4
       m_TileMatrixIndex: 4
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
-  - first: {x: 1, y: -9, z: 0}
+  - first: {x: 2, y: -9, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 4
       m_TileSpriteIndex: 4
+      m_TileMatrixIndex: 4
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: 4, y: -9, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 4
+      m_TileSpriteIndex: 4
+      m_TileMatrixIndex: 4
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: 6, y: -9, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 6
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 4
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -863,6 +883,16 @@ Tilemap:
       serializedVersion: 2
       m_TileIndex: 7
       m_TileSpriteIndex: 7
+      m_TileMatrixIndex: 4
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
+  - first: {x: 6, y: -7, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 6
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 4
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -1174,15 +1204,15 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: dd1452b1e04aeb94586cd0885d588f8a, type: 2}
   - m_RefCount: 22
     m_Data: {fileID: 11400000, guid: 9f9a8ae2158609c4caa1826d2ab5f4f4, type: 2}
-  - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: 4de71654e4b992141a79125c058a7664, type: 2}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: 10d7ead68d64da3479140693380fd3b9, type: 2}
-  - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: 82d6fbe6d8075864182146e78a426e53, type: 2}
+  - m_RefCount: 3
+    m_Data: {fileID: 11400000, guid: 4de71654e4b992141a79125c058a7664, type: 2}
   - m_RefCount: 2
     m_Data: {fileID: 11400000, guid: e09b2c82d79a4cb43b1a2c0ea5864939, type: 2}
-  - m_RefCount: 5
+  - m_RefCount: 7
     m_Data: {fileID: 11400000, guid: 1aa35755b83b744479a8a5f1fe081a3c, type: 2}
   - m_RefCount: 4
     m_Data: {fileID: 11400000, guid: 00cdcc20888d13c4199682cf5fefb88a, type: 2}
@@ -1193,13 +1223,13 @@ Tilemap:
     m_Data: {fileID: -6471529459002863262, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
   - m_RefCount: 3
     m_Data: {fileID: -901158335, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
-  - m_RefCount: 1
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 3
     m_Data: {fileID: -1075991013, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
-  - m_RefCount: 1
-    m_Data: {fileID: -59223817, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
   - m_RefCount: 2
     m_Data: {fileID: -673681141, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
-  - m_RefCount: 5
+  - m_RefCount: 7
     m_Data: {fileID: -664617120, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
   - m_RefCount: 4
     m_Data: {fileID: 2049247903, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
@@ -1276,7 +1306,7 @@ Tilemap:
       e31: 0
       e32: 0
       e33: 1
-  - m_RefCount: 21
+  - m_RefCount: 24
     m_Data:
       e00: 1
       e01: 0
@@ -1313,7 +1343,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 48
+  - m_RefCount: 51
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -2420,7 +2450,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2982699920196648363, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
       propertyPath: speed
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4546961489888114255, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
       propertyPath: m_Radius
@@ -2547,8 +2577,8 @@ MonoBehaviour:
   invulnerabilityDuration: 0.1
   isPoisoned: 1
   poisonDamagePerSecond: 2
-  poisonDuration: 6
   poisonSpeedReduction: 0.3
+  poisonStacks: 0
   isStunned: 0
 --- !u!61 &1160224258
 BoxCollider2D:
@@ -3471,7 +3501,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1547607537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4283,7 +4313,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 00.60.00
+  m_text: 00.30.00
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7d80fc8e657a2b14eba1a887b3c12e87, type: 2}
   m_sharedMaterial: {fileID: 281437775874132033, guid: 7d80fc8e657a2b14eba1a887b3c12e87, type: 2}
@@ -4521,7 +4551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e524862aeb0ebe945a792a63f5b879a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimedLevelManager
-  timeLimit: 60
+  timeLimit: 30
   enableTimer: 1
   timerText: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
@@ -4745,8 +4775,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13
-  m_fontSizeBase: 13
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4813,7 +4843,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 110, y: -2}
+  m_AnchoredPosition: {x: 110, y: 0}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2041917879
@@ -4873,7 +4903,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: YOU DIE!
+  m_text: Level Lost!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7d80fc8e657a2b14eba1a887b3c12e87, type: 2}
   m_sharedMaterial: {fileID: 281437775874132033, guid: 7d80fc8e657a2b14eba1a887b3c12e87, type: 2}

@@ -1293,7 +1293,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 00.60.00
+  m_text: 00.30.00
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7d80fc8e657a2b14eba1a887b3c12e87, type: 2}
   m_sharedMaterial: {fileID: 281437775874132033, guid: 7d80fc8e657a2b14eba1a887b3c12e87, type: 2}
@@ -2350,8 +2350,8 @@ Tilemap:
   - first: {x: -1, y: 7, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 5
-      m_TileSpriteIndex: 5
+      m_TileIndex: 1
+      m_TileSpriteIndex: 1
       m_TileMatrixIndex: 4
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -2481,7 +2481,7 @@ Tilemap:
   m_TileAssetArray:
   - m_RefCount: 10
     m_Data: {fileID: 11400000, guid: dd1452b1e04aeb94586cd0885d588f8a, type: 2}
-  - m_RefCount: 21
+  - m_RefCount: 22
     m_Data: {fileID: 11400000, guid: 9f9a8ae2158609c4caa1826d2ab5f4f4, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 82d6fbe6d8075864182146e78a426e53, type: 2}
@@ -2489,7 +2489,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 10d7ead68d64da3479140693380fd3b9, type: 2}
   - m_RefCount: 2
     m_Data: {fileID: 11400000, guid: e09b2c82d79a4cb43b1a2c0ea5864939, type: 2}
-  - m_RefCount: 3
+  - m_RefCount: 2
     m_Data: {fileID: 11400000, guid: 4de71654e4b992141a79125c058a7664, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 1aa35755b83b744479a8a5f1fe081a3c, type: 2}
@@ -2498,7 +2498,7 @@ Tilemap:
   m_TileSpriteArray:
   - m_RefCount: 10
     m_Data: {fileID: 1791468083, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
-  - m_RefCount: 21
+  - m_RefCount: 22
     m_Data: {fileID: -6471529459002863262, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
   - m_RefCount: 3
     m_Data: {fileID: -901158335, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
@@ -2506,7 +2506,7 @@ Tilemap:
     m_Data: {fileID: -59223817, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
   - m_RefCount: 2
     m_Data: {fileID: -673681141, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
-  - m_RefCount: 3
+  - m_RefCount: 2
     m_Data: {fileID: -1075991013, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -664617120, guid: 46a3e42d35546dd4298349c517df67bf, type: 3}
@@ -3074,7 +3074,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: YOU DIE!
+  m_text: Level Lost!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7d80fc8e657a2b14eba1a887b3c12e87, type: 2}
   m_sharedMaterial: {fileID: 281437775874132033, guid: 7d80fc8e657a2b14eba1a887b3c12e87, type: 2}
@@ -3218,8 +3218,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13
-  m_fontSizeBase: 13
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3286,7 +3286,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -2, y: 0}
+  m_AnchoredPosition: {x: -100, y: 0}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1471417530
@@ -3934,7 +3934,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2982699920196648363, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
       propertyPath: speed
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4546961489888114255, guid: bc3fb0d30ad619244b13924e43abd552, type: 3}
       propertyPath: m_Radius
@@ -4061,8 +4061,8 @@ MonoBehaviour:
   invulnerabilityDuration: 0.1
   isPoisoned: 1
   poisonDamagePerSecond: 2
-  poisonDuration: 6
   poisonSpeedReduction: 0.3
+  poisonStacks: 0
   isStunned: 0
 --- !u!61 &1833802658
 BoxCollider2D:
@@ -4573,7 +4573,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2048022715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4721,7 +4721,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e524862aeb0ebe945a792a63f5b879a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimedLevelManager
-  timeLimit: 60
+  timeLimit: 30
   enableTimer: 1
   timerText: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
@@ -5013,8 +5013,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13
-  m_fontSizeBase: 13
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5081,7 +5081,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 110, y: -2}
+  m_AnchoredPosition: {x: 110, y: 0}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1660057539 &9223372036854775807

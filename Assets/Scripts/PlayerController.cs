@@ -24,6 +24,14 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Layer mask for walls")]
     public LayerMask wallLayer;
 
+    [Header("Anti-Stick Settings")]
+    [Tooltip("Enable enhanced anti-stick mechanism")]
+    public bool useAntiStick = true;
+    [Tooltip("Time threshold to detect if stuck (seconds)")]
+    public float stuckTimeThreshold = 0.15f;
+    [Tooltip("Force applied to push away from walls when stuck")]
+    public float antiStickForce = 8f;
+
     [Header("Death Movement Settings")]
     public float deathMovementDistance = 2f; // How far player can move after death (in meters)
     public float deathMovementDelay = 1.5f; // How long player can move after death (in seconds)
@@ -42,6 +50,11 @@ public class PlayerController : MonoBehaviour
     private Vector3 deathPosition;
     private float deathTime;
 
+    // Anti-stick tracking
+    private Vector3 lastSignificantPosition;
+    private float stuckTimer = 0f;
+    private bool wasMovingLastFrame = false;
+
     // Component references (HealthSystem and AbilitySystem are optional - only for advanced levels)
     private HealthSystem healthSystem;  // Optional: Only used in levels with health bars
     private AbilitySystem abilitySystem;  // Optional: Only used in levels with abilities
@@ -51,6 +64,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         previousPosition = transform.position;
+        lastSignificantPosition = transform.position;
 
         // Get component references (these may be null for simple levels like 0.2)
         healthSystem = GetComponent<HealthSystem>();  // May be null
@@ -206,35 +220,99 @@ public class PlayerController : MonoBehaviour
             // Use Rigidbody velocity for wall collision detection
             rb.linearVelocity = currentVelocity;
 
-            // Anti-stick: If touching a wall while trying to move perpendicular, apply small push-away
+            // Enhanced anti-stick mechanism
             if (inputDirection.magnitude > 0.1f)
             {
                 // Check all 4 directions for walls very close to player
-                float pushDistance = 0.05f;
-                float checkDistance = 0.15f;
+                float checkDistance = 0.2f;
                 Vector2 pushForce = Vector2.zero;
 
-                // Check each direction
+                // Check each direction with BoxCast for more reliable detection
                 RaycastHit2D hitUp = Physics2D.Raycast(transform.position, Vector2.up, checkDistance, wallLayer);
                 RaycastHit2D hitDown = Physics2D.Raycast(transform.position, Vector2.down, checkDistance, wallLayer);
                 RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, Vector2.left, checkDistance, wallLayer);
                 RaycastHit2D hitRight = Physics2D.Raycast(transform.position, Vector2.right, checkDistance, wallLayer);
 
-                // Add push away from close walls
+                // Add push away from close walls (stronger push when closer)
+                float basePush = 0.1f;
                 if (hitUp.collider != null && hitUp.distance < checkDistance)
-                    pushForce.y -= pushDistance * (1f - hitUp.distance / checkDistance);
+                    pushForce.y -= basePush * (1f - hitUp.distance / checkDistance);
                 if (hitDown.collider != null && hitDown.distance < checkDistance)
-                    pushForce.y += pushDistance * (1f - hitDown.distance / checkDistance);
+                    pushForce.y += basePush * (1f - hitDown.distance / checkDistance);
                 if (hitLeft.collider != null && hitLeft.distance < checkDistance)
-                    pushForce.x += pushDistance * (1f - hitLeft.distance / checkDistance);
+                    pushForce.x += basePush * (1f - hitLeft.distance / checkDistance);
                 if (hitRight.collider != null && hitRight.distance < checkDistance)
-                    pushForce.x -= pushDistance * (1f - hitRight.distance / checkDistance);
+                    pushForce.x -= basePush * (1f - hitRight.distance / checkDistance);
 
-                // Apply small push to prevent sticking
+                // Apply push to prevent sticking
                 if (pushForce.magnitude > 0.001f)
                 {
-                    rb.linearVelocity += pushForce * speed * 0.5f;
+                    rb.linearVelocity += pushForce * speed;
                 }
+
+                // Enhanced stuck detection and recovery
+                if (useAntiStick)
+                {
+                    float distanceMoved = Vector3.Distance(transform.position, lastSignificantPosition);
+
+                    // If trying to move but not actually moving
+                    if (distanceMoved < 0.01f && inputDirection.magnitude > 0.1f)
+                    {
+                        stuckTimer += Time.deltaTime;
+
+                        if (stuckTimer >= stuckTimeThreshold)
+                        {
+                            // Player is stuck - apply stronger escape force
+                            Vector2 escapeDir = Vector2.zero;
+
+                            // Find the direction with most space (no wall or furthest wall)
+                            float maxDist = 0f;
+                            Vector2[] directions = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+                            RaycastHit2D[] hits = { hitUp, hitDown, hitLeft, hitRight };
+
+                            for (int i = 0; i < 4; i++)
+                            {
+                                float dist = hits[i].collider != null ? hits[i].distance : checkDistance * 2f;
+                                if (dist > maxDist)
+                                {
+                                    maxDist = dist;
+                                    escapeDir = directions[i];
+                                }
+                            }
+
+                            // Also consider diagonal escape if stuck in corner
+                            if (pushForce.magnitude > 0.05f)
+                            {
+                                // Use the push force direction as escape hint
+                                escapeDir = pushForce.normalized;
+                            }
+
+                            // Apply escape force
+                            if (escapeDir.magnitude > 0.1f)
+                            {
+                                rb.linearVelocity = escapeDir * antiStickForce;
+                                Debug.Log($"[PlayerController] Anti-stick activated! Escaping toward {escapeDir}");
+                            }
+
+                            stuckTimer = 0f; // Reset to prevent spam
+                        }
+                    }
+                    else
+                    {
+                        // Moving successfully - reset stuck timer and update position
+                        stuckTimer = 0f;
+                        if (distanceMoved > 0.05f)
+                        {
+                            lastSignificantPosition = transform.position;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Not trying to move - reset stuck tracking
+                stuckTimer = 0f;
+                lastSignificantPosition = transform.position;
             }
         }
         else

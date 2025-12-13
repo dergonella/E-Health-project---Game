@@ -20,12 +20,15 @@ public class HealthSystem : MonoBehaviour
     private float invulnerabilityTimer = 0f;
     public bool isInvulnerable { get; private set; }
 
-    [Header("Status Effects")]
+    [Header("Poison Settings (DEADLY - only medkit cures!)")]
     public bool isPoisoned = false;
-    public float poisonDamagePerSecond = 2f;  // Reduced from 3 for easier testing
-    public float poisonDuration = 6f;  // Reduced from 8 for easier testing
-    public float poisonSpeedReduction = 0.3f; // Changed from 0.4 - only 30% slower for easier testing
-    private float poisonTimer = 0f;
+    [Tooltip("Base poison damage per second (stacks with each hit!)")]
+    public float poisonDamagePerSecond = 8f;  // Much higher base damage
+    [Tooltip("How much slower player moves while poisoned")]
+    public float poisonSpeedReduction = 0.4f; // 40% slower
+    [Tooltip("Current poison stacks - each hit adds 1 stack, damage = stacks * damagePerSecond")]
+    public int poisonStacks = 0;
+    private const int MAX_POISON_STACKS = 10; // Cap to prevent instant death
 
     public bool isStunned = false;
     private float stunTimer = 0f;
@@ -72,20 +75,17 @@ public class HealthSystem : MonoBehaviour
             }
         }
 
-        // Handle poison damage over time
-        if (isPoisoned)
+        // Handle poison damage over time (DEADLY - continuous until medkit!)
+        if (isPoisoned && poisonStacks > 0)
         {
-            poisonTimer -= Time.deltaTime;
+            // Damage scales with stacks: more hits = faster death!
+            // Each stack adds full damage per second
+            float totalPoisonDamage = poisonStacks * poisonDamagePerSecond * Time.deltaTime;
 
             // Apply poison damage (bypass shield - poison DoT continues even with shield)
-            // But shield activation cures poison, so this is fair
-            TakeDamage(poisonDamagePerSecond * Time.deltaTime, false, true);
+            TakeDamage(totalPoisonDamage, false, true);
 
-            // Check if poison expired
-            if (poisonTimer <= 0f)
-            {
-                CurePoison();
-            }
+            // NO timer expiration - only medkit cures poison!
         }
 
         // Handle stun timer
@@ -163,28 +163,34 @@ public class HealthSystem : MonoBehaviour
             return;
         }
 
-        if (!isPoisoned)
+        // Add a poison stack (damage increases with each hit!)
+        if (poisonStacks < MAX_POISON_STACKS)
         {
-            isPoisoned = true;
-            poisonTimer = poisonDuration;
-            OnPoisonStatusChanged?.Invoke(true);
-            Debug.Log("Player poisoned!");
+            poisonStacks++;
+            Debug.Log($"[HealthSystem] POISON STACK ADDED! Now at {poisonStacks}/{MAX_POISON_STACKS} stacks. DPS: {poisonStacks * poisonDamagePerSecond}");
         }
         else
         {
-            // Refresh poison duration
-            poisonTimer = poisonDuration;
+            Debug.Log($"[HealthSystem] MAX POISON STACKS ({MAX_POISON_STACKS}) reached! Player is doomed without medkit!");
+        }
+
+        if (!isPoisoned)
+        {
+            isPoisoned = true;
+            OnPoisonStatusChanged?.Invoke(true);
+            Debug.Log("[HealthSystem] PLAYER POISONED! Only medkit can cure!");
         }
     }
 
     public void CurePoison()
     {
-        if (isPoisoned)
+        if (isPoisoned || poisonStacks > 0)
         {
+            int oldStacks = poisonStacks;
             isPoisoned = false;
-            poisonTimer = 0f;
+            poisonStacks = 0;
             OnPoisonStatusChanged?.Invoke(false);
-            Debug.Log("Poison cured!");
+            Debug.Log($"[HealthSystem] POISON CURED! Cleared {oldStacks} stacks with medkit!");
         }
     }
 
@@ -238,9 +244,9 @@ public class HealthSystem : MonoBehaviour
         currentHealth = maxHealth;
         currentFocus = maxFocus;
         isPoisoned = false;
+        poisonStacks = 0;
         isStunned = false;
         isInvulnerable = false;
-        poisonTimer = 0f;
         stunTimer = 0f;
         invulnerabilityTimer = 0f;
 

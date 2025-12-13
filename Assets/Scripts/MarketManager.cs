@@ -54,11 +54,6 @@ public class MarketManager : MonoBehaviour
     [Tooltip("Click Play after checking this to RESET all data to zero")]
     public bool devResetAllData = false;
 
-    // Base starting amounts (from level config)
-    private int baseMedkits = 3;
-    private int baseShields = 3;
-    private int baseSlowMotion = 3;
-
     void Awake()
     {
         // Developer options - run in Awake so it happens before Start
@@ -133,8 +128,7 @@ public class MarketManager : MonoBehaviour
     {
         if (medkitCountText != null)
         {
-            int total = MarketData.GetTotalMedkits(baseMedkits);
-            medkitCountText.text = $"Medkit: {total}";
+            medkitCountText.text = $"Medkit: {MarketData.Medkits}";
         }
 
         if (medkitPriceText != null)
@@ -147,8 +141,7 @@ public class MarketManager : MonoBehaviour
     {
         if (shieldCountText != null)
         {
-            int total = MarketData.GetTotalShields(baseShields);
-            shieldCountText.text = $"Shield: {total}";
+            shieldCountText.text = $"Shield: {MarketData.Shields}";
         }
 
         if (shieldPriceText != null)
@@ -161,8 +154,7 @@ public class MarketManager : MonoBehaviour
     {
         if (slowMotionCountText != null)
         {
-            int total = MarketData.GetTotalSlowMotion(baseSlowMotion);
-            slowMotionCountText.text = $"Slow Motion: {total}";
+            slowMotionCountText.text = $"Slow Motion: {MarketData.SlowMotion}";
         }
 
         if (slowMotionPriceText != null)
@@ -190,7 +182,7 @@ public class MarketManager : MonoBehaviour
     {
         if (MarketData.BuyMedkit(medkitPrice))
         {
-            Debug.Log($"[Market] Bought Medkit! Total: {MarketData.GetTotalMedkits(baseMedkits)}");
+            Debug.Log($"[Market] Bought Medkit! Total: {MarketData.Medkits}");
             UpdateAllUI();
         }
         else
@@ -203,7 +195,7 @@ public class MarketManager : MonoBehaviour
     {
         if (MarketData.BuyShield(shieldPrice))
         {
-            Debug.Log($"[Market] Bought Shield! Total: {MarketData.GetTotalShields(baseShields)}");
+            Debug.Log($"[Market] Bought Shield! Total: {MarketData.Shields}");
             UpdateAllUI();
         }
         else
@@ -216,7 +208,7 @@ public class MarketManager : MonoBehaviour
     {
         if (MarketData.BuySlowMotion(slowMotionPrice))
         {
-            Debug.Log($"[Market] Bought Slow Motion! Total: {MarketData.GetTotalSlowMotion(baseSlowMotion)}");
+            Debug.Log($"[Market] Bought Slow Motion! Total: {MarketData.SlowMotion}");
             UpdateAllUI();
         }
         else
