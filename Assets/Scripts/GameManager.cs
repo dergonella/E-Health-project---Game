@@ -123,6 +123,9 @@ public class GameManager : MonoBehaviour
         {
             if (won)
             {
+                int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+                int currentLevelNumber = currentSceneIndex - 5;
+                LevelProgressManager.UnlockNextLevel(currentLevelNumber);
                 uiManager.ShowWinScreen(currentScore);
             }
             else

@@ -13,4 +13,8 @@ public class LevelSelectController : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
     }
+    public void OpenShop()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Market_Scene");
+    }
 }
