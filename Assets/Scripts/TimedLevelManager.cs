@@ -157,7 +157,7 @@ public class TimedLevelManager : MonoBehaviour
                 levelCompleted = true;
                 ConvertPointsToMoney();
 
-                GameManager.Instance.GameOver(true); // Win!
+                GameManager.Instance.GameOver(true, true); // Win! (money already awarded)
             }
             else
             {
@@ -177,32 +177,49 @@ public class TimedLevelManager : MonoBehaviour
 
 
     /// <summary>
-    /// Convert excess points above target score to money (for Level 0.1).
+    /// Convert points to money when player wins a timed level.
+    /// Always awards money - no longer requires convertExcessPointsToMoney flag.
     /// </summary>
     private void ConvertPointsToMoney()
     {
-        // Check if current level has points-to-money conversion enabled
-        if (LevelManager.Instance != null && GameManager.Instance != null)
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("[TimedLevelManager] GameManager not found! Cannot award money.");
+            return;
+        }
+
+        int finalScore = GameManager.Instance.GetScore();
+        int targetScore = 2000; // Default
+
+        // Try to get target score from LevelManager
+        if (LevelManager.Instance != null)
         {
             LevelManager.LevelData currentLevel = LevelManager.Instance.GetCurrentLevelData();
-            if (currentLevel != null && currentLevel.convertExcessPointsToMoney)
+            if (currentLevel != null)
             {
-                // Get PointsToMoneyConverter component (should be on same GameObject or in scene)
-                PointsToMoneyConverter converter = Object.FindFirstObjectByType<PointsToMoneyConverter>();
-
-                if (converter != null)
-                {
-                    int finalScore = GameManager.Instance.GetScore();
-                    int targetScore = currentLevel.targetScore;
-
-                    // Convert and award money
-                    converter.ConvertAndAwardMoney(finalScore, targetScore, true);
-                }
-                else
-                {
-                    Debug.LogWarning("TimedLevelManager: PointsToMoneyConverter not found in scene! Cannot convert points to money.");
-                }
+                targetScore = currentLevel.targetScore;
             }
+        }
+
+        // Try to use PointsToMoneyConverter if available
+        PointsToMoneyConverter converter = Object.FindFirstObjectByType<PointsToMoneyConverter>();
+        if (converter != null)
+        {
+            converter.ConvertAndAwardMoney(finalScore, targetScore, true);
+            Debug.Log($"[TimedLevelManager] Money awarded via PointsToMoneyConverter");
+        }
+        else
+        {
+            // Fallback: Calculate and add directly to MarketData
+            // Using 10:1 ratio: targetScore/10 = base money, excess/10 = bonus
+            int baseMoney = Mathf.FloorToInt((float)targetScore / 10f);
+            int excessPoints = Mathf.Max(0, finalScore - targetScore);
+            int bonusMoney = Mathf.FloorToInt((float)excessPoints / 10f);
+            int totalMoney = baseMoney + bonusMoney;
+
+            MarketData.AddMoney(totalMoney);
+            Debug.Log($"[TimedLevelManager] Money awarded directly: {totalMoney} (base: {baseMoney}, bonus: {bonusMoney})");
+            Debug.Log($"[TimedLevelManager] Player total money: {MarketData.Money}");
         }
     }
 

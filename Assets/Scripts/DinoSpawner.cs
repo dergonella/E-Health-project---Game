@@ -11,8 +11,8 @@ public class DinoSpawner : MonoBehaviour
     }
 
     public SpawnableObject[] objects;
-    public float minSpawnRate = 1f;
-    public float maxSpawnRate = 2f;
+    public float minSpawnRate = 0.75f;  // +25% harder (was 1f) - obstacles spawn faster
+    public float maxSpawnRate = 1.5f;   // +25% harder (was 2f) - less time between spawns
 
     private void OnEnable()
     {

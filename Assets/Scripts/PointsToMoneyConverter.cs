@@ -8,8 +8,11 @@ using UnityEngine;
 public class PointsToMoneyConverter : MonoBehaviour
 {
     [Header("Conversion Settings")]
-    [Tooltip("How many points = 1 coin (e.g., 100 points = 1 coin)")]
-    [SerializeField] private int pointsToMoneyRatio = 100;
+    [Tooltip("How many points = 1 coin (e.g., 10 points = 1 coin)")]
+    [SerializeField] private int pointsToMoneyRatio = 10;
+
+    // Force correct ratio constant - ignores Inspector value
+    private const int FORCED_RATIO = 10;
 
     [Header("Bonus Settings")]
     [Tooltip("Multiplier for excess points (points above target score)")]
@@ -18,9 +21,21 @@ public class PointsToMoneyConverter : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
 
+    void Awake()
+    {
+        // Force the correct ratio regardless of Inspector value
+        // This fixes scenes that have old serialized value of 100
+        if (pointsToMoneyRatio != FORCED_RATIO)
+        {
+            Debug.Log($"[PointsToMoneyConverter] Forcing ratio from {pointsToMoneyRatio} to {FORCED_RATIO}");
+            pointsToMoneyRatio = FORCED_RATIO;
+        }
+    }
+
     /// <summary>
     /// Convert final score to money and award it to the player.
     /// Splits into base score and excess score for different conversion rates.
+    /// Works with or without CurrencyManager - always awards to MarketData.
     /// </summary>
     /// <param name="finalScore">Player's total score at level end</param>
     /// <param name="targetScore">Target score needed to complete level</param>
@@ -30,14 +45,7 @@ public class PointsToMoneyConverter : MonoBehaviour
         if (!levelWon)
         {
             if (showDebugLogs)
-                Debug.Log("PointsToMoneyConverter: Player did not win. No money awarded.");
-            return;
-        }
-
-        // Check if CurrencyManager exists
-        if (CurrencyManager.Instance == null)
-        {
-            Debug.LogError("PointsToMoneyConverter: CurrencyManager not found! Cannot award money.");
+                Debug.Log("[PointsToMoneyConverter] Player did not win. No money awarded.");
             return;
         }
 
@@ -57,19 +65,28 @@ public class PointsToMoneyConverter : MonoBehaviour
         // Total money to award
         int totalMoney = baseMoney + bonusMoney;
 
-        // Award the money using CurrencyManager
-        CurrencyManager.Instance.AddMoney(totalMoney);
+        // Award the money - use CurrencyManager if available, otherwise direct to MarketData
+        if (CurrencyManager.Instance != null)
+        {
+            CurrencyManager.Instance.AddMoney(totalMoney);
+        }
+        else
+        {
+            // Fallback: Add directly to MarketData (works in all scenes!)
+            MarketData.AddMoney(totalMoney);
+            Debug.Log($"[PointsToMoneyConverter] CurrencyManager not found - added {totalMoney} directly to MarketData");
+        }
 
         if (showDebugLogs)
         {
-            Debug.Log($"PointsToMoneyConverter: Conversion Complete!");
+            Debug.Log($"[PointsToMoneyConverter] Conversion Complete!");
             Debug.Log($"  - Final Score: {finalScore}");
             Debug.Log($"  - Target Score: {targetScore}");
             Debug.Log($"  - Excess Points: {excessPoints}");
             Debug.Log($"  - Base Money: {baseMoney} coins (from target score)");
             Debug.Log($"  - Bonus Money: {bonusMoney} coins (from excess points)");
             Debug.Log($"  - Total Awarded: {totalMoney} coins");
-            Debug.Log($"  - Player Total Money: {CurrencyManager.Instance.GetMoney()} coins");
+            Debug.Log($"  - Player Total Money: {MarketData.Money} coins");
         }
     }
 
