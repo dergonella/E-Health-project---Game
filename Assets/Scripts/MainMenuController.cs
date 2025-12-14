@@ -20,6 +20,10 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene("Dialogue IntroScene");
     }
 
+    public void OnLevelsClicked()
+    {
+        SceneManager.LoadScene("LevelMenu");
+    }
     public void OnShopClicked()
     {
         SceneManager.LoadScene("Market_Scene");

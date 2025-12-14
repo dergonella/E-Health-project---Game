@@ -221,7 +221,7 @@ public class MarketManager : MonoBehaviour
 
     public void GoToMainMenu()
     {
-        SceneManager.LoadScene(mainMenuSceneName);
+        SceneManager.LoadScene("LevelMenu");
     }
 
     public void GoToDinoLevel()
