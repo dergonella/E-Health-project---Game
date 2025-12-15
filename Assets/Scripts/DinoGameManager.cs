@@ -8,8 +8,8 @@ public class DinoGameManager : MonoBehaviour
 {
     public static DinoGameManager Instance { get; private set; }
 
-    public float initialGameSpeed = 5f;
-    public float gameSpeedIncrease = 0.1f;
+    public float initialGameSpeed = 6.25f;    // +25% (was 5)
+    public float gameSpeedIncrease = 0.125f;  // +25% (was 0.1)
     public float gameSpeed { get; private set; }
 
     [SerializeField] private TextMeshProUGUI scoreText;
@@ -103,6 +103,27 @@ public class DinoGameManager : MonoBehaviour
             menuButton.gameObject.SetActive(true);
 
         UpdateHiscore();
+
+        // Award money based on score (Dino game rewards survival time)
+        AwardMoney();
+    }
+
+    /// <summary>
+    /// Award money based on Dino game score.
+    /// Score is based on survival time, so we convert directly.
+    /// </summary>
+    private void AwardMoney()
+    {
+        // Dino game: score = survival time * speed
+        // Convert: every 10 score = 1 money (10:1 ratio)
+        int earnedMoney = Mathf.FloorToInt(score / 10f);
+
+        if (earnedMoney > 0)
+        {
+            MarketData.AddMoney(earnedMoney);
+            Debug.Log($"[DinoGameManager] Awarded {earnedMoney} money for score {Mathf.FloorToInt(score)}");
+            Debug.Log($"[DinoGameManager] Player total money: {MarketData.Money}");
+        }
     }
 
     private void Update()

@@ -14,6 +14,9 @@ public static class MarketData
     private const string SLOWMO_KEY = "SlowMotion";
     private const string INITIALIZED_KEY = "InventoryInitialized";
 
+    // Starting budget for new players
+    public const int STARTING_MONEY = 300;
+
     /// <summary>
     /// Player's current money
     /// </summary>
@@ -88,6 +91,7 @@ public static class MarketData
     /// <summary>
     /// Initialize inventory with starting values (only runs once per new game)
     /// Uses BASE constants if no parameters provided
+    /// Also sets starting money to 300
     /// </summary>
     public static void InitializeIfNeeded(int startMedkits = -1, int startShields = -1, int startSlowMotion = -1)
     {
@@ -98,12 +102,17 @@ public static class MarketData
 
         if (!PlayerPrefs.HasKey(INITIALIZED_KEY))
         {
+            // Set starting money (300)
+            Money = STARTING_MONEY;
+
+            // Set starting items (3 each)
             Medkits = startMedkits;
             Shields = startShields;
             SlowMotion = startSlowMotion;
+
             PlayerPrefs.SetInt(INITIALIZED_KEY, 1);
             PlayerPrefs.Save();
-            Debug.Log($"[MarketData] Inventory initialized: {startMedkits} medkits, {startShields} shields, {startSlowMotion} slow motion");
+            Debug.Log($"[MarketData] New game initialized: {STARTING_MONEY} money, {startMedkits} medkits, {startShields} shields, {startSlowMotion} slow motion");
         }
     }
 
@@ -247,12 +256,12 @@ public static class MarketData
     public const int BASE_SLOWMOTION = 3;
 
     /// <summary>
-    /// DEVELOPER ONLY: Reset all market data to base values (3 of each item, 0 money)
+    /// DEVELOPER ONLY: Reset all market data to base values (3 of each item, 300 starting money)
     /// </summary>
     public static void ResetAllData()
     {
-        // Reset money to 0
-        PlayerPrefs.SetInt(MONEY_KEY, 0);
+        // Reset money to starting value (300)
+        PlayerPrefs.SetInt(MONEY_KEY, STARTING_MONEY);
 
         // Reset items to BASE values (3 each)
         PlayerPrefs.SetInt(MEDKITS_KEY, BASE_MEDKITS);
@@ -263,7 +272,7 @@ public static class MarketData
         PlayerPrefs.SetInt(INITIALIZED_KEY, 1);
         PlayerPrefs.Save();
 
-        Debug.Log($"[MarketData] All data reset to base values! Medkits: {BASE_MEDKITS}, Shields: {BASE_SHIELDS}, SlowMotion: {BASE_SLOWMOTION}, Money: 0");
+        Debug.Log($"[MarketData] All data reset to base values! Medkits: {BASE_MEDKITS}, Shields: {BASE_SHIELDS}, SlowMotion: {BASE_SLOWMOTION}, Money: {STARTING_MONEY}");
     }
 
     /// <summary>

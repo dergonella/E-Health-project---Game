@@ -107,11 +107,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void GameOver(bool won)
+    public void GameOver(bool won, bool moneyAlreadyAwarded = false)
     {
         if (gameOver) return;
 
         gameOver = true;
+
+        // Award money if player won (skip if already awarded by TimedLevelManager)
+        if (won && !moneyAlreadyAwarded)
+        {
+            AwardMoneyForWin();
+        }
 
         // Show restart button (like dino level format)
         if (GameInputManager.Instance != null)
@@ -129,6 +135,46 @@ public class GameManager : MonoBehaviour
             {
                 uiManager.ShowLoseScreen(currentScore);
             }
+        }
+    }
+
+    /// <summary>
+    /// Award money to player after winning a level.
+    /// Uses PointsToMoneyConverter if available, otherwise calculates directly.
+    /// </summary>
+    private void AwardMoneyForWin()
+    {
+        int targetScore = 2000; // Default target
+
+        // Get target score from LevelManager or LevelConfig
+        if (LevelManager.Instance != null)
+        {
+            var levelData = LevelManager.Instance.GetCurrentLevelData();
+            if (levelData != null)
+            {
+                targetScore = levelData.targetScore;
+            }
+        }
+
+        // Try to use PointsToMoneyConverter if available
+        PointsToMoneyConverter converter = Object.FindFirstObjectByType<PointsToMoneyConverter>();
+        if (converter != null)
+        {
+            converter.ConvertAndAwardMoney(currentScore, targetScore, true);
+            Debug.Log($"[GameManager] Money awarded via PointsToMoneyConverter");
+        }
+        else
+        {
+            // Fallback: Calculate and add directly to MarketData
+            // Using 10:1 ratio: targetScore/10 = base money, excess/10 = bonus
+            int baseMoney = Mathf.FloorToInt((float)targetScore / 10f);
+            int excessPoints = Mathf.Max(0, currentScore - targetScore);
+            int bonusMoney = Mathf.FloorToInt((float)excessPoints / 10f);
+            int totalMoney = baseMoney + bonusMoney;
+
+            MarketData.AddMoney(totalMoney);
+            Debug.Log($"[GameManager] Money awarded directly: {totalMoney} (base: {baseMoney}, bonus: {bonusMoney})");
+            Debug.Log($"[GameManager] Player total money: {MarketData.Money}");
         }
     }
 
