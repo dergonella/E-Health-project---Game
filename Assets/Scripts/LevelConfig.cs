@@ -97,49 +97,49 @@ public class LevelConfig : ScriptableObject
         config.enableShield = true;
         config.enableBulletSlowdown = true;
 
-        // EVEN HARDER - +25-30% from previous values
-        // Fire rate: 2.5 -> 6.5 -> 15 shots per second
-        // Damage: 19 -> 32 -> 50
-        // Projectile speed: 6 -> 9 -> 12
-        // Poison DPS: 15 -> 25 -> 38 per stack
+        // ULTRA HARD - +25% increase across all values
+        // Fire rate: 3.1 -> 8.1 -> 19 shots per second
+        // Damage: 24 -> 40 -> 63
+        // Projectile speed: 7.5 -> 11 -> 15
+        // Poison DPS: 19 -> 31 -> 48 per stack
         switch (level)
         {
             case 1:
                 config.fireSnakeCount = 3;
                 config.poisonSnakeCount = 0;
-                config.snakeFireRate = 2.5f;      // +25% (was 2)
-                config.snakeSpeed = 2.3f;         // +15% (was 2.0)
-                config.snakeShootingRange = 9f;   // +12% (was 8)
-                config.snakeMinShootDistance = 1.2f;
-                config.projectileDamage = 19f;    // +27% (was 15)
-                config.projectileSpeed = 6f;      // +20% (was 5)
-                config.poisonDamagePerSecond = 15f;  // +25% (was 12)
-                config.poisonSpeedReduction = 0.4f;  // +14% (was 0.35)
+                config.snakeFireRate = 3.1f;      // +25% (was 2.5)
+                config.snakeSpeed = 2.9f;         // +25% (was 2.3)
+                config.snakeShootingRange = 11f;  // +22% (was 9)
+                config.snakeMinShootDistance = 1.0f;
+                config.projectileDamage = 24f;    // +26% (was 19)
+                config.projectileSpeed = 7.5f;    // +25% (was 6)
+                config.poisonDamagePerSecond = 19f;  // +27% (was 15)
+                config.poisonSpeedReduction = 0.5f;  // +25% (was 0.4)
                 break;
             case 2:
                 config.fireSnakeCount = 0;
                 config.poisonSnakeCount = 3;
-                config.snakeFireRate = 6.5f;      // +30% (was 5)
-                config.snakeSpeed = 2.9f;         // +16% (was 2.5)
-                config.snakeShootingRange = 12f;  // +20% (was 10)
-                config.snakeMinShootDistance = 0.8f;
-                config.projectileDamage = 32f;    // +28% (was 25)
-                config.projectileSpeed = 9f;      // +29% (was 7)
-                config.poisonDamagePerSecond = 25f;  // +25% (was 20)
-                config.poisonSpeedReduction = 0.55f; // +10% (was 0.5)
+                config.snakeFireRate = 8.1f;      // +25% (was 6.5)
+                config.snakeSpeed = 3.6f;         // +24% (was 2.9)
+                config.snakeShootingRange = 15f;  // +25% (was 12)
+                config.snakeMinShootDistance = 0.6f;
+                config.projectileDamage = 40f;    // +25% (was 32)
+                config.projectileSpeed = 11f;     // +22% (was 9)
+                config.poisonDamagePerSecond = 31f;  // +24% (was 25)
+                config.poisonSpeedReduction = 0.69f; // +25% (was 0.55)
                 break;
             case 3:
             default:
                 config.fireSnakeCount = 2;
                 config.poisonSnakeCount = 1;
-                config.snakeFireRate = 15f;       // +25% (was 12) - BULLET HELL!
-                config.snakeSpeed = 3.5f;         // +17% (was 3.0)
-                config.snakeShootingRange = 14f;  // +17% (was 12)
-                config.snakeMinShootDistance = 0.3f;
-                config.projectileDamage = 50f;    // +25% (was 40)
-                config.projectileSpeed = 12f;     // +20% (was 10)
-                config.poisonDamagePerSecond = 38f;  // +27% (was 30)
-                config.poisonSpeedReduction = 0.65f; // +8% (was 0.6) - nearly immobile!
+                config.snakeFireRate = 19f;       // +27% (was 15) - EXTREME BULLET HELL!
+                config.snakeSpeed = 4.4f;         // +26% (was 3.5)
+                config.snakeShootingRange = 18f;  // +29% (was 14)
+                config.snakeMinShootDistance = 0.2f;
+                config.projectileDamage = 63f;    // +26% (was 50)
+                config.projectileSpeed = 15f;     // +25% (was 12)
+                config.poisonDamagePerSecond = 48f;  // +26% (was 38)
+                config.poisonSpeedReduction = 0.81f; // +25% (was 0.65) - nearly frozen!
                 break;
         }
 
