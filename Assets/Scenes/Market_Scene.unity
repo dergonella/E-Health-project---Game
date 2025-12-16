@@ -1701,7 +1701,7 @@ MonoBehaviour:
   buySlowMotionButton: {fileID: 1051348635}
   mainMenuButton: {fileID: 368501258}
   dinoLevelButton: {fileID: 1076114262}
-  devSetMoney: 1000
+  devSetMoney: 300
   devApplyMoney: 0
   devResetAllData: 0
 --- !u!4 &579791943
