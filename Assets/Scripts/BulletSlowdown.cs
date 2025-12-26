@@ -11,10 +11,6 @@ using System;
 /// </summary>
 public class BulletSlowdown : MonoBehaviour
 {
-    [Header("Inventory")]
-    [Tooltip("Starting number of slow motion uses")]
-    public int startingSlowMotion = 3;
-
     [Header("Slowdown Settings")]
     [Tooltip("How slow enemies/projectiles become (0.1 = 10% speed, 90% slowdown)")]
     public float slowTimeScale = 0.1f;
@@ -25,33 +21,15 @@ public class BulletSlowdown : MonoBehaviour
     [Tooltip("Cooldown before ability can be used again")]
     public float cooldown = 15f;
 
-    [Header("Smooth Transition")]
-    [Tooltip("Duration of smooth transition when ending slow motion")]
-    public float transitionDuration = 0.5f;
-
     [Header("Audio (Optional)")]
     public AudioClip activateSound;
     public AudioClip deactivateSound;
-
-    // Inventory
-    public int SlowMotionCount { get; private set; }
-
-    // Smooth transition
-    private bool isTransitioning = false;
-    private float transitionTimer = 0f;
-    private float transitionStartTimeScale;
-    private float transitionStartSpeed;
-    private float transitionStartAccel;
-    private float transitionStartDecel;
 
     // State tracking
     public bool IsActive { get; private set; }
     public bool IsOnCooldown { get; private set; }
     public float RemainingDuration { get; private set; }
     public float RemainingCooldown { get; private set; }
-
-    // Event for UI (inventory count)
-    public event Action<int> OnCountChanged;
 
     // Store original values
     private float originalTimeScale = 1f;
@@ -71,10 +49,6 @@ public class BulletSlowdown : MonoBehaviour
 
     private AudioSource audioSource;
     private bool isInitialized = false;
-
-    // Safety: Maximum time slow motion can be active (prevents infinite slow motion bug)
-    private const float MAX_SLOWMO_TIME = 30f;
-    private float totalActiveTime = 0f;
 
     void Awake()
     {
@@ -110,21 +84,12 @@ public class BulletSlowdown : MonoBehaviour
         // Store original fixed delta time for physics compensation
         originalFixedDeltaTime = Time.fixedDeltaTime;
 
-        // Initialize inventory if this is a new game
-        MarketData.InitializeIfNeeded(3, 3, startingSlowMotion);
-
-        // Load current inventory from persistent storage
-        SlowMotionCount = MarketData.SlowMotion;
-        OnCountChanged?.Invoke(SlowMotionCount);
-
-        Debug.Log($"[BulletSlowdown] Loaded from save: {SlowMotionCount} slow motions");
-
         // Ensure we start in normal state
         IsActive = false;
         IsOnCooldown = false;
         isInitialized = true;
 
-        Debug.Log($"[BulletSlowdown] READY! {SlowMotionCount} slow motions available. Press O to activate.");
+        Debug.Log("[BulletSlowdown] READY! Press O to activate bullet slowdown.");
     }
 
     void Update()
@@ -136,67 +101,20 @@ public class BulletSlowdown : MonoBehaviour
             TryActivate();
         }
 
-        // Handle smooth transition back to normal
-        if (isTransitioning)
-        {
-            transitionTimer += Time.unscaledDeltaTime;
-            float t = Mathf.Clamp01(transitionTimer / transitionDuration);
-
-            // Smoothly lerp time scale back to normal
-            Time.timeScale = Mathf.Lerp(transitionStartTimeScale, originalTimeScale, t);
-            Time.fixedDeltaTime = 0.02f * Time.timeScale;
-
-            // Smoothly lerp player speed back to normal
-            if (playerController != null)
-            {
-                playerController.speed = Mathf.Lerp(transitionStartSpeed, originalPlayerSpeed, t);
-                playerController.acceleration = Mathf.Lerp(transitionStartAccel, originalPlayerAcceleration, t);
-                playerController.deceleration = Mathf.Lerp(transitionStartDecel, originalPlayerDeceleration, t);
-            }
-
-            // Transition complete
-            if (t >= 1f)
-            {
-                isTransitioning = false;
-                Time.timeScale = originalTimeScale;
-                Time.fixedDeltaTime = originalFixedDeltaTime;
-
-                if (playerController != null)
-                {
-                    playerController.speed = originalPlayerSpeed;
-                    playerController.acceleration = originalPlayerAcceleration;
-                    playerController.deceleration = originalPlayerDeceleration;
-                }
-
-                Debug.Log("[BulletSlowdown] Smooth transition complete!");
-            }
-            return; // Don't process other updates during transition
-        }
-
         // Handle active slowdown - use unscaledDeltaTime since we're modifying timeScale
         if (IsActive)
         {
-            float deltaTime = Time.unscaledDeltaTime;
-            RemainingDuration -= deltaTime;
-            totalActiveTime += deltaTime;
-
+            RemainingDuration -= Time.unscaledDeltaTime;
             OnDurationChanged?.Invoke(RemainingDuration, duration);
 
-            // Force deactivate if duration expired OR safety timeout reached
-            if (RemainingDuration < 0.01f || totalActiveTime > MAX_SLOWMO_TIME)
+            if (RemainingDuration <= 0f)
             {
-                if (totalActiveTime > MAX_SLOWMO_TIME)
-                {
-                    Debug.LogWarning("[BulletSlowdown] SAFETY: Force deactivating - exceeded max time!");
-                }
-                RemainingDuration = 0f;
-                totalActiveTime = 0f;
                 Deactivate();
             }
         }
 
         // Handle cooldown - use unscaledDeltaTime for consistent cooldown
-        if (IsOnCooldown && !IsActive && !isTransitioning)
+        if (IsOnCooldown && !IsActive)
         {
             RemainingCooldown -= Time.unscaledDeltaTime;
             OnCooldownChanged?.Invoke(RemainingCooldown, cooldown);
@@ -215,12 +133,6 @@ public class BulletSlowdown : MonoBehaviour
     /// </summary>
     public void TryActivate()
     {
-        if (SlowMotionCount <= 0)
-        {
-            Debug.Log("[BulletSlowdown] No slow motion available!");
-            return;
-        }
-
         if (IsActive)
         {
             Debug.Log("[BulletSlowdown] Already active!");
@@ -233,32 +145,13 @@ public class BulletSlowdown : MonoBehaviour
             return;
         }
 
-        // Use one from inventory and save to persistent storage
-        if (MarketData.UseSlowMotion())
-        {
-            SlowMotionCount = MarketData.SlowMotion; // Sync with saved value
-            OnCountChanged?.Invoke(SlowMotionCount);
-            Debug.Log($"[BulletSlowdown] Used slow motion! {SlowMotionCount} remaining (saved).");
-            Activate();
-        }
-    }
-
-    /// <summary>
-    /// Add slow motion to inventory (from market/pickup). Saves to persistent storage.
-    /// </summary>
-    public void AddSlowMotion(int count = 1)
-    {
-        MarketData.SlowMotion += count;
-        SlowMotionCount = MarketData.SlowMotion;
-        OnCountChanged?.Invoke(SlowMotionCount);
-        Debug.Log($"[BulletSlowdown] Picked up {count} slow motion! Total: {SlowMotionCount}");
+        Activate();
     }
 
     void Activate()
     {
         IsActive = true;
         RemainingDuration = duration;
-        totalActiveTime = 0f; // Reset safety timer
 
         // Store current time scale
         originalTimeScale = Time.timeScale;
@@ -309,24 +202,25 @@ public class BulletSlowdown : MonoBehaviour
         IsActive = false;
         RemainingDuration = 0f;
 
-        // Start smooth transition instead of instant change
-        isTransitioning = true;
-        transitionTimer = 0f;
-        transitionStartTimeScale = Time.timeScale;
+        // Restore normal time
+        Time.timeScale = originalTimeScale;
+        Time.fixedDeltaTime = originalFixedDeltaTime;
 
+        // Restore player's original speed
         if (playerController != null)
         {
-            transitionStartSpeed = playerController.speed;
-            transitionStartAccel = playerController.acceleration;
-            transitionStartDecel = playerController.deceleration;
+            playerController.speed = originalPlayerSpeed;
+            playerController.acceleration = originalPlayerAcceleration;
+            playerController.deceleration = originalPlayerDeceleration;
+            Debug.Log($"[BulletSlowdown] Player speed restored to {originalPlayerSpeed}");
         }
 
         // Start cooldown
         IsOnCooldown = true;
         RemainingCooldown = cooldown;
 
-        Debug.Log("[BulletSlowdown] ====== DEACTIVATING (smooth transition) ======");
-        Debug.Log($"[BulletSlowdown] Transition duration: {transitionDuration}s");
+        Debug.Log("[BulletSlowdown] ====== DEACTIVATED! ======");
+        Debug.Log($"[BulletSlowdown] TimeScale restored to {Time.timeScale}");
         Debug.Log($"[BulletSlowdown] Cooldown: {cooldown}s");
 
         OnSlowdownActiveChanged?.Invoke(false);
@@ -351,7 +245,7 @@ public class BulletSlowdown : MonoBehaviour
     }
 
     /// <summary>
-    /// Reset ability state (for level restart). Refreshes from saved data.
+    /// Reset ability state (for level restart).
     /// </summary>
     public void ResetAbility()
     {
@@ -368,18 +262,12 @@ public class BulletSlowdown : MonoBehaviour
             }
         }
 
-        // Refresh from saved data (don't reset - items are consumable)
-        SlowMotionCount = MarketData.SlowMotion;
-        OnCountChanged?.Invoke(SlowMotionCount);
-
         IsActive = false;
         IsOnCooldown = false;
         RemainingDuration = 0f;
         RemainingCooldown = 0f;
 
         OnSlowdownActiveChanged?.Invoke(false);
-
-        Debug.Log($"[BulletSlowdown] Refreshed: {SlowMotionCount} slow motions");
     }
 
     void OnDisable()

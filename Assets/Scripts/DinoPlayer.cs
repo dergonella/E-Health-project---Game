@@ -10,40 +10,14 @@ public class DinoPlayer : MonoBehaviour
     [Header("Ducking")]
     public float duckScaleY = 0.5f;
 
-    [Header("Animation Sprites")]
-    [Tooltip("Idle penguin sprite (standing still)")]
-    public Sprite pinguinIdle;
-    [Tooltip("Running sprite 1 (leg up)")]
-    public Sprite pinguin1;
-    [Tooltip("Running sprite 2 (leg down)")]
-    public Sprite pinguin2;
-    [Tooltip("How fast to switch between sprites (lower = faster)")]
-    public float animationSpeed = 0.1f;
-
     private Vector3 velocity;
     private bool isGrounded;
     private bool isDucking;
     private Vector3 normalScale;
 
-    // Animation
-    private SpriteRenderer spriteRenderer;
-    private float animationTimer;
-    private int currentFrame = 0;
-    private Sprite[] runSprites;
-
     private void Start()
     {
         normalScale = transform.localScale;
-
-        // Get sprite renderer for animation
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer == null)
-        {
-            spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-        }
-
-        // Setup run animation sprites array
-        runSprites = new Sprite[] { pinguin1, pinguin2 };
 
         // Ensure we have a Rigidbody2D for collision detection
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
@@ -69,33 +43,6 @@ public class DinoPlayer : MonoBehaviour
         HandleInput();
         ApplyGravity();
         ApplyMovement();
-        UpdateAnimation();
-    }
-
-    void UpdateAnimation()
-    {
-        // When jumping or not grounded - show idle sprite
-        if (!isGrounded)
-        {
-            if (pinguinIdle != null)
-            {
-                spriteRenderer.sprite = pinguinIdle;
-            }
-            return;
-        }
-
-        // When grounded - animate running (cycle through pinguin1 and pinguin2)
-        if (pinguin1 != null && pinguin2 != null)
-        {
-            animationTimer += Time.deltaTime;
-
-            if (animationTimer >= animationSpeed)
-            {
-                animationTimer = 0f;
-                currentFrame = (currentFrame + 1) % 2;
-                spriteRenderer.sprite = runSprites[currentFrame];
-            }
-        }
     }
 
     void HandleInput()

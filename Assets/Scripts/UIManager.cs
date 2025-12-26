@@ -32,9 +32,6 @@ public class UIManager : MonoBehaviour
     public Slider shieldActiveBar;
     public TextMeshProUGUI shieldStatusText;
 
-    [Header("Slow Motion UI")]
-    public TextMeshProUGUI slowMotionCountText;
-
     [Header("Back to Menu")]
     public Button backToMenuButton;
 
@@ -42,7 +39,6 @@ public class UIManager : MonoBehaviour
     private HealthSystem healthSystem;
     private AbilitySystem abilitySystem;
     private PlayerInventory playerInventory;
-    private BulletSlowdown bulletSlowdown;
 
     void Start()
     {
@@ -102,11 +98,6 @@ public class UIManager : MonoBehaviour
                 healthSystem.OnFocusChanged += UpdateFocusUI;
                 healthSystem.OnPoisonStatusChanged += UpdatePoisonIndicator;
                 healthSystem.OnStunStatusChanged += UpdateStunIndicator;
-
-                // IMPORTANT: Initialize health bar with current values immediately
-                // This fixes the empty health bar issue when UIManager starts after HealthSystem
-                UpdateHealthUI(healthSystem.currentHealth, healthSystem.maxHealth);
-                UpdateFocusUI(healthSystem.currentFocus, healthSystem.maxFocus);
             }
 
             // Subscribe to ability events (legacy system)
@@ -130,15 +121,6 @@ public class UIManager : MonoBehaviour
                 UpdateShieldActiveUI(false);
             }
 
-            // Subscribe to slow motion events
-            bulletSlowdown = playerObj.GetComponent<BulletSlowdown>();
-            if (bulletSlowdown != null)
-            {
-                bulletSlowdown.OnCountChanged += UpdateSlowMotionUI;
-
-                // Initialize UI with current value
-                UpdateSlowMotionUI(bulletSlowdown.SlowMotionCount);
-            }
         }
     }
 
@@ -331,16 +313,6 @@ public class UIManager : MonoBehaviour
         if (shieldStatusText != null && remaining > 0)
         {
             shieldStatusText.text = $"SHIELD: {remaining:F1}s";
-        }
-    }
-
-    // ===== SLOW MOTION UI =====
-
-    void UpdateSlowMotionUI(int count)
-    {
-        if (slowMotionCountText != null)
-        {
-            slowMotionCountText.text = $"Slow Motion (O): {count}";
         }
     }
 }

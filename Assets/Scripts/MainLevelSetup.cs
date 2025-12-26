@@ -29,18 +29,6 @@ public class MainLevelSetup : MonoBehaviour
     [Tooltip("Spawn points for snakes - assign transforms in scene")]
     public Transform[] snakeSpawnPoints;
 
-    [Header("Background Settings")]
-    [Tooltip("Background sprite for this level (optional)")]
-    public Sprite backgroundSprite;
-
-    [Tooltip("Background color if no sprite assigned")]
-    public Color backgroundColor = new Color(0.1f, 0.15f, 0.2f);
-
-    [Tooltip("Different backgrounds per persona (optional)")]
-    public Sprite brightgroveBackground;
-    public Sprite silvergroveBackground;
-    public Sprite stonegroveBackground;
-
     [Header("References (Auto-found if not set)")]
     public GameObject player;
 
@@ -49,7 +37,6 @@ public class MainLevelSetup : MonoBehaviour
     private HealthSystem healthSystem;
     private PlayerInventory inventory;
     private BulletSlowdown bulletSlowdown;
-    private BackgroundManager backgroundManager;
 
     void Start()
     {
@@ -88,36 +75,11 @@ public class MainLevelSetup : MonoBehaviour
         bulletSlowdown = player.GetComponent<BulletSlowdown>();
 
         // Setup everything
-        SetupBackground();
         SetupPlayer();
         SetupSnakes();
         SetupWinCondition();
 
         Debug.Log($"=== LEVEL SETUP COMPLETE ===");
-    }
-
-    void SetupBackground()
-    {
-        Debug.Log("[MainLevelSetup] Setting up background...");
-
-        // Check if BackgroundManager already exists in scene
-        backgroundManager = FindObjectOfType<BackgroundManager>();
-
-        if (backgroundManager == null)
-        {
-            // Create BackgroundManager
-            GameObject bgObj = new GameObject("BackgroundManager");
-            backgroundManager = bgObj.AddComponent<BackgroundManager>();
-        }
-
-        // Configure background
-        backgroundManager.backgroundSprite = backgroundSprite;
-        backgroundManager.backgroundColor = backgroundColor;
-        backgroundManager.brightgroveBackground = brightgroveBackground;
-        backgroundManager.silvergroveBackground = silvergroveBackground;
-        backgroundManager.stonegroveBackground = stonegroveBackground;
-
-        Debug.Log("[MainLevelSetup] Background setup complete");
     }
 
     LevelConfig CreateDefaultConfig()
@@ -143,13 +105,19 @@ public class MainLevelSetup : MonoBehaviour
             Debug.Log($"[MainLevelSetup] No valid level set, defaulting to Level 1");
         }
 
-        // Get persona from GameState (convert enum to string)
-        string persona = GameState.SelectedPersona.ToString();
-        Debug.Log($"[MainLevelSetup] Creating config for {persona} Level {level}");
+        Debug.Log($"[MainLevelSetup] Creating default config for Level {level}");
 
-        // Create persona-specific config with TRIPLED fire rates per level
-        // Level 1: 1 shot/sec, Level 2: 3 shots/sec, Level 3: 9 shots/sec
-        return LevelConfig.CreateConfig(persona, level);
+        switch (level)
+        {
+            case 1:
+                return LevelConfig.CreateLevel1Default();
+            case 2:
+                return LevelConfig.CreateLevel2Default();
+            case 3:
+                return LevelConfig.CreateLevel3Default();
+            default:
+                return LevelConfig.CreateLevel1Default();
+        }
     }
 
     void SetupPlayer()
@@ -165,11 +133,6 @@ public class MainLevelSetup : MonoBehaviour
 
         // Reset health to full
         healthSystem.ResetHealth();
-
-        // Apply poison settings from level config (makes game harder each level)
-        healthSystem.poisonDamagePerSecond = levelConfig.poisonDamagePerSecond;
-        healthSystem.poisonSpeedReduction = levelConfig.poisonSpeedReduction;
-        Debug.Log($"[MainLevelSetup] Poison settings: {levelConfig.poisonDamagePerSecond} DPS per stack, {levelConfig.poisonSpeedReduction * 100}% speed reduction");
 
         // Setup inventory
         if (levelConfig.enableMedkit || levelConfig.enableShield)
@@ -291,16 +254,10 @@ public class MainLevelSetup : MonoBehaviour
     {
         // Enable projectiles
         snake.canShootProjectiles = levelConfig.snakesCanShoot;
-        snake.fireRate = levelConfig.snakeFireRate;
-        snake.shootingRange = levelConfig.snakeShootingRange;
-        snake.minShootingDistance = levelConfig.snakeMinShootDistance;
+        snake.fireRate = 1f / levelConfig.snakeShootInterval; // Convert interval to rate
 
         // Set projectile type
         snake.projectileType = isPoison ? Projectile.ProjectileType.Poison : Projectile.ProjectileType.Fire;
-
-        // Set projectile damage and speed (stored on snake, applied when shooting)
-        snake.projectileDamage = levelConfig.projectileDamage;
-        snake.projectileSpeed = levelConfig.projectileSpeed;
 
         // Enable wall avoidance for maze
         snake.useWallAvoidance = true;
@@ -312,7 +269,7 @@ public class MainLevelSetup : MonoBehaviour
         snake.isInstantKillMode = false;
 
         string snakeType = isPoison ? "Poison" : "Fire";
-        Debug.Log($"  - {snake.gameObject.name}: {snakeType} snake, fireRate={snake.fireRate}, damage={snake.projectileDamage}, speed={snake.projectileSpeed}");
+        Debug.Log($"  - {snake.gameObject.name}: {snakeType} snake, shoot={snake.canShootProjectiles}");
     }
 
     void SpawnSnake(bool isPoison, int index)

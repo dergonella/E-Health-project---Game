@@ -9,8 +9,8 @@ public class CurrencyManager : MonoBehaviour
     public static CurrencyManager Instance { get; private set; }
 
     [Header("Currency Settings")]
-    [Tooltip("How many score points = 1 coin (e.g., 10 score = 1 coin)")]
-    public int scoreToMoneyRatio = 10;
+    [Tooltip("How many score points = 1 coin (e.g., 100 score = 1 coin)")]
+    public int scoreToMoneyRatio = 100;
 
     [Tooltip("Bonus multiplier for completing levels (e.g., 1.5x money for winning)")]
     public float levelCompleteMultiplier = 1.5f;
@@ -55,7 +55,6 @@ public class CurrencyManager : MonoBehaviour
 
     /// <summary>
     /// Award money to the player (after level ends)
-    /// Also syncs with MarketData for unified money system
     /// </summary>
     public void AwardMoney(int score, bool isLevelComplete = false)
     {
@@ -63,10 +62,7 @@ public class CurrencyManager : MonoBehaviour
         totalMoney += moneyEarned;
         lifetimeMoneyEarned += moneyEarned;
 
-        // SYNC with MarketData so Market screen shows correct money
-        MarketData.AddMoney(moneyEarned);
-
-        Debug.Log($"[CurrencyManager] Money awarded: {moneyEarned} coins (Total: {totalMoney}, MarketData: {MarketData.Money})");
+        Debug.Log($"Money awarded: {moneyEarned} coins (Total: {totalMoney})");
 
         SaveMoneyData();
     }
@@ -95,27 +91,20 @@ public class CurrencyManager : MonoBehaviour
 
     /// <summary>
     /// Add money directly (for testing or special rewards)
-    /// Also syncs with MarketData for unified money system
     /// </summary>
     public void AddMoney(int amount)
     {
         totalMoney += amount;
         lifetimeMoneyEarned += amount;
-
-        // SYNC with MarketData so Market screen shows correct money
-        MarketData.AddMoney(amount);
-
         SaveMoneyData();
-        Debug.Log($"[CurrencyManager] Added {amount} money. Total: {totalMoney}, MarketData: {MarketData.Money}");
     }
 
     /// <summary>
-    /// Get current money balance (synced with MarketData)
+    /// Get current money balance
     /// </summary>
     public int GetMoney()
     {
-        // Return from MarketData to ensure sync
-        return MarketData.Money;
+        return totalMoney;
     }
 
     /// <summary>
@@ -155,38 +144,25 @@ public class CurrencyManager : MonoBehaviour
 
     /// <summary>
     /// Load money data from PlayerPrefs
-    /// Syncs with MarketData to ensure unified money system
     /// </summary>
     void LoadMoneyData()
     {
-        // Initialize MarketData if needed (sets starting money to 300)
-        MarketData.InitializeIfNeeded();
-
-        // Use MarketData as the single source of truth
-        totalMoney = MarketData.Money;
+        totalMoney = PlayerPrefs.GetInt("TotalMoney", 0);
         lifetimeMoneyEarned = PlayerPrefs.GetInt("LifetimeEarned", 0);
         lifetimeMoneySpent = PlayerPrefs.GetInt("LifetimeSpent", 0);
 
-        Debug.Log($"[CurrencyManager] Money loaded: {totalMoney} coins (synced with MarketData)");
+        Debug.Log($"Money loaded: {totalMoney} coins");
     }
 
     /// <summary>
-    /// Reset all money data (for testing) - resets to starting value 300
+    /// Reset all money data (for testing)
     /// </summary>
     public void ResetAllMoney()
     {
-        // Reset MarketData (which sets money to 300)
-        MarketData.ResetAllData();
-
-        // Sync local values
-        totalMoney = MarketData.Money;
+        totalMoney = 0;
         lifetimeMoneyEarned = 0;
         lifetimeMoneySpent = 0;
-
-        PlayerPrefs.SetInt("LifetimeEarned", 0);
-        PlayerPrefs.SetInt("LifetimeSpent", 0);
-        PlayerPrefs.Save();
-
-        Debug.Log($"[CurrencyManager] All data reset! Money: {totalMoney}");
+        SaveMoneyData();
+        Debug.Log("All money data reset!");
     }
 }

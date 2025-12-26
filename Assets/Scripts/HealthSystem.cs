@@ -20,21 +20,15 @@ public class HealthSystem : MonoBehaviour
     private float invulnerabilityTimer = 0f;
     public bool isInvulnerable { get; private set; }
 
-    [Header("Poison Settings (DEADLY - only medkit cures!)")]
+    [Header("Status Effects")]
     public bool isPoisoned = false;
-    [Tooltip("Base poison damage per second (stacks with each hit!)")]
-    public float poisonDamagePerSecond = 8f;  // Much higher base damage
-    [Tooltip("How much slower player moves while poisoned")]
-    public float poisonSpeedReduction = 0.4f; // 40% slower
-    [Tooltip("Current poison stacks - each hit adds 1 stack, damage = stacks * damagePerSecond")]
-    public int poisonStacks = 0;
-    private const int MAX_POISON_STACKS = 10; // Cap to prevent instant death
+    public float poisonDamagePerSecond = 2f;  // Reduced from 3 for easier testing
+    public float poisonDuration = 6f;  // Reduced from 8 for easier testing
+    public float poisonSpeedReduction = 0.3f; // Changed from 0.4 - only 30% slower for easier testing
+    private float poisonTimer = 0f;
 
     public bool isStunned = false;
     private float stunTimer = 0f;
-
-    // Shield reference (for blocking damage)
-    private PlayerInventory inventory;
 
     // Events
     public event Action<float, float> OnHealthChanged; // current, max
@@ -42,20 +36,6 @@ public class HealthSystem : MonoBehaviour
     public event Action OnDeath;
     public event Action<bool> OnPoisonStatusChanged;
     public event Action<bool> OnStunStatusChanged;
-
-    void Start()
-    {
-        // Get inventory reference for shield checking
-        inventory = GetComponent<PlayerInventory>();
-
-        // Initialize health to max at start
-        currentHealth = maxHealth;
-        currentFocus = maxFocus;
-
-        // Notify UI of initial values (fixes empty health bar at start)
-        OnHealthChanged?.Invoke(currentHealth, maxHealth);
-        OnFocusChanged?.Invoke(currentFocus, maxFocus);
-    }
 
     void Update()
     {
@@ -75,17 +55,19 @@ public class HealthSystem : MonoBehaviour
             }
         }
 
-        // Handle poison damage over time (DEADLY - continuous until medkit!)
-        if (isPoisoned && poisonStacks > 0)
+        // Handle poison damage over time
+        if (isPoisoned)
         {
-            // Damage scales with stacks: more hits = faster death!
-            // Each stack adds full damage per second
-            float totalPoisonDamage = poisonStacks * poisonDamagePerSecond * Time.deltaTime;
+            poisonTimer -= Time.deltaTime;
 
-            // Apply poison damage (bypass shield - poison DoT continues even with shield)
-            TakeDamage(totalPoisonDamage, false, true);
+            // Apply poison damage
+            TakeDamage(poisonDamagePerSecond * Time.deltaTime, false);
 
-            // NO timer expiration - only medkit cures poison!
+            // Check if poison expired
+            if (poisonTimer <= 0f)
+            {
+                CurePoison();
+            }
         }
 
         // Handle stun timer
@@ -100,15 +82,8 @@ public class HealthSystem : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage, bool triggerInvulnerability = true, bool bypassShield = false)
+    public void TakeDamage(float damage, bool triggerInvulnerability = true)
     {
-        // Check if shield blocks this damage (unless bypassed - e.g., for poison DoT)
-        if (!bypassShield && inventory != null && inventory.IsShieldActive)
-        {
-            Debug.Log($"[HealthSystem] Shield blocked {damage} damage!");
-            return;
-        }
-
         if (isInvulnerable && triggerInvulnerability) return;
 
         currentHealth -= damage;
@@ -156,41 +131,28 @@ public class HealthSystem : MonoBehaviour
 
     public void ApplyPoison()
     {
-        // Shield blocks poison application
-        if (inventory != null && inventory.IsShieldActive)
-        {
-            Debug.Log("[HealthSystem] Shield blocked poison application!");
-            return;
-        }
-
-        // Add a poison stack (damage increases with each hit!)
-        if (poisonStacks < MAX_POISON_STACKS)
-        {
-            poisonStacks++;
-            Debug.Log($"[HealthSystem] POISON STACK ADDED! Now at {poisonStacks}/{MAX_POISON_STACKS} stacks. DPS: {poisonStacks * poisonDamagePerSecond}");
-        }
-        else
-        {
-            Debug.Log($"[HealthSystem] MAX POISON STACKS ({MAX_POISON_STACKS}) reached! Player is doomed without medkit!");
-        }
-
         if (!isPoisoned)
         {
             isPoisoned = true;
+            poisonTimer = poisonDuration;
             OnPoisonStatusChanged?.Invoke(true);
-            Debug.Log("[HealthSystem] PLAYER POISONED! Only medkit can cure!");
+            Debug.Log("Player poisoned!");
+        }
+        else
+        {
+            // Refresh poison duration
+            poisonTimer = poisonDuration;
         }
     }
 
     public void CurePoison()
     {
-        if (isPoisoned || poisonStacks > 0)
+        if (isPoisoned)
         {
-            int oldStacks = poisonStacks;
             isPoisoned = false;
-            poisonStacks = 0;
+            poisonTimer = 0f;
             OnPoisonStatusChanged?.Invoke(false);
-            Debug.Log($"[HealthSystem] POISON CURED! Cleared {oldStacks} stacks with medkit!");
+            Debug.Log("Poison cured!");
         }
     }
 
@@ -228,9 +190,9 @@ public class HealthSystem : MonoBehaviour
         currentHealth = maxHealth;
         currentFocus = maxFocus;
         isPoisoned = false;
-        poisonStacks = 0;
         isStunned = false;
         isInvulnerable = false;
+        poisonTimer = 0f;
         stunTimer = 0f;
         invulnerabilityTimer = 0f;
 

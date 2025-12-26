@@ -40,20 +40,10 @@ public class CobraAI : MonoBehaviour
     [Header("Projectile Settings")]
     public bool canShootProjectiles = false;
     public GameObject projectilePrefab;
-    [Tooltip("Shots per second (set by LevelConfig)")]
-    public float fireRate = 0.5f;
-    [Tooltip("Maximum shooting distance")]
-    public float shootingRange = 8f;
-    [Tooltip("Minimum distance before shooting (for fairness)")]
-    public float minShootingDistance = 2f;
+    public float fireRate = 2.0f; // Increased from 0.3 - shoot much faster! (2 shots per second)
+    public float shootingRange = 5f; // Reduced from 7 - shorter range for testing
+    public float minShootingDistance = 2f; // Increased from 1.5 - more safe space
     public Projectile.ProjectileType projectileType = Projectile.ProjectileType.Fire;
-
-    [Header("Projectile Damage (Set by LevelConfig)")]
-    [Tooltip("Damage dealt per projectile hit")]
-    public float projectileDamage = 10f;
-    [Tooltip("How fast projectiles travel")]
-    public float projectileSpeed = 3f;
-
     private float fireTimer = 0f;
 
     [Header("Visual Feedback")]
@@ -70,13 +60,10 @@ public class CobraAI : MonoBehaviour
     [Header("Wall Collision Settings")]
     [Tooltip("Enable wall avoidance using raycasts")]
     public bool useWallAvoidance = true;
-    [Tooltip("Distance to check for walls ahead - higher = earlier detection")]
-    public float wallCheckDistance = 1.0f; // Increased for earlier wall detection
+    [Tooltip("Distance to check for walls ahead")]
+    public float wallCheckDistance = 0.5f;
     [Tooltip("Layer mask for walls (set in Inspector or uses 'Wall' layer)")]
     public LayerMask wallLayer;
-    [Tooltip("How smoothly the snake turns around corners (higher = smoother)")]
-    [Range(5f, 20f)]
-    public float cornerSmoothness = 12f; // Increased for faster response
 
     private Transform playerTransform;
     private PlayerController playerController;
@@ -242,34 +229,15 @@ public class CobraAI : MonoBehaviour
 
     void HandleProjectileShooting()
     {
-        // Debug: Log why shooting might not work
-        if (!canShootProjectiles)
-        {
-            return; // canShootProjectiles is disabled in Inspector
-        }
-        if (projectilePrefab == null)
-        {
-            Debug.LogWarning($"[CobraAI] {gameObject.name}: projectilePrefab is not assigned!");
-            return;
-        }
-        if (playerTransform == null)
-        {
-            Debug.LogWarning($"[CobraAI] {gameObject.name}: Player not found!");
-            return;
-        }
-
-        // Calculate fire interval (fireRate = shots per second)
-        float fireInterval = 1f / Mathf.Max(0.1f, fireRate);
+        if (!canShootProjectiles || projectilePrefab == null || playerTransform == null) return;
 
         // Update fire timer
         fireTimer += Time.deltaTime;
 
         // Check if ready to fire
+        float fireInterval = 1f / fireRate;
         if (fireTimer >= fireInterval)
         {
-            // Reset timer FIRST (so we maintain consistent fire rate)
-            fireTimer = 0f;
-
             // Check distance to player
             float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
 
@@ -277,15 +245,7 @@ public class CobraAI : MonoBehaviour
             if (distanceToPlayer <= shootingRange && distanceToPlayer >= minShootingDistance)
             {
                 ShootProjectile();
-                Debug.Log($"[CobraAI] {gameObject.name} FIRED! Distance: {distanceToPlayer:F1}, FireRate: {fireRate}");
-            }
-            else if (distanceToPlayer > shootingRange)
-            {
-                // Too far - don't spam this log
-            }
-            else if (distanceToPlayer < minShootingDistance)
-            {
-                // Too close - don't spam this log
+                fireTimer = 0f;
             }
         }
     }
@@ -303,29 +263,20 @@ public class CobraAI : MonoBehaviour
 
         if (proj != null)
         {
-            // Apply damage and speed from LevelConfig (set via MainLevelSetup)
-            proj.damage = projectileDamage;
-            proj.speed = projectileSpeed;
             proj.Initialize(direction, projectileType);
         }
     }
 
-    // ===== ADVANCED PATHFINDING SYSTEM =====
+    // Stuck detection variables
     private Vector3 lastPosition;
     private float stuckTimer = 0f;
     private int stuckDirection = 1; // 1 or -1 for alternating unstuck direction
-    private float unstuckForceTimer = 0f;
-
-    // Smart pathfinding state
-    private bool isNavigatingCorner = false;
-    private Vector3 cornerDirection; // Direction to follow around corner
-    private float cornerNavigationTimer = 0f;
-    private float cornerCommitTime = 0.6f; // How long to commit to a corner direction
-
-    // Predictive corner detection
-    private bool cornerAhead = false;
-    private float lastCornerCheckTime = 0f;
-    private float cornerCheckInterval = 0.1f; // Check for corners every 0.1s
+    private float unstuckForceTimer = 0f; // Timer to force movement when severely stuck
+    private float pathfindTimer = 0f; // Timer for pathfinding around obstacles
+    private Vector3 pathfindTarget; // Temporary target when navigating around walls
+    private bool isPathfinding = false; // Currently navigating around an obstacle
+    private Vector3 pathfindDirection; // Direction to follow when pathfinding
+    private float pathfindDuration = 0f; // How long to follow current path direction
 
     void ChaseAI()
     {
@@ -333,291 +284,92 @@ public class CobraAI : MonoBehaviour
         float distance = toPlayer.magnitude;
         Vector3 directToPlayer = toPlayer.normalized;
 
-        // Track movement for stuck detection
+        // Check if stuck (not moving much)
         float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        UpdateStuckState(movementDelta);
-        lastPosition = transform.position;
-
-        // Update corner navigation timer
-        if (cornerNavigationTimer > 0)
-        {
-            cornerNavigationTimer -= Time.deltaTime;
-        }
-
-        // Emergency unstuck
-        if (unstuckForceTimer > 1.0f)
-        {
-            EmergencyUnstuck();
-            return;
-        }
-
-        // Get the best movement direction using smart pathfinding
-        Vector3 moveDirection = GetSmartDirection(directToPlayer, distance);
-
-        MoveWithWallAvoidance(moveDirection, speed);
-    }
-
-    /// <summary>
-    /// Update stuck detection state
-    /// </summary>
-    void UpdateStuckState(float movementDelta)
-    {
-        if (movementDelta < 0.006f)
+        if (movementDelta < 0.008f) // Slightly higher threshold
         {
             stuckTimer += Time.deltaTime;
             unstuckForceTimer += Time.deltaTime;
         }
         else
         {
-            // Moving well
-            if (movementDelta > 0.015f)
+            stuckTimer = 0f;
+            unstuckForceTimer = 0f;
+            // If we're moving well, we can stop pathfinding
+            if (movementDelta > 0.02f)
             {
-                stuckTimer = 0f;
-                unstuckForceTimer = 0f;
+                isPathfinding = false;
+            }
+        }
+        lastPosition = transform.position;
 
-                // If moving well and direct path is clear, stop corner navigation
-                if (!isNavigatingCorner || cornerNavigationTimer <= 0)
-                {
-                    isNavigatingCorner = false;
-                }
+        // Decrease pathfind duration
+        if (pathfindDuration > 0)
+        {
+            pathfindDuration -= Time.deltaTime;
+        }
+
+        // If severely stuck for too long, find open space and nudge there
+        if (unstuckForceTimer > 1.2f)
+        {
+            Vector3 escapeDir = FindOpenDirection();
+            if (escapeDir != Vector3.zero)
+            {
+                // Start pathfinding in this direction
+                isPathfinding = true;
+                pathfindDirection = escapeDir;
+                pathfindDuration = 0.8f; // Follow this direction for a bit
+                transform.position += escapeDir * 0.3f; // Small nudge
             }
             else
             {
-                // Moving slowly - reduce timers but don't reset
-                stuckTimer = Mathf.Max(0, stuckTimer - Time.deltaTime * 0.5f);
-                unstuckForceTimer = Mathf.Max(0, unstuckForceTimer - Time.deltaTime * 0.5f);
+                // Last resort - random offset
+                Vector3 randomOffset = new Vector3(Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f), 0f);
+                transform.position += randomOffset;
             }
+            unstuckForceTimer = 0f;
+            stuckTimer = 0f;
+            return;
         }
-    }
 
-    /// <summary>
-    /// Emergency escape when severely stuck - no teleporting, just change direction
-    /// </summary>
-    void EmergencyUnstuck()
-    {
-        Vector3 escapeDir = FindBestEscapeDirection();
-        if (escapeDir != Vector3.zero)
+        // Determine movement direction
+        Vector3 moveDirection;
+
+        // Check if direct path to player is blocked
+        bool directPathBlocked = IsPathBlocked(directToPlayer);
+
+        if (isPathfinding && pathfindDuration > 0)
         {
-            isNavigatingCorner = true;
-            cornerDirection = escapeDir;
-            cornerNavigationTimer = cornerCommitTime * 1.5f; // Longer commit to escape
+            // Continue following pathfind direction
+            moveDirection = pathfindDirection;
 
-            // DON'T teleport - just set velocity if using rigidbody
-            if (rb != null && useWallAvoidance)
+            // But check if we can now see the player directly
+            if (!directPathBlocked)
             {
-                rb.linearVelocity = escapeDir * speed * 1.2f; // Slight boost to escape
+                isPathfinding = false;
+                moveDirection = directToPlayer;
             }
-            // Reset smoothed direction to escape direction
-            smoothedDirection = escapeDir;
         }
-        unstuckForceTimer = 0f;
-        stuckTimer = 0f;
-    }
-
-    /// <summary>
-    /// Get the smartest direction to move considering walls and corners
-    /// </summary>
-    Vector3 GetSmartDirection(Vector3 directToPlayer, float distanceToPlayer)
-    {
-        // If we're committed to navigating a corner, continue that direction
-        if (isNavigatingCorner && cornerNavigationTimer > 0)
+        else if (directPathBlocked || stuckTimer > 0.15f)
         {
-            // Check if the corner direction is still valid
-            if (!IsPathBlocked(cornerDirection))
+            // Need to find a way around
+            moveDirection = FindPathAroundWall(directToPlayer);
+
+            // If we found a good alternate path, commit to it briefly
+            if (moveDirection != directToPlayer)
             {
-                // Also check if we can now see the player directly
-                if (!IsPathBlocked(directToPlayer))
-                {
-                    // Path to player is clear - stop corner navigation
-                    isNavigatingCorner = false;
-                    return directToPlayer;
-                }
-                return cornerDirection;
-            }
-            else
-            {
-                // Corner direction blocked - need new direction
-                isNavigatingCorner = false;
+                isPathfinding = true;
+                pathfindDirection = moveDirection;
+                pathfindDuration = 0.5f; // Follow this direction for half a second
             }
         }
-
-        // Check if direct path to player is clear
-        bool directBlocked = IsPathBlocked(directToPlayer);
-
-        // Predictive corner detection - look ahead for walls
-        bool cornerApproaching = DetectCornerAhead(directToPlayer);
-
-        if (!directBlocked && !cornerApproaching)
+        else
         {
-            // Clear path to player - go direct
-            return directToPlayer;
+            // Direct path is clear
+            moveDirection = directToPlayer;
         }
 
-        // Need to navigate around obstacle
-        Vector3 bestDirection = FindBestCornerDirection(directToPlayer);
-
-        // Commit to this direction for smooth navigation
-        if (bestDirection != directToPlayer)
-        {
-            isNavigatingCorner = true;
-            cornerDirection = bestDirection;
-            cornerNavigationTimer = cornerCommitTime;
-        }
-
-        return bestDirection;
-    }
-
-    /// <summary>
-    /// Detect if there's a corner/wall approaching in our path
-    /// </summary>
-    bool DetectCornerAhead(Vector3 direction)
-    {
-        // Check at extended distance for early corner detection
-        float lookAheadDistance = wallCheckDistance * 2.5f;
-
-        RaycastHit2D centerHit = Physics2D.Raycast(transform.position, direction, lookAheadDistance, wallLayer);
-
-        if (centerHit.collider != null)
-        {
-            // Wall ahead - check if it's close enough to start turning
-            return centerHit.distance < wallCheckDistance * 1.8f;
-        }
-
-        // Also check slightly to the sides for corner edges
-        Vector3 leftDir = Quaternion.Euler(0, 0, 25f) * direction;
-        Vector3 rightDir = Quaternion.Euler(0, 0, -25f) * direction;
-
-        RaycastHit2D leftHit = Physics2D.Raycast(transform.position, leftDir, lookAheadDistance * 0.8f, wallLayer);
-        RaycastHit2D rightHit = Physics2D.Raycast(transform.position, rightDir, lookAheadDistance * 0.8f, wallLayer);
-
-        // If one side is blocked but not the other, it's a corner
-        if ((leftHit.collider != null && rightHit.collider == null) ||
-            (leftHit.collider == null && rightHit.collider != null))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Find the best direction to navigate around a corner/wall
-    /// </summary>
-    Vector3 FindBestCornerDirection(Vector3 toPlayer)
-    {
-        // Test many directions and find the best one
-        float[] testAngles = { 30f, -30f, 45f, -45f, 60f, -60f, 75f, -75f, 90f, -90f, 120f, -120f };
-
-        Vector3 bestDir = toPlayer;
-        float bestScore = -9999f;
-
-        foreach (float angle in testAngles)
-        {
-            Vector3 testDir = Quaternion.Euler(0, 0, angle) * toPlayer;
-
-            // Check if this direction is clear
-            RaycastHit2D nearHit = Physics2D.Raycast(transform.position, testDir, wallCheckDistance, wallLayer);
-
-            if (nearHit.collider == null)
-            {
-                // Direction is clear - calculate score
-                float score = ScoreNavigationDirection(testDir, toPlayer, angle);
-
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestDir = testDir;
-                }
-            }
-        }
-
-        // If no good direction found, try to find any open direction
-        if (bestScore < -999f)
-        {
-            bestDir = FindBestEscapeDirection();
-            if (bestDir == Vector3.zero)
-            {
-                bestDir = toPlayer; // Last resort
-            }
-        }
-
-        return bestDir.normalized;
-    }
-
-    /// <summary>
-    /// Score a potential navigation direction
-    /// </summary>
-    float ScoreNavigationDirection(Vector3 testDir, Vector3 toPlayer, float angle)
-    {
-        float score = 0f;
-
-        // 1. Check how far we can go in this direction
-        RaycastHit2D farHit = Physics2D.Raycast(transform.position, testDir, wallCheckDistance * 5f, wallLayer);
-        float clearDistance = farHit.collider != null ? farHit.distance : wallCheckDistance * 5f;
-        score += clearDistance * 2f;
-
-        // 2. How well does this direction lead toward player?
-        float dotToPlayer = Vector3.Dot(testDir, toPlayer);
-        score += dotToPlayer * 3f;
-
-        // 3. Prefer smaller turn angles (more natural movement)
-        float anglePenalty = Mathf.Abs(angle) / 180f;
-        score -= anglePenalty * 1.5f;
-
-        // 4. Check if going this way would get us closer to player
-        Vector3 futurePos = transform.position + testDir * Mathf.Min(clearDistance, 2f);
-        float currentDist = Vector3.Distance(transform.position, playerTransform.position);
-        float futureDist = Vector3.Distance(futurePos, playerTransform.position);
-        float progressBonus = (currentDist - futureDist) * 2f;
-        score += progressBonus;
-
-        // 5. Bonus for directions that have long clear paths (good for corridors)
-        if (clearDistance > wallCheckDistance * 3f)
-        {
-            score += 2f;
-        }
-
-        // 6. Prefer consistent direction with current corner navigation
-        if (isNavigatingCorner && cornerDirection != Vector3.zero)
-        {
-            float consistency = Vector3.Dot(testDir, cornerDirection);
-            score += consistency * 1f;
-        }
-
-        return score;
-    }
-
-    /// <summary>
-    /// Find the best escape direction when stuck
-    /// </summary>
-    Vector3 FindBestEscapeDirection()
-    {
-        float[] angles = { 0f, 45f, -45f, 90f, -90f, 135f, -135f, 180f };
-        Vector3 bestDir = Vector3.zero;
-        float bestClearance = 0f;
-
-        Vector3 toPlayer = playerTransform != null ?
-            (playerTransform.position - transform.position).normalized : Vector3.right;
-
-        foreach (float angle in angles)
-        {
-            Vector3 testDir = Quaternion.Euler(0, 0, angle) * toPlayer;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, testDir, wallCheckDistance * 3f, wallLayer);
-
-            float clearance = hit.collider != null ? hit.distance : wallCheckDistance * 3f;
-
-            // Prefer directions toward player
-            float playerBonus = Vector3.Dot(testDir, toPlayer) * 0.5f;
-            float totalScore = clearance + playerBonus;
-
-            if (totalScore > bestClearance)
-            {
-                bestClearance = totalScore;
-                bestDir = testDir;
-            }
-        }
-
-        return bestDir.normalized;
+        MoveWithWallAvoidance(moveDirection, speed);
     }
 
     /// <summary>
@@ -629,115 +381,221 @@ public class CobraAI : MonoBehaviour
         return hit.collider != null;
     }
 
-    // Smooth direction for corner navigation
-    private Vector3 smoothedDirection = Vector3.zero;
+    /// <summary>
+    /// Find a path around a wall to reach the player
+    /// </summary>
+    Vector3 FindPathAroundWall(Vector3 toPlayer)
+    {
+        // Check perpendicular directions first (go around the wall)
+        Vector3 perpLeft = new Vector3(-toPlayer.y, toPlayer.x, 0f).normalized;
+        Vector3 perpRight = new Vector3(toPlayer.y, -toPlayer.x, 0f).normalized;
+
+        // Score each perpendicular direction
+        float leftScore = ScoreDirection(perpLeft, toPlayer);
+        float rightScore = ScoreDirection(perpRight, toPlayer);
+
+        // Also check diagonal directions (45 degrees from perpendicular)
+        Vector3 diagLeft = (toPlayer + perpLeft).normalized;
+        Vector3 diagRight = (toPlayer + perpRight).normalized;
+        float diagLeftScore = ScoreDirection(diagLeft, toPlayer);
+        float diagRightScore = ScoreDirection(diagRight, toPlayer);
+
+        // Find the best scoring direction
+        Vector3 bestDir = toPlayer;
+        float bestScore = -999f;
+
+        if (leftScore > bestScore && leftScore > 0) { bestScore = leftScore; bestDir = perpLeft; }
+        if (rightScore > bestScore && rightScore > 0) { bestScore = rightScore; bestDir = perpRight; }
+        if (diagLeftScore > bestScore && diagLeftScore > 0) { bestScore = diagLeftScore; bestDir = diagLeft; }
+        if (diagRightScore > bestScore && diagRightScore > 0) { bestScore = diagRightScore; bestDir = diagRight; }
+
+        // If nothing good found, try the 8-direction search
+        if (bestScore <= 0)
+        {
+            bestDir = GetUnstuckDirection(toPlayer);
+        }
+
+        // Alternate direction preference to avoid oscillation
+        if (stuckTimer > 0.3f)
+        {
+            stuckDirection *= -1;
+            stuckTimer = 0.15f;
+        }
+
+        return bestDir;
+    }
+
+    /// <summary>
+    /// Score a direction based on how clear it is and how well it leads toward player
+    /// </summary>
+    float ScoreDirection(Vector3 direction, Vector3 toPlayer)
+    {
+        // Check if direction is blocked
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, wallCheckDistance * 2f, wallLayer);
+
+        if (hit.collider != null)
+        {
+            return -1f; // Blocked
+        }
+
+        // Check how far we can go
+        RaycastHit2D farHit = Physics2D.Raycast(transform.position, direction, wallCheckDistance * 4f, wallLayer);
+        float clearDistance = farHit.collider != null ? farHit.distance : wallCheckDistance * 4f;
+
+        // Also check if the direction eventually leads toward player
+        // by checking if after moving in this direction, we'd be closer to player
+        Vector3 futurePos = transform.position + direction * clearDistance * 0.5f;
+        Vector3 currentToPlayer = playerTransform.position - transform.position;
+        Vector3 futureToPlayer = playerTransform.position - futurePos;
+
+        // Bonus if future position is closer to player
+        float proximityBonus = (currentToPlayer.magnitude - futureToPlayer.magnitude) * 2f;
+
+        return clearDistance + proximityBonus;
+    }
+
+    /// <summary>
+    /// Find the best direction to move when stuck
+    /// </summary>
+    Vector3 GetUnstuckDirection(Vector3 originalDirection)
+    {
+        // Try 8 directions and find the best one that leads toward player
+        float[] angles = { 0f, 45f, -45f, 90f, -90f, 135f, -135f, 180f };
+        Vector3 bestDir = originalDirection;
+        float bestScore = -999f;
+
+        Vector3 toPlayer = (playerTransform.position - transform.position).normalized;
+
+        foreach (float angle in angles)
+        {
+            Vector3 testDir = Quaternion.Euler(0, 0, angle) * originalDirection;
+
+            // Check if this direction is clear
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, testDir, wallCheckDistance * 1.5f, wallLayer);
+
+            if (hit.collider == null)
+            {
+                // Direction is clear - score based on how much it leads toward player
+                float dotToPlayer = Vector3.Dot(testDir, toPlayer);
+                float score = dotToPlayer + (1f - Mathf.Abs(angle) / 180f) * 0.5f; // Prefer smaller angles
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestDir = testDir;
+                }
+            }
+        }
+
+        // Alternate stuck direction for next time
+        if (stuckTimer > 0.3f)
+        {
+            stuckDirection *= -1;
+            stuckTimer = 0.1f;
+        }
+
+        return bestDir.normalized;
+    }
+
+    /// <summary>
+    /// Find an open direction when completely stuck
+    /// </summary>
+    Vector3 FindOpenDirection()
+    {
+        // Check 8 directions
+        for (int i = 0; i < 8; i++)
+        {
+            float angle = i * 45f;
+            Vector3 dir = Quaternion.Euler(0, 0, angle) * Vector3.right;
+
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, wallCheckDistance * 2f, wallLayer);
+
+            if (hit.collider == null)
+            {
+                return dir;
+            }
+        }
+        return Vector3.zero;
+    }
 
     /// <summary>
     /// Moves the cobra in the given direction, avoiding walls if enabled.
-    /// SIMPLE AND RELIABLE - when blocked, slide along wall or turn perpendicular.
+    /// Uses wall sliding for smooth movement through narrow passages.
     /// </summary>
     private void MoveWithWallAvoidance(Vector3 direction, float moveSpeed)
     {
         if (useWallAvoidance && wallLayer != 0)
         {
-            // Simple, reliable wall avoidance
-            RaycastHit2D forwardHit = Physics2D.Raycast(transform.position, direction, wallCheckDistance, wallLayer);
+            // Check multiple rays for better wall detection (more directions)
+            float[] rayAngles = { 0f, 30f, -30f, 60f, -60f, 90f, -90f };
+            Vector3 bestDirection = direction;
+            float bestScore = -999f;
+            bool forwardBlocked = false;
 
-            if (forwardHit.collider != null)
+            // Get direction to player for scoring
+            Vector3 toPlayer = playerTransform != null ?
+                (playerTransform.position - transform.position).normalized : direction;
+
+            foreach (float angle in rayAngles)
             {
-                // Wall ahead! Try to slide along it
-                Vector3 wallNormal = forwardHit.normal;
+                Vector3 testDir = Quaternion.Euler(0, 0, angle) * direction;
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, testDir, wallCheckDistance, wallLayer);
 
-                // Calculate slide direction (remove the component going into the wall)
-                Vector3 slideDir = direction - Vector3.Dot(direction, wallNormal) * (Vector3)wallNormal;
-
-                if (slideDir.magnitude > 0.1f)
+                if (angle == 0f && hit.collider != null)
                 {
-                    // Check if slide direction is clear
-                    RaycastHit2D slideHit = Physics2D.Raycast(transform.position, slideDir.normalized, wallCheckDistance * 0.8f, wallLayer);
-                    if (slideHit.collider == null)
+                    forwardBlocked = true;
+                }
+
+                if (hit.collider == null)
+                {
+                    // Direction is clear - check how far we can go
+                    RaycastHit2D farHit = Physics2D.Raycast(transform.position, testDir, wallCheckDistance * 3f, wallLayer);
+                    float clearDistance = farHit.collider != null ? farHit.distance : wallCheckDistance * 3f;
+
+                    // Score = distance * alignment with player direction
+                    float dotToPlayer = Vector3.Dot(testDir, toPlayer);
+                    float angleBonus = 1f - (Mathf.Abs(angle) / 90f) * 0.3f; // Small penalty for big angles
+                    float score = clearDistance * (0.5f + dotToPlayer * 0.5f) * angleBonus;
+
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestDirection = testDir;
+                    }
+                }
+            }
+
+            // If forward is blocked, use the best alternative
+            if (forwardBlocked && bestScore > -999f)
+            {
+                direction = bestDirection.normalized;
+            }
+            else if (forwardBlocked)
+            {
+                // All directions blocked - try wall sliding
+                RaycastHit2D directHit = Physics2D.Raycast(transform.position, direction, wallCheckDistance, wallLayer);
+                if (directHit.collider != null)
+                {
+                    Vector3 wallNormal = directHit.normal;
+                    Vector3 slideDir = direction - Vector3.Dot(direction, wallNormal) * (Vector3)wallNormal;
+
+                    if (slideDir.magnitude > 0.1f)
                     {
                         direction = slideDir.normalized;
                     }
                     else
                     {
-                        // Slide blocked - try perpendicular directions
-                        direction = TryPerpendicularDirections(direction, wallNormal);
-                    }
-                }
-                else
-                {
-                    // Moving directly into wall - turn perpendicular
-                    direction = TryPerpendicularDirections(direction, wallNormal);
-                }
-            }
-            else
-            {
-                // Forward is clear, but check slightly ahead for early corner detection
-                RaycastHit2D aheadHit = Physics2D.Raycast(transform.position, direction, wallCheckDistance * 2f, wallLayer);
-                if (aheadHit.collider != null && aheadHit.distance < wallCheckDistance * 1.5f)
-                {
-                    // Corner approaching - check which side is more open
-                    Vector3 leftDir = Quaternion.Euler(0, 0, 45f) * direction;
-                    Vector3 rightDir = Quaternion.Euler(0, 0, -45f) * direction;
-
-                    RaycastHit2D leftHit = Physics2D.Raycast(transform.position, leftDir, wallCheckDistance * 2f, wallLayer);
-                    RaycastHit2D rightHit = Physics2D.Raycast(transform.position, rightDir, wallCheckDistance * 2f, wallLayer);
-
-                    float leftClear = leftHit.collider != null ? leftHit.distance : wallCheckDistance * 3f;
-                    float rightClear = rightHit.collider != null ? rightHit.distance : wallCheckDistance * 3f;
-
-                    // Bias toward player direction
-                    if (playerTransform != null)
-                    {
-                        Vector3 toPlayer = (playerTransform.position - transform.position).normalized;
-                        leftClear += Vector3.Dot(leftDir, toPlayer) * 0.5f;
-                        rightClear += Vector3.Dot(rightDir, toPlayer) * 0.5f;
-                    }
-
-                    // Start turning toward the more open side
-                    if (leftClear > rightClear && leftHit.collider == null)
-                    {
-                        direction = Vector3.Lerp(direction, leftDir, 0.4f).normalized;
-                    }
-                    else if (rightHit.collider == null)
-                    {
-                        direction = Vector3.Lerp(direction, rightDir, 0.4f).normalized;
+                        // Last resort - perpendicular
+                        direction = new Vector3(-direction.y, direction.x, 0f) * stuckDirection;
                     }
                 }
             }
-
-            // Smooth direction changes (but faster than before)
-            if (smoothedDirection == Vector3.zero)
-            {
-                smoothedDirection = direction;
-            }
-            else
-            {
-                // Faster smoothing for more responsive turning
-                float smoothSpeed = cornerSmoothness * 1.5f;
-                smoothedDirection = Vector3.Lerp(smoothedDirection, direction, smoothSpeed * Time.deltaTime);
-
-                // Safety check - don't smooth into walls
-                RaycastHit2D smoothCheck = Physics2D.Raycast(transform.position, smoothedDirection, wallCheckDistance * 0.5f, wallLayer);
-                if (smoothCheck.collider != null)
-                {
-                    smoothedDirection = direction;
-                }
-            }
-
-            direction = smoothedDirection.normalized;
         }
 
         // Apply movement
         if (rb != null && useWallAvoidance)
         {
-            Vector3 targetVelocity = direction * moveSpeed;
-
-            // Faster velocity transitions for more responsive movement
-            Vector3 newVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, 15f * Time.deltaTime);
-
-            rb.linearVelocity = newVelocity;
+            rb.linearVelocity = direction * moveSpeed;
         }
         else
         {
@@ -745,83 +603,73 @@ public class CobraAI : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Try perpendicular directions when sliding fails
-    /// </summary>
-    Vector3 TryPerpendicularDirections(Vector3 originalDir, Vector3 wallNormal)
-    {
-        // Get perpendicular directions to the wall
-        Vector3 perp1 = new Vector3(-wallNormal.y, wallNormal.x, 0f);
-        Vector3 perp2 = new Vector3(wallNormal.y, -wallNormal.x, 0f);
-
-        // Check which perpendicular is clear
-        RaycastHit2D hit1 = Physics2D.Raycast(transform.position, perp1, wallCheckDistance, wallLayer);
-        RaycastHit2D hit2 = Physics2D.Raycast(transform.position, perp2, wallCheckDistance, wallLayer);
-
-        bool perp1Clear = hit1.collider == null;
-        bool perp2Clear = hit2.collider == null;
-
-        // Prefer direction toward player
-        if (playerTransform != null)
-        {
-            Vector3 toPlayer = (playerTransform.position - transform.position).normalized;
-            float dot1 = Vector3.Dot(perp1, toPlayer);
-            float dot2 = Vector3.Dot(perp2, toPlayer);
-
-            if (perp1Clear && perp2Clear)
-            {
-                return dot1 > dot2 ? perp1 : perp2;
-            }
-            else if (perp1Clear)
-            {
-                return perp1;
-            }
-            else if (perp2Clear)
-            {
-                return perp2;
-            }
-        }
-        else
-        {
-            if (perp1Clear) return perp1;
-            if (perp2Clear) return perp2;
-        }
-
-        // Both blocked - try diagonal away from wall
-        Vector3 awayFromWall = wallNormal;
-        RaycastHit2D awayHit = Physics2D.Raycast(transform.position, awayFromWall, wallCheckDistance * 0.5f, wallLayer);
-        if (awayHit.collider == null)
-        {
-            return awayFromWall;
-        }
-
-        // Last resort - alternate direction
-        stuckDirection *= -1;
-        return stuckDirection > 0 ? perp1 : perp2;
-    }
-
     void AttackAI()
     {
         // Advanced Predator AI - predicts player movement and intercepts
         Vector3 toPlayer = playerTransform.position - transform.position;
         float distance = toPlayer.magnitude;
+        Vector3 directToPlayer = toPlayer.normalized;
 
-        // Track movement for stuck detection
+        // Check if stuck
         float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        UpdateStuckState(movementDelta);
+        if (movementDelta < 0.008f)
+        {
+            stuckTimer += Time.deltaTime;
+            unstuckForceTimer += Time.deltaTime;
+        }
+        else
+        {
+            stuckTimer = 0f;
+            unstuckForceTimer = 0f;
+            if (movementDelta > 0.02f) isPathfinding = false;
+        }
         lastPosition = transform.position;
 
-        // Update corner navigation timer
-        if (cornerNavigationTimer > 0)
+        // Decrease pathfind duration
+        if (pathfindDuration > 0) pathfindDuration -= Time.deltaTime;
+
+        // If severely stuck, nudge toward open space
+        if (unstuckForceTimer > 1.2f)
         {
-            cornerNavigationTimer -= Time.deltaTime;
+            Vector3 escapeDir = FindOpenDirection();
+            if (escapeDir != Vector3.zero)
+            {
+                isPathfinding = true;
+                pathfindDirection = escapeDir;
+                pathfindDuration = 0.8f;
+                transform.position += escapeDir * 0.3f;
+            }
+            unstuckForceTimer = 0f;
+            stuckTimer = 0f;
+            return;
         }
 
-        // Emergency unstuck
-        if (unstuckForceTimer > 1.0f)
+        // Determine movement direction with smart pathfinding
+        Vector3 direction;
+        bool directPathBlocked = IsPathBlocked(directToPlayer);
+
+        if (isPathfinding && pathfindDuration > 0)
         {
-            EmergencyUnstuck();
-            return;
+            direction = pathfindDirection;
+            if (!directPathBlocked)
+            {
+                isPathfinding = false;
+                direction = directToPlayer;
+            }
+        }
+        else if (directPathBlocked || stuckTimer > 0.15f)
+        {
+            direction = FindPathAroundWall(directToPlayer);
+            if (direction != directToPlayer)
+            {
+                isPathfinding = true;
+                pathfindDirection = direction;
+                pathfindDuration = 0.5f;
+            }
+        }
+        else
+        {
+            direction = directToPlayer;
         }
 
         // Predict where player will be
@@ -842,11 +690,8 @@ public class CobraAI : MonoBehaviour
         targetPos.x = Mathf.Clamp(targetPos.x, -boundX + 0.3f, boundX - 0.3f);
         targetPos.y = Mathf.Clamp(targetPos.y, -boundY + 0.3f, boundY - 0.3f);
 
-        // Get direction to predicted position
-        Vector3 directToTarget = (targetPos - transform.position).normalized;
-
-        // Get the best movement direction using smart pathfinding
-        Vector3 moveDirection = GetSmartDirection(directToTarget, distance);
+        // Move toward predicted position
+        direction = (targetPos - transform.position).normalized;
 
         // Speed boost when close
         float currentSpeed = speed;
@@ -855,7 +700,7 @@ public class CobraAI : MonoBehaviour
             currentSpeed = speed * (1f + boostMultiplier);
         }
 
-        MoveWithWallAvoidance(moveDirection, currentSpeed);
+        MoveWithWallAvoidance(direction, currentSpeed);
     }
 
     void RandomAI()
@@ -863,39 +708,19 @@ public class CobraAI : MonoBehaviour
         // Random movement - picks random points
         randomTimer += Time.deltaTime;
 
-        // Track movement for stuck detection
-        float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        UpdateStuckState(movementDelta);
-        lastPosition = transform.position;
-
-        // Update corner navigation timer
-        if (cornerNavigationTimer > 0)
-        {
-            cornerNavigationTimer -= Time.deltaTime;
-        }
-
-        // Emergency unstuck
-        if (unstuckForceTimer > 1.0f)
-        {
-            EmergencyUnstuck();
-            SetNewRandomTarget(); // Pick a new target after unstuck
-            return;
-        }
-
         if (randomTimer >= randomTargetChangeInterval)
         {
             SetNewRandomTarget();
             randomTimer = 0f;
         }
 
-        // Move toward random target using smart pathfinding
+        // Move toward random target
+        Vector3 direction = (randomTarget - transform.position).normalized;
         float distanceToTarget = Vector3.Distance(transform.position, randomTarget);
-        Vector3 directToTarget = (randomTarget - transform.position).normalized;
 
         if (distanceToTarget > 0.05f)
         {
-            Vector3 moveDirection = GetSmartDirection(directToTarget, distanceToTarget);
-            MoveWithWallAvoidance(moveDirection, speed);
+            MoveWithWallAvoidance(direction, speed);
         }
     }
 
@@ -987,49 +812,8 @@ public class CobraAI : MonoBehaviour
         }
         else
         {
-            // Track movement for stuck detection
-            float movementDelta = Vector3.Distance(transform.position, lastPosition);
-            UpdateStuckState(movementDelta);
-            lastPosition = transform.position;
-
-            // Update corner navigation timer
-            if (cornerNavigationTimer > 0)
-            {
-                cornerNavigationTimer -= Time.deltaTime;
-            }
-
-            // Emergency unstuck
-            if (unstuckForceTimer > 1.0f)
-            {
-                EmergencyUnstuck();
-                return;
-            }
-
-            // AGGRESSIVE strike at player - Ambusher should always go toward player
-            Vector3 directToPlayer = (playerTransform.position - transform.position).normalized;
-
-            // Check if direct path is blocked
-            bool directBlocked = IsPathBlocked(directToPlayer);
-
-            Vector3 strikeDirection;
-            if (!directBlocked)
-            {
-                // Direct path is clear - GO STRAIGHT TO PLAYER (ignore corner navigation)
-                strikeDirection = directToPlayer;
-                isNavigatingCorner = false; // Reset corner navigation
-            }
-            else
-            {
-                // Path blocked - use smart direction but with shorter corner commit
-                strikeDirection = GetSmartDirection(directToPlayer, distanceToPlayer);
-
-                // For ambusher, reduce corner navigation time to be more aggressive
-                if (isNavigatingCorner)
-                {
-                    cornerNavigationTimer = Mathf.Min(cornerNavigationTimer, 0.3f);
-                }
-            }
-
+            // Aggressive strike at player
+            Vector3 strikeDirection = (playerTransform.position - transform.position).normalized;
             MoveWithWallAvoidance(strikeDirection, strikeSpeed);
 
             // Return to hiding if player escapes
@@ -1062,24 +846,6 @@ public class CobraAI : MonoBehaviour
     {
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
 
-        // Track movement for stuck detection
-        float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        UpdateStuckState(movementDelta);
-        lastPosition = transform.position;
-
-        // Update corner navigation timer
-        if (cornerNavigationTimer > 0)
-        {
-            cornerNavigationTimer -= Time.deltaTime;
-        }
-
-        // Emergency unstuck
-        if (unstuckForceTimer > 1.0f)
-        {
-            EmergencyUnstuck();
-            return;
-        }
-
         // Check if player is in alert range
         if (distanceToPlayer < alertRange)
         {
@@ -1100,17 +866,16 @@ public class CobraAI : MonoBehaviour
 
         if (isAlerted)
         {
-            // Aggressive chase when alerted - use smart pathfinding
-            Vector3 directToPlayer = (playerTransform.position - transform.position).normalized;
-            Vector3 chaseDirection = GetSmartDirection(directToPlayer, distanceToPlayer);
+            // Aggressive chase when alerted
+            Vector3 chaseDirection = (playerTransform.position - transform.position).normalized;
             float chaseSpeed = speed * chaseSpeedMultiplier;
             MoveWithWallAvoidance(chaseDirection, chaseSpeed);
         }
         else
         {
-            // Patrol the route with smart pathfinding
+            // Patrol the route
             Vector3 targetPoint = patrolPoints[currentPatrolPoint];
-            Vector3 directToPoint = (targetPoint - transform.position).normalized;
+            Vector3 patrolDirection = (targetPoint - transform.position).normalized;
             float distanceToPoint = Vector3.Distance(transform.position, targetPoint);
 
             if (distanceToPoint < 0.2f)
@@ -1119,8 +884,6 @@ public class CobraAI : MonoBehaviour
                 currentPatrolPoint = (currentPatrolPoint + 1) % patrolPoints.Length;
             }
 
-            // Use smart direction for patrol as well
-            Vector3 patrolDirection = GetSmartDirection(directToPoint, distanceToPoint);
             MoveWithWallAvoidance(patrolDirection, patrolSpeed);
         }
     }
@@ -1138,24 +901,6 @@ public class CobraAI : MonoBehaviour
     {
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
 
-        // Track movement for stuck detection
-        float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        UpdateStuckState(movementDelta);
-        lastPosition = transform.position;
-
-        // Update corner navigation timer
-        if (cornerNavigationTimer > 0)
-        {
-            cornerNavigationTimer -= Time.deltaTime;
-        }
-
-        // Emergency unstuck
-        if (unstuckForceTimer > 1.0f)
-        {
-            EmergencyUnstuck();
-            return;
-        }
-
         // Check if other cobras are nearby for coordination
         CobraAI nearestAlly = FindNearestCobra();
 
@@ -1168,7 +913,7 @@ public class CobraAI : MonoBehaviour
                 isCoordinating = true;
                 SetVisualState(huntingColor);
 
-                // Coordinated flanking attack with smart pathfinding
+                // Coordinated flanking attack
                 PerformFlankingManeuver(nearestAlly);
             }
             else
@@ -1176,19 +921,17 @@ public class CobraAI : MonoBehaviour
                 isCoordinating = false;
                 SetVisualState(originalColor);
 
-                // Move toward ally to coordinate using smart pathfinding
+                // Move toward ally to coordinate
                 Vector3 toAlly = (nearestAlly.transform.position - transform.position).normalized;
                 Vector3 toPlayer = (playerTransform.position - transform.position).normalized;
                 Vector3 balancedDirection = (toAlly + toPlayer * 2f).normalized;
 
-                // Use smart direction
-                Vector3 moveDirection = GetSmartDirection(balancedDirection, distanceToPlayer);
-                MoveWithWallAvoidance(moveDirection, speed);
+                MoveWithWallAvoidance(balancedDirection, speed);
             }
         }
         else
         {
-            // No allies nearby - use basic chase (already uses smart pathfinding)
+            // No allies nearby - use basic chase
             ChaseAI();
         }
     }
@@ -1212,10 +955,8 @@ public class CobraAI : MonoBehaviour
         flankTarget.x = Mathf.Clamp(flankTarget.x, -boundX + 0.5f, boundX - 0.5f);
         flankTarget.y = Mathf.Clamp(flankTarget.y, -boundY + 0.5f, boundY - 0.5f);
 
-        // Move toward flanking position using smart pathfinding
-        float distanceToTarget = Vector3.Distance(transform.position, flankTarget);
-        Vector3 directToTarget = (flankTarget - transform.position).normalized;
-        Vector3 moveDirection = GetSmartDirection(directToTarget, distanceToTarget);
+        // Move toward flanking position
+        Vector3 moveDirection = (flankTarget - transform.position).normalized;
         MoveWithWallAvoidance(moveDirection, speed);
     }
 
@@ -1251,21 +992,35 @@ public class CobraAI : MonoBehaviour
         Vector3 toPlayer = (playerTransform.position - transform.position).normalized;
         Vector3 awayFromPlayer = -toPlayer;
 
-        // Track movement for stuck detection
+        // Check if stuck
         float movementDelta = Vector3.Distance(transform.position, lastPosition);
-        UpdateStuckState(movementDelta);
+        if (movementDelta < 0.005f)
+        {
+            stuckTimer += Time.deltaTime;
+            unstuckForceTimer += Time.deltaTime;
+        }
+        else
+        {
+            stuckTimer = 0f;
+            unstuckForceTimer = 0f;
+        }
         lastPosition = transform.position;
 
-        // Update corner navigation timer
-        if (cornerNavigationTimer > 0)
+        // If severely stuck, find open space
+        if (unstuckForceTimer > 1.5f)
         {
-            cornerNavigationTimer -= Time.deltaTime;
-        }
-
-        // Emergency unstuck
-        if (unstuckForceTimer > 1.0f)
-        {
-            EmergencyUnstuck();
+            Vector3 escapeDir = FindOpenDirection();
+            if (escapeDir != Vector3.zero)
+            {
+                transform.position += escapeDir * 0.5f;
+            }
+            else
+            {
+                Vector3 randomOffset = new Vector3(Random.Range(-0.4f, 0.4f), Random.Range(-0.4f, 0.4f), 0f);
+                transform.position += randomOffset;
+            }
+            unstuckForceTimer = 0f;
+            stuckTimer = 0f;
             return;
         }
 
@@ -1279,28 +1034,42 @@ public class CobraAI : MonoBehaviour
         {
             // Too close - back away while strafing
             Vector3 strafe = new Vector3(-toPlayer.y, toPlayer.x, 0f) * (Mathf.Sin(Time.time * 2f) * 0.5f);
-            Vector3 retreatDir = (awayFromPlayer + strafe).normalized;
-
-            // Use smart pathfinding for retreat
-            moveDirection = GetSmartDirection(retreatDir, distanceToPlayer);
+            moveDirection = (awayFromPlayer + strafe).normalized;
             SetVisualState(alertColor); // Orange = retreating
+
+            // If stuck while retreating, use smart pathfinding
+            if (stuckTimer > 0.1f)
+            {
+                moveDirection = GetUnstuckDirection(awayFromPlayer);
+            }
         }
         else if (distanceToPlayer > idealMaxDistance)
         {
-            // Too far - move closer using smart pathfinding
-            moveDirection = GetSmartDirection(toPlayer, distanceToPlayer);
+            // Too far - move closer but cautiously
+            moveDirection = toPlayer * 0.7f;
             SetVisualState(originalColor);
+
+            // Handle stuck while approaching - use smart pathfinding
+            if (stuckTimer > 0.1f)
+            {
+                moveDirection = GetUnstuckDirection(toPlayer);
+            }
         }
         else
         {
             // In ideal range - strafe to make it harder to dodge projectiles
             float strafeSpeed = 1.5f;
             float strafeDirection = Mathf.Sin(Time.time * strafeSpeed + GetInstanceID());
-            Vector3 strafeDir = new Vector3(-toPlayer.y, toPlayer.x, 0f) * strafeDirection;
-
-            // Use smart pathfinding for strafing
-            moveDirection = GetSmartDirection(strafeDir.normalized, distanceToPlayer);
+            moveDirection = new Vector3(-toPlayer.y, toPlayer.x, 0f) * strafeDirection;
             SetVisualState(huntingColor); // Red = attacking
+
+            // Check if strafe direction is blocked
+            if (stuckTimer > 0.1f)
+            {
+                // Try opposite strafe direction
+                moveDirection = -moveDirection;
+                stuckTimer = 0f;
+            }
         }
 
         // Apply movement with wall avoidance
