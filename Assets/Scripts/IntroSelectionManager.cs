@@ -10,10 +10,10 @@ public class IntroSelectionManager : MonoBehaviour
         // 1. Save the player's choice so we remember it later
         GameContext.SetPersona(personaIndex);
 
-        Debug.Log("Persona Selected: " + personaIndex + ". Loading Prologue...");
+        Debug.Log("Persona Selected: " + personaIndex + ". Loading Level Menu...");
 
-        // 2. Load the NEW Prologue Scene
-        // We go here first so the character can speak before the game starts.
-        SceneManager.LoadScene("Story_PostLvl0");
+        // 2. Load the Level Menu (The Hub)
+        // From here, the player can click "Level 1" to start the story.
+        SceneManager.LoadScene("LevelMenu");
     }
 }

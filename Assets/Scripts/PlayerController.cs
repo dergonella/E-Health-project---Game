@@ -9,6 +9,29 @@ public class PlayerController : MonoBehaviour
     public float deceleration = 30f;  // Quick stops for testing
     public float size = 0.2f;
 
+    [Header("Bounds Settings")]
+    [Tooltip("Use Tilemap walls for bounds instead of hard-coded limits")]
+    public bool useWallCollision = true;  // For maze levels (Level 0.2+)
+    [Tooltip("Fallback bounds when no walls exist")]
+    public float boundX = 4f;
+    public float boundY = 3f;
+
+    [Header("Corner Smoothing")]
+    [Tooltip("Enable smooth sliding around corners")]
+    public bool useCornerSmoothing = true;
+    [Tooltip("Distance to check for walls")]
+    public float wallCheckDistance = 0.4f;
+    [Tooltip("Layer mask for walls")]
+    public LayerMask wallLayer;
+
+    [Header("Anti-Stick Settings")]
+    [Tooltip("Enable enhanced anti-stick mechanism")]
+    public bool useAntiStick = true;
+    [Tooltip("Time threshold to detect if stuck (seconds)")]
+    public float stuckTimeThreshold = 0.15f;
+    [Tooltip("Force applied to push away from walls when stuck")]
+    public float antiStickForce = 8f;
+
     [Header("Death Movement Settings")]
     public float deathMovementDistance = 2f; // How far player can move after death (in meters)
     public float deathMovementDelay = 1.5f; // How long player can move after death (in seconds)
@@ -27,19 +50,69 @@ public class PlayerController : MonoBehaviour
     private Vector3 deathPosition;
     private float deathTime;
 
-    // Component references
-    private HealthSystem healthSystem;
-    private AbilitySystem abilitySystem;
+    // Anti-stick tracking
+    private Vector3 lastSignificantPosition;
+    private float stuckTimer = 0f;
+    private bool wasMovingLastFrame = false;
+
+    // Component references (HealthSystem and AbilitySystem are optional - only for advanced levels)
+    private HealthSystem healthSystem;  // Optional: Only used in levels with health bars
+    private AbilitySystem abilitySystem;  // Optional: Only used in levels with abilities
     private Animator animator;
+    private Rigidbody2D rb;
 
     void Start()
     {
         previousPosition = transform.position;
+        lastSignificantPosition = transform.position;
 
-        // Get component references
-        healthSystem = GetComponent<HealthSystem>();
-        abilitySystem = GetComponent<AbilitySystem>();
+        // Get component references (these may be null for simple levels like 0.2)
+        healthSystem = GetComponent<HealthSystem>();  // May be null
+        abilitySystem = GetComponent<AbilitySystem>();  // May be null
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
+
+        // Configure Rigidbody for wall collision mode
+        if (useWallCollision && rb != null)
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 0f;  // No gravity for top-down game
+            rb.freezeRotation = true;  // Don't rotate when hitting walls
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate; // Smoother movement
+
+            // Reduce friction to prevent sticking to walls
+            Collider2D col = GetComponent<Collider2D>();
+            if (col != null)
+            {
+                // Ensure collider is NOT a trigger for wall collision to work
+                if (col.isTrigger)
+                {
+                    Debug.LogWarning("[PlayerController] Collider is set as Trigger - wall collision won't work! Disabling trigger mode.");
+                    col.isTrigger = false;
+                }
+
+                // Create a frictionless physics material to prevent wall sticking
+                PhysicsMaterial2D slipperyMaterial = new PhysicsMaterial2D("PlayerSlippery");
+                slipperyMaterial.friction = 0f;
+                slipperyMaterial.bounciness = 0f;
+                col.sharedMaterial = slipperyMaterial;
+            }
+
+            // Reduce linear drag to prevent sluggish movement near walls
+            rb.linearDamping = 0f;
+            rb.angularDamping = 0f;
+        }
+
+        // Auto-setup wall layer if not set
+        if (wallLayer == 0)
+        {
+            int wallLayerIndex = LayerMask.NameToLayer("Wall");
+            if (wallLayerIndex != -1)
+            {
+                wallLayer = 1 << wallLayerIndex;
+            }
+        }
     }
 
     void Update()
@@ -75,12 +148,19 @@ public class PlayerController : MonoBehaviour
             // If still within death movement window, allow movement (continue with normal movement code below)
         }
 
-        // Check if stunned - if stunned, decelerate to stop
+        // Check if stunned - if stunned, decelerate to stop (only if HealthSystem exists)
         if (healthSystem != null && healthSystem.isStunned)
         {
             // Smoothly stop when stunned
             currentVelocity = Vector3.Lerp(currentVelocity, Vector3.zero, deceleration * Time.deltaTime);
-            transform.position += currentVelocity * Time.deltaTime;
+            if (useWallCollision && rb != null)
+            {
+                rb.linearVelocity = currentVelocity;
+            }
+            else
+            {
+                transform.position += currentVelocity * Time.deltaTime;
+            }
             return;
         }
 
@@ -116,6 +196,12 @@ public class PlayerController : MonoBehaviour
         // Calculate target velocity
         Vector3 targetVelocity = inputDirection * speed * speedMultiplier;
 
+        // Apply corner smoothing - helps slide around corners
+        if (useCornerSmoothing && inputDirection.magnitude > 0.1f && wallLayer != 0)
+        {
+            targetVelocity = ApplyCornerSmoothing(inputDirection, speed * speedMultiplier);
+        }
+
         // Smooth acceleration/deceleration
         if (inputDirection.magnitude > 0.1f)
         {
@@ -128,25 +214,174 @@ public class PlayerController : MonoBehaviour
             currentVelocity = Vector3.Lerp(currentVelocity, Vector3.zero, deceleration * Time.deltaTime);
         }
 
-        // Move the player with smooth velocity
-        transform.position += currentVelocity * Time.deltaTime;
+        // Move the player
+        if (useWallCollision && rb != null)
+        {
+            // Use Rigidbody velocity for wall collision detection
+            rb.linearVelocity = currentVelocity;
+
+            // Enhanced anti-stick mechanism
+            if (inputDirection.magnitude > 0.1f)
+            {
+                // Check all 4 directions for walls very close to player
+                float checkDistance = 0.2f;
+                Vector2 pushForce = Vector2.zero;
+
+                // Check each direction with BoxCast for more reliable detection
+                RaycastHit2D hitUp = Physics2D.Raycast(transform.position, Vector2.up, checkDistance, wallLayer);
+                RaycastHit2D hitDown = Physics2D.Raycast(transform.position, Vector2.down, checkDistance, wallLayer);
+                RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, Vector2.left, checkDistance, wallLayer);
+                RaycastHit2D hitRight = Physics2D.Raycast(transform.position, Vector2.right, checkDistance, wallLayer);
+
+                // Add push away from close walls (stronger push when closer)
+                float basePush = 0.1f;
+                if (hitUp.collider != null && hitUp.distance < checkDistance)
+                    pushForce.y -= basePush * (1f - hitUp.distance / checkDistance);
+                if (hitDown.collider != null && hitDown.distance < checkDistance)
+                    pushForce.y += basePush * (1f - hitDown.distance / checkDistance);
+                if (hitLeft.collider != null && hitLeft.distance < checkDistance)
+                    pushForce.x += basePush * (1f - hitLeft.distance / checkDistance);
+                if (hitRight.collider != null && hitRight.distance < checkDistance)
+                    pushForce.x -= basePush * (1f - hitRight.distance / checkDistance);
+
+                // Apply push to prevent sticking
+                if (pushForce.magnitude > 0.001f)
+                {
+                    rb.linearVelocity += pushForce * speed;
+                }
+
+                // Enhanced stuck detection and recovery
+                if (useAntiStick)
+                {
+                    float distanceMoved = Vector3.Distance(transform.position, lastSignificantPosition);
+
+                    // If trying to move but not actually moving
+                    if (distanceMoved < 0.01f && inputDirection.magnitude > 0.1f)
+                    {
+                        stuckTimer += Time.deltaTime;
+
+                        if (stuckTimer >= stuckTimeThreshold)
+                        {
+                            // Player is stuck - apply stronger escape force
+                            Vector2 escapeDir = Vector2.zero;
+
+                            // Find the direction with most space (no wall or furthest wall)
+                            float maxDist = 0f;
+                            Vector2[] directions = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+                            RaycastHit2D[] hits = { hitUp, hitDown, hitLeft, hitRight };
+
+                            for (int i = 0; i < 4; i++)
+                            {
+                                float dist = hits[i].collider != null ? hits[i].distance : checkDistance * 2f;
+                                if (dist > maxDist)
+                                {
+                                    maxDist = dist;
+                                    escapeDir = directions[i];
+                                }
+                            }
+
+                            // Also consider diagonal escape if stuck in corner
+                            if (pushForce.magnitude > 0.05f)
+                            {
+                                // Use the push force direction as escape hint
+                                escapeDir = pushForce.normalized;
+                            }
+
+                            // Apply escape force
+                            if (escapeDir.magnitude > 0.1f)
+                            {
+                                rb.linearVelocity = escapeDir * antiStickForce;
+                                Debug.Log($"[PlayerController] Anti-stick activated! Escaping toward {escapeDir}");
+                            }
+
+                            stuckTimer = 0f; // Reset to prevent spam
+                        }
+                    }
+                    else
+                    {
+                        // Moving successfully - reset stuck timer and update position
+                        stuckTimer = 0f;
+                        if (distanceMoved > 0.05f)
+                        {
+                            lastSignificantPosition = transform.position;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Not trying to move - reset stuck tracking
+                stuckTimer = 0f;
+                lastSignificantPosition = transform.position;
+            }
+        }
+        else
+        {
+            // Direct transform movement (old method)
+            transform.position += currentVelocity * Time.deltaTime;
+
+            // Keep player in bounds with clamping
+            transform.position = new Vector3(
+                Mathf.Clamp(transform.position.x, -boundX, boundX),
+                Mathf.Clamp(transform.position.y, -boundY, boundY),
+                0f
+            );
+        }
 
         // Update animator parameters for 4-directional animation
         UpdateAnimator(horizontal, vertical);
-
-        // Keep player in bounds
-        float boundX = 4f;
-        float boundY = 3f;
-        transform.position = new Vector3(
-            Mathf.Clamp(transform.position.x, -boundX, boundX),
-            Mathf.Clamp(transform.position.y, -boundY, boundY),
-            0f
-        );
     }
 
     void CalculateVelocity()
     {
         velocity = transform.position - previousPosition;
+    }
+
+    /// <summary>
+    /// Smooths movement around corners by detecting walls and sliding along them.
+    /// Prevents getting stuck on corner edges in narrow passages.
+    /// </summary>
+    Vector3 ApplyCornerSmoothing(Vector3 inputDir, float moveSpeed)
+    {
+        Vector3 resultVelocity = inputDir * moveSpeed;
+
+        // Check if moving into a wall
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, inputDir, wallCheckDistance, wallLayer);
+
+        if (hit.collider != null)
+        {
+            // Wall detected - try to slide along it
+            Vector3 wallNormal = hit.normal;
+
+            // Calculate slide direction (remove the component going into the wall)
+            Vector3 slideDir = inputDir - Vector3.Dot(inputDir, wallNormal) * (Vector3)wallNormal;
+
+            if (slideDir.magnitude > 0.1f)
+            {
+                resultVelocity = slideDir.normalized * moveSpeed;
+            }
+            else
+            {
+                // Check perpendicular directions for corner navigation
+                Vector3 perp1 = new Vector3(-inputDir.y, inputDir.x, 0f);
+                Vector3 perp2 = new Vector3(inputDir.y, -inputDir.x, 0f);
+
+                RaycastHit2D hit1 = Physics2D.Raycast(transform.position, perp1, wallCheckDistance, wallLayer);
+                RaycastHit2D hit2 = Physics2D.Raycast(transform.position, perp2, wallCheckDistance, wallLayer);
+
+                // Choose the direction that's not blocked
+                if (hit1.collider == null && hit2.collider != null)
+                {
+                    resultVelocity = perp1 * moveSpeed * 0.7f;
+                }
+                else if (hit2.collider == null && hit1.collider != null)
+                {
+                    resultVelocity = perp2 * moveSpeed * 0.7f;
+                }
+            }
+        }
+
+        return resultVelocity;
     }
 
     void UpdateAnimator(float horizontal, float vertical)
@@ -239,23 +474,20 @@ public class PlayerController : MonoBehaviour
 
     void HandleCollision(GameObject other)
     {
-        Debug.Log($"Player collision detected with: {other.name}, Tag: {other.tag}");
-
         // Check collision with cobra
         if (other.CompareTag("Cobra"))
         {
-            // Check if cobra is in instant kill mode (levels 0-3)
             CobraAI cobraAI = other.GetComponent<CobraAI>();
+
+            // INSTANT KILL MODE (Level 0.2 and similar)
             if (cobraAI != null && cobraAI.isInstantKillMode)
             {
-                // CobraAI handles instant kill - it calls Die() which allows brief movement
-                // But for timed levels (Level 0.1), we want immediate game over
+                // For timed levels (Level 0.1), immediate game over
                 if (LevelManager.Instance != null)
                 {
                     var levelData = LevelManager.Instance.GetCurrentLevelData();
                     if (levelData != null && levelData.hasTimedChallenge)
                     {
-                        // Immediate game over for timed challenges - no delayed movement
                         Debug.Log("Cobra hit in timed challenge! Immediate game over!");
                         if (GameManager.Instance != null && !GameManager.Instance.IsGameOver())
                         {
@@ -264,30 +496,26 @@ public class PlayerController : MonoBehaviour
                         return;
                     }
                 }
-                // For other instant-kill levels, CobraAI handles it (allows brief movement)
+                // For other instant-kill levels (like 0.2), CobraAI calls Die()
                 return;
             }
 
-            // Level 4: Normal damage mode
-            // Check if we have health system (levels with health)
+            // DAMAGE MODE (Advanced levels with health system)
             if (healthSystem != null)
             {
-                // Check if shield is active
+                // Check if shield is active (only if AbilitySystem exists)
                 if (abilitySystem != null && abilitySystem.isShieldActive)
                 {
                     Debug.Log("Cobra attack blocked by shield!");
                     return;
                 }
 
-                // Take damage (15 HP per collision)
                 healthSystem.TakeDamage(15f);
-                Debug.Log("Cobra hit! Dealt 15 damage (Level 4 - normal mode)");
-
-                // Death is handled by HealthSystem event
+                Debug.Log("Cobra hit! Dealt 15 damage");
             }
             else
             {
-                // Fallback for levels without health system and not in instant kill mode
+                // No health system and not instant kill = immediate game over
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.GameOver(false);
@@ -298,22 +526,12 @@ public class PlayerController : MonoBehaviour
         // Check collision with shard
         if (other.CompareTag("Shard"))
         {
-            Debug.Log($"Player touched shard: {other.name}");
             ShardController shard = other.GetComponent<ShardController>();
             if (shard != null)
             {
-                Debug.Log($"ShardController found! Collecting shard...");
                 CollectShard(100);
                 shard.Respawn();
             }
-            else
-            {
-                Debug.LogError($"Shard {other.name} has no ShardController component!");
-            }
-        }
-        else
-        {
-            Debug.Log($"Object {other.name} does NOT have 'Shard' tag. It has: '{other.tag}'");
         }
     }
 }

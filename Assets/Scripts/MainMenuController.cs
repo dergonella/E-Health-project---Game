@@ -17,12 +17,16 @@ public class MainMenuController : MonoBehaviour
     public void OnPlayClicked()
     {
         // Load the Level Selection Menu
-        SceneManager.LoadScene("LevelMenu");
+        SceneManager.LoadScene("Dialogue IntroScene");
     }
 
+    public void OnLevelsClicked()
+    {
+        SceneManager.LoadScene("LevelMenu");
+    }
     public void OnShopClicked()
     {
-        SceneManager.LoadScene("Shop");
+        SceneManager.LoadScene("Market_Scene");
     }
 
     public void OnSoundToggleClicked()
